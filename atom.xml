@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-01T10:31:38.624Z</updated>
+    <updated>2019-08-01T10:43:59.855Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -30,6 +30,7 @@ Color.rgb = Normal.xyz / 2.0 + 0.5;
 Normal.xyz = Color.rgb * 2.0 - 1.0
 </code></pre>
 <h1 id="渲染步骤">渲染步骤</h1>
+<p>将生成的法线和原图分别贴到材质球上面。接下来就是需要写一些shader了。至于怎么写，其实有很多教程。这里主要说明下基本的渲染步骤：</p>
 <pre><code>N = normalize(Normal.xyz)
 L = normalize(LightDir.xyz)
 Diffuse = LightColor * max(dot(N, L), 0.0)
@@ -38,10 +39,11 @@ Attenuation = 1.0 / (ConstantAtt + (LinearAtt * Distance) + (QuadraticAtt * Dist
 Intensity = Ambient + Diffuse * Attenuation
 FinalColor = DiffuseColor.rgb * Intensity.rgb
 </code></pre>
-<p>最终效果图<br>
-<img src="https://s2.ax1x.com/2019/08/01/eaDlMd.gif" alt="eaDlMd.gif"></p>
+<h1 id="最终效果图">最终效果图</h1>
+<p><img src="https://s2.ax1x.com/2019/08/01/eaDlMd.gif" alt="eaDlMd.gif"></p>
 <h1 id="参考">参考</h1>
-<p><a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
+<p><a href="https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6">ShaderLesson6</a><br>
+<a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
 ]]></content>
     </entry>
 </feed>

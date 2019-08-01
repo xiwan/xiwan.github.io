@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>2d 光照研究 | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿" />
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1564655494459">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1564656237024">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://xiwan.github.io">
-  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1564655494459" alt="">
+  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1564656237024" alt="">
   </a>
   <h1 class="site-title">
     Keep Thinking
@@ -102,6 +102,7 @@ Color.rgb = Normal.xyz / 2.0 + 0.5;
 Normal.xyz = Color.rgb * 2.0 - 1.0
 </code></pre>
 <h1 id="渲染步骤">渲染步骤</h1>
+<p>将生成的法线和原图分别贴到材质球上面。接下来就是需要写一些shader了。至于怎么写，其实有很多教程。这里主要说明下基本的渲染步骤：</p>
 <pre><code>N = normalize(Normal.xyz)
 L = normalize(LightDir.xyz)
 Diffuse = LightColor * max(dot(N, L), 0.0)
@@ -110,10 +111,11 @@ Attenuation = 1.0 / (ConstantAtt + (LinearAtt * Distance) + (QuadraticAtt * Dist
 Intensity = Ambient + Diffuse * Attenuation
 FinalColor = DiffuseColor.rgb * Intensity.rgb
 </code></pre>
-<p>最终效果图<br>
-<img src="https://s2.ax1x.com/2019/08/01/eaDlMd.gif" alt="eaDlMd.gif"></p>
+<h1 id="最终效果图">最终效果图</h1>
+<p><img src="https://s2.ax1x.com/2019/08/01/eaDlMd.gif" alt="eaDlMd.gif"></p>
 <h1 id="参考">参考</h1>
-<p><a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
+<p><a href="https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6">ShaderLesson6</a><br>
+<a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
 
               </div>
               <div class="toc-container">
@@ -121,6 +123,7 @@ FinalColor = DiffuseColor.rgb * Intensity.rgb
 <li><a href="#%E8%83%8C%E6%99%AF">背景</a></li>
 <li><a href="#%E5%8E%9F%E7%90%86">原理</a></li>
 <li><a href="#%E6%B8%B2%E6%9F%93%E6%AD%A5%E9%AA%A4">渲染步骤</a></li>
+<li><a href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C%E5%9B%BE">最终效果图</a></li>
 <li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
 </ul>
 
