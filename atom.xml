@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
-    <title>Gridea</title>
-    <updated>2019-08-01T09:23:32.062Z</updated>
+    <title>Keep Thinking</title>
+    <updated>2019-08-01T09:37:57.073Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
-    <subtitle>温故而知新</subtitle>
+    <subtitle>有美人兮心不怿</subtitle>
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2019, Gridea</rights>
+    <rights>All rights reserved 2019, Keep Thinking</rights>
     <entry>
-        <title type="html"><![CDATA[test]]></title>
+        <title type="html"><![CDATA[2d 光照研究]]></title>
         <id>https://xiwan.github.io/post/test</id>
         <link href="https://xiwan.github.io/post/test">
         </link>
         <updated>2019-08-01T09:18:29.000Z</updated>
-        <content type="html"><![CDATA[<p><img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
+        <content type="html"><![CDATA[<p>先看效果图</p>
+<p><img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
 ]]></content>
     </entry>
 </feed>
