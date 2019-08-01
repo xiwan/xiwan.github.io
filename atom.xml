@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://xiwan.github.io/keep_thinking/</id>
+    <id>https://xiwan.github.io</id>
     <title>Gridea</title>
-    <updated>2019-08-01T09:13:25.254Z</updated>
+    <updated>2019-08-01T09:23:15.977Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://xiwan.github.io/keep_thinking/"/>
-    <link rel="self" href="https://xiwan.github.io/keep_thinking//atom.xml"/>
+    <link rel="alternate" href="https://xiwan.github.io"/>
+    <link rel="self" href="https://xiwan.github.io/atom.xml"/>
     <subtitle>温故而知新</subtitle>
-    <logo>https://xiwan.github.io/keep_thinking//images/avatar.png</logo>
-    <icon>https://xiwan.github.io/keep_thinking//favicon.ico</icon>
+    <logo>https://xiwan.github.io/images/avatar.png</logo>
+    <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[test]]></title>
+        <id>https://xiwan.github.io/post/test</id>
+        <link href="https://xiwan.github.io/post/test">
+        </link>
+        <updated>2019-08-01T09:18:29.000Z</updated>
+        <content type="html"><![CDATA[<p><img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
+]]></content>
+    </entry>
 </feed>
