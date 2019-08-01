@@ -1,114 +1,60 @@
-
-<!DOCTYPE html>
 <html>
   <head>
-    
-<meta charset="utf-8" >
-
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>2d 光照研究 | Keep Thinking</title>
-<meta name="description" content="有美人兮心不怿">
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-
+<meta name="description" content="有美人兮心不怿" />
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1564654276262">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1564652257937">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
-
-
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
   </head>
   <body>
-    <div id="app" class="main">
-      <div class="site-header-container">
-  <div class="site-header">
-    <div class="left">
-      <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1564652257937" alt="" width="32px" height="32px">
-      </a>
-      <a href="https://xiwan.github.io">
-        <h1 class="site-title">Keep Thinking</h1>
-      </a>
-    </div>
-    <div class="right">
-      <transition name="fade">
-        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
-      </transition>
-    </div>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xiwan.github.io">
+  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1564654276262" alt="">
+  </a>
+  <h1 class="site-title">
+    Keep Thinking
+  </h1>
+  <p class="site-description">
+    有美人兮心不怿
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu">
+          about
+        </a>
+      
+    
   </div>
-</div>
-
-<transition name="fade">
-  <div class="menu-container" style="display: none;" v-show="menuVisible">
-    <div class="menu-list">
-      
-        
-          <a href="/" class="menu purple-link">
-            首页
-          </a>
-        
-      
-        
-          <a href="/archives" class="menu purple-link">
-            归档
-          </a>
-        
-      
-        
-          <a href="/tags" class="menu purple-link">
-            标签
-          </a>
-        
-      
-        
-          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
-            about
-          </a>
-        
-      
-    </div>
-  </div>
-</transition>
-
-
-      <div class="content-container">
-        <div class="post-detail">
-          
-          <h2 class="post-title">2d 光照研究</h2>
-          <div class="post-info post-detail-info">
-            <span><i class="icon-calendar-outline"></i> 2019-08-01</span>
-            
-              <span>
-                <i class="icon-pricetags-outline"></i>
-                
-                  <a href="https://xiwan.github.io/tag/pWl5SQFpg">
-                    unity
-                    
-                  </a>
-                
-              </span>
-            
-          </div>
-          <div class="post-content">
-            <p>先看效果图</p>
-<p><img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
-
-          </div>
-        </div>
-
-        
-      </div>
-
-      
-
-      <div class="site-footer">
-  <div class="slogan">有美人兮心不怿</div>
   <div class="social-container">
     
       
@@ -122,26 +68,119 @@
       
     
   </div>
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
 </div>
 
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              2d 光照研究
+            </h2>
+            <div class="post-info">
+              <span>
+                2019-08-01
+              </span>
+              <span>
+                1 min read
+              </span>
+              
+                <a href="https://xiwan.github.io/tag/pWl5SQFpg" class="post-tag">
+                  # unity
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="背景">背景</h1>
+<p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
+<!-- more -->
+<h1 id="原理">原理</h1>
+<p><img src="https://xiwan.github.io/post-images/1564653884231.png" alt=" 原始贴图与法线贴图"></p>
+<p>法线图： 基于原始图生成的。这是因为它把图片的法线向量转成了rgp通道。而面向我们的一般是z轴，所以颜色偏蓝。</p>
+<pre><code>//下面是两者的互相转换公式
+Color.rgb = Normal.xyz / 2.0 + 0.5;
+Normal.xyz = Color.rgb * 2.0 - 1.0
+</code></pre>
+<h1 id="渲染步骤">渲染步骤</h1>
+<pre><code>N = normalize(Normal.xyz)
+L = normalize(LightDir.xyz)
+Diffuse = LightColor * max(dot(N, L), 0.0)
+Ambient = AmbientColor * AmbientIntensity
+Attenuation = 1.0 / (ConstantAtt + (LinearAtt * Distance) + (QuadraticAtt * Distance * Distance)) 
+Intensity = Ambient + Diffuse * Attenuation
+FinalColor = DiffuseColor.rgb * Intensity.rgb
+</code></pre>
+<p>最终效果图<br>
+<img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
+<h1 id="参考">参考</h1>
+<p><a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
 
-    </div>
-    <script type="application/javascript">
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E8%83%8C%E6%99%AF">背景</a></li>
+<li><a href="#%E5%8E%9F%E7%90%86">原理</a></li>
+<li><a href="#%E6%B8%B2%E6%9F%93%E6%AD%A5%E9%AA%A4">渲染步骤</a></li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
 
-hljs.initHighlightingOnLoad()
+              </div>
+            </div>
+          </article>
+        </div>
 
-var app = new Vue({
-  el: '#app',
-  data: {
-    menuVisible: false,
-  },
-})
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
 
 </script>
 
-
-
-
+      </div>
+    </div>
   </body>
 </html>

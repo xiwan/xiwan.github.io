@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-01T09:37:57.073Z</updated>
+    <updated>2019-08-01T10:13:13.737Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -16,8 +16,32 @@
         <link href="https://xiwan.github.io/post/test">
         </link>
         <updated>2019-08-01T09:18:29.000Z</updated>
-        <content type="html"><![CDATA[<p>先看效果图</p>
-<p><img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
+        <summary type="html"><![CDATA[<h1 id="背景">背景</h1>
+<p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="背景">背景</h1>
+<p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
+<!-- more -->
+<h1 id="原理">原理</h1>
+<p><img src="https://xiwan.github.io/post-images/1564653884231.png" alt=" 原始贴图与法线贴图"></p>
+<p>法线图： 基于原始图生成的。这是因为它把图片的法线向量转成了rgp通道。而面向我们的一般是z轴，所以颜色偏蓝。</p>
+<pre><code>//下面是两者的互相转换公式
+Color.rgb = Normal.xyz / 2.0 + 0.5;
+Normal.xyz = Color.rgb * 2.0 - 1.0
+</code></pre>
+<h1 id="渲染步骤">渲染步骤</h1>
+<pre><code>N = normalize(Normal.xyz)
+L = normalize(LightDir.xyz)
+Diffuse = LightColor * max(dot(N, L), 0.0)
+Ambient = AmbientColor * AmbientIntensity
+Attenuation = 1.0 / (ConstantAtt + (LinearAtt * Distance) + (QuadraticAtt * Distance * Distance)) 
+Intensity = Ambient + Diffuse * Attenuation
+FinalColor = DiffuseColor.rgb * Intensity.rgb
+</code></pre>
+<p>最终效果图<br>
+<img src="https://xiwan.github.io/post-images/1564651126498.gif" alt="2d light"></p>
+<h1 id="参考">参考</h1>
+<p><a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
 ]]></content>
     </entry>
 </feed>
