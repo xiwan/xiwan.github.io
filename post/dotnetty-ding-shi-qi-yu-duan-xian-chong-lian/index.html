@@ -1,97 +1,108 @@
+
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+<meta charset="utf-8" >
+
 <title>dotnetty定时器与断线重连 | Keep Thinking</title>
-<meta name="description" content="有美人兮心不怿" />
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176011447">
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176239495">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://xiwan.github.io">
-  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176011447" alt="">
-  </a>
-  <h1 class="site-title">
-    Keep Thinking
-  </h1>
-  <p class="site-description">
-    有美人兮心不怿
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu">
-          about
-        </a>
-      
-    
-  </div>
-  <div class="social-container">
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176239495" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
   </div>
 </div>
 
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
         <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-              dotnetty定时器与断线重连
-            </h2>
-            <div class="post-info">
-              <span>
-                2019-08-07
-              </span>
-              <span>
-                1 min read
-              </span>
-              
-                <a href="https://xiwan.github.io/tag/gdya-a8IE" class="post-tag">
-                  # netty
-                </a>
-              
-            </div>
+          
+          <h2 class="post-title">dotnetty定时器与断线重连</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2019-08-07</span>
             
-            <div class="post-content-wrapper">
-              <div class="post-content">
-                <h3 id="定时器">定时器</h3>
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://xiwan.github.io/tag/gdya-a8IE">
+                    netty
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content">
+            <h3 id="定时器">定时器</h3>
 <p>netty定时器使用比较简单，只需要作如下设置。<br>
 其中，第一位为读超时时间，第二位为写超时时间，第三位为所有超时时间。如果设置为0，表示不启用。</p>
 <pre><code class="language-csharp">pipeline.AddLast(&quot;IdleStateHandler&quot;, new IdleStateHandler(0, 10, 0));
@@ -107,117 +118,86 @@
 <p>我们可以看到，每经过3个丢失的包，服务器便会主动断开客户端的连接；然后客户端知道自己被断开后，会间隔5秒尝试连接服务器，直到成功为止。</p>
 <p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16b2d3febe.png" alt=""></p>
 
-              </div>
-              <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#%E5%AE%9A%E6%97%B6%E5%99%A8">定时器</a></li>
-<li><a href="#%E6%96%AD%E7%BA%BF%E9%87%8D%E8%BF%9E">断线重连</a>
-<ul>
-<li><a href="#%E6%B5%8B%E8%AF%95">测试</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-              </div>
-            </div>
-          </article>
+          </div>
         </div>
 
         
           <div class="next-post">
-            <div class="next">下一篇</div>
-            <a href="https://xiwan.github.io/post/dotnettty-da-bao-yu-nian-bao">
+            <a class="purple-link" href="https://xiwan.github.io/post/dotnettty-da-bao-yu-nian-bao">
               <h3 class="post-title">
-                dotnettty大包与粘包
+                下一篇：dotnettty大包与粘包
               </h3>
             </a>
           </div>
+          
+      </div>
+
+      
+        
+          <div id="gitalk-container"></div>
         
 
         
-          
-            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+      
 
-<div id="gitalk-container"></div>
-
-<script>
-
-  var gitalk = new Gitalk({
-    clientID: 'c8d7ebef73924ce0e7ad',
-    clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
-    repo: 'xiwan.github.io',
-    owner: 'xiwan',
-    admin: ['xiwan'],
-    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-    distractionFreeMode: false  // Facebook-like distraction free mode
-  })
-
-  gitalk.render('gitalk-container')
-
-</script>
-
-          
-
-          
-        
-
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
-  <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
 </div>
 
-<script>
-  hljs.initHighlightingOnLoad()
 
-  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+    </div>
+    <script type="application/javascript">
 
-  // This should probably be throttled.
-  // Especially because it triggers during smooth scrolling.
-  // https://lodash.com/docs/4.17.10#throttle
-  // You could do like...
-  // window.addEventListener("scroll", () => {
-  //    _.throttle(doThatStuff, 100);
-  // });
-  // Only not doing it here to keep this Pen dependency-free.
+hljs.initHighlightingOnLoad()
 
-  window.addEventListener("scroll", event => {
-    let fromTop = window.scrollY;
-
-    mainNavLinks.forEach((link, index) => {
-      let section = document.getElementById(decodeURI(link.hash).substring(1));
-      let nextSection = null
-      if (mainNavLinks[index + 1]) {
-        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-      }
-      console.log('section.offsetHeight', section.offsetHeight);
-      if (section.offsetTop <= fromTop) {
-        if (nextSection) {
-          if (nextSection.offsetTop > fromTop) {
-            link.classList.add("current");
-          } else {
-            link.classList.remove("current");    
-          }
-        } else {
-          link.classList.add("current");
-        }
-      } else {
-        link.classList.remove("current");
-      }
-    });
-  });
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
 
 </script>
 
-      </div>
-    </div>
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
   </body>
 </html>

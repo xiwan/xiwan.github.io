@@ -1,97 +1,108 @@
+
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+<meta charset="utf-8" >
+
 <title>基于docker搭建centos模板环境 | Keep Thinking</title>
-<meta name="description" content="有美人兮心不怿" />
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176011447">
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176239495">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://xiwan.github.io">
-  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176011447" alt="">
-  </a>
-  <h1 class="site-title">
-    Keep Thinking
-  </h1>
-  <p class="site-description">
-    有美人兮心不怿
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu">
-          about
-        </a>
-      
-    
-  </div>
-  <div class="social-container">
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176239495" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
   </div>
 </div>
 
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
         <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-              基于docker搭建centos模板环境
-            </h2>
-            <div class="post-info">
-              <span>
-                2019-08-07
-              </span>
-              <span>
-                2 min read
-              </span>
-              
-                <a href="https://xiwan.github.io/tag/WLQnCbVL4" class="post-tag">
-                  # docker
-                </a>
-              
-            </div>
+          
+          <h2 class="post-title">基于docker搭建centos模板环境</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2019-08-07</span>
             
-            <div class="post-content-wrapper">
-              <div class="post-content">
-                <h1 id="背景">背景</h1>
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://xiwan.github.io/tag/WLQnCbVL4">
+                    docker
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content">
+            <h1 id="背景">背景</h1>
 <p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
 <!-- more -->
 <p>以下的流程只是一个测试例子，真实环境需要对不同环境来写不同的镜像。由于我比较懒，所以暂且把所有服务都放在一个镜像里面。</p>
@@ -170,108 +181,86 @@ CMD [&quot;/usr/sbin/init&quot;]
 <pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s2 /usr/sbin/init
 </code></pre>
 
-              </div>
-              <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li><a href="#%E8%83%8C%E6%99%AF">背景</a></li>
-<li><a href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B">基本流程</a></li>
-<li><a href="#%E5%9F%BA%E4%BA%8Ecentos%E9%95%9C%E5%83%8F">基于centos镜像</a></li>
-<li><a href="#%E5%88%B6%E4%BD%9C%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E7%9A%84%E9%95%9C%E5%83%8F">制作环境准备的镜像</a></li>
-<li><a href="#%E5%AF%BC%E5%87%BA%E9%95%9C%E5%83%8F%E5%AE%B9%E5%99%A8">导出镜像/容器</a></li>
-</ul>
-
-              </div>
-            </div>
-          </article>
+          </div>
         </div>
 
         
           <div class="next-post">
-            <div class="next">下一篇</div>
-            <a href="https://xiwan.github.io/post/test">
+            <a class="purple-link" href="https://xiwan.github.io/post/test">
               <h3 class="post-title">
-                2d 光照研究
+                下一篇：2d 光照研究
               </h3>
             </a>
           </div>
+          
+      </div>
+
+      
+        
+          <div id="gitalk-container"></div>
         
 
         
-          
-            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+      
 
-<div id="gitalk-container"></div>
-
-<script>
-
-  var gitalk = new Gitalk({
-    clientID: 'c8d7ebef73924ce0e7ad',
-    clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
-    repo: 'xiwan.github.io',
-    owner: 'xiwan',
-    admin: ['xiwan'],
-    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-    distractionFreeMode: false  // Facebook-like distraction free mode
-  })
-
-  gitalk.render('gitalk-container')
-
-</script>
-
-          
-
-          
-        
-
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
-  <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
 </div>
 
-<script>
-  hljs.initHighlightingOnLoad()
 
-  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+    </div>
+    <script type="application/javascript">
 
-  // This should probably be throttled.
-  // Especially because it triggers during smooth scrolling.
-  // https://lodash.com/docs/4.17.10#throttle
-  // You could do like...
-  // window.addEventListener("scroll", () => {
-  //    _.throttle(doThatStuff, 100);
-  // });
-  // Only not doing it here to keep this Pen dependency-free.
+hljs.initHighlightingOnLoad()
 
-  window.addEventListener("scroll", event => {
-    let fromTop = window.scrollY;
-
-    mainNavLinks.forEach((link, index) => {
-      let section = document.getElementById(decodeURI(link.hash).substring(1));
-      let nextSection = null
-      if (mainNavLinks[index + 1]) {
-        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-      }
-      console.log('section.offsetHeight', section.offsetHeight);
-      if (section.offsetTop <= fromTop) {
-        if (nextSection) {
-          if (nextSection.offsetTop > fromTop) {
-            link.classList.add("current");
-          } else {
-            link.classList.remove("current");    
-          }
-        } else {
-          link.classList.add("current");
-        }
-      } else {
-        link.classList.remove("current");
-      }
-    });
-  });
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
 
 </script>
 
-      </div>
-    </div>
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
   </body>
 </html>

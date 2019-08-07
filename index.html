@@ -1,60 +1,233 @@
+
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+<meta charset="utf-8" >
+
 <title>Keep Thinking</title>
-<meta name="description" content="有美人兮心不怿" />
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176011447">
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176239495">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://xiwan.github.io">
-  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176011447" alt="">
-  </a>
-  <h1 class="site-title">
-    Keep Thinking
-  </h1>
-  <p class="site-description">
-    有美人兮心不怿
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu">
-          about
-        </a>
-      
-    
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176239495" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
   </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        
+        
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian">
+        <h2 class="post-title">dotnetty定时器与断线重连</h2>
+      </a>
+      <div class="post-abstract">
+        
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gdya-a8IE">
+                netty
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/dotnettty-da-bao-yu-nian-bao">
+        <h2 class="post-title">dotnettty大包与粘包</h2>
+      </a>
+      <div class="post-abstract">
+        <h4 id="目的">目的</h4>
+<p>主要测试dotnetty在大包体，或者粘包情况下的表现</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gdya-a8IE">
+                netty
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/serilog-vs-log4net">
+        <h2 class="post-title">serilog vs log4net</h2>
+      </a>
+      <div class="post-abstract">
+        <h3 id="目的">目的</h3>
+<p>通过测试数值来比较两个库的优劣</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/JMW1yxHv1">
+        <h2 class="post-title">基于docker搭建centos模板环境</h2>
+      </a>
+      <div class="post-abstract">
+        <h1 id="背景">背景</h1>
+<p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/WLQnCbVL4">
+                docker
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/test">
+        <h2 class="post-title">2d 光照研究</h2>
+      </a>
+      <div class="post-abstract">
+        <h1 id="背景">背景</h1>
+<p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-01</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/pWl5SQFpg">
+                unity
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+
+<div class="pagination-container">
+  
+  
+</div>
+
+
+      </div>
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
   <div class="social-container">
     
       
@@ -68,191 +241,26 @@
       
     
   </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
 </div>
 
-    
-        <div class="post-container">
-  
-    <article class="post">
-      <a href="https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian">
-        <h2 class="post-title">dotnetty定时器与断线重连</h2>
-      </a>
-      <div class="post-info">
-        <span>
-          2019-08-07
-        </span>
-        <span>
-          1 min read
-        </span>
-        
-          <a href="https://xiwan.github.io/tag/gdya-a8IE" class="post-tag">
-            # netty
-          </a>
-        
-      </div>
-      
-      <div class="post-abstract">
-        
-      </di>
-    </article>
-  
-    <article class="post">
-      <a href="https://xiwan.github.io/post/dotnettty-da-bao-yu-nian-bao">
-        <h2 class="post-title">dotnettty大包与粘包</h2>
-      </a>
-      <div class="post-info">
-        <span>
-          2019-08-07
-        </span>
-        <span>
-          1 min read
-        </span>
-        
-          <a href="https://xiwan.github.io/tag/gdya-a8IE" class="post-tag">
-            # netty
-          </a>
-        
-      </div>
-      
-      <div class="post-abstract">
-        <h4 id="目的">目的</h4>
-<p>主要测试dotnetty在大包体，或者粘包情况下的表现</p>
 
-      </di>
-    </article>
-  
-    <article class="post">
-      <a href="https://xiwan.github.io/post/serilog-vs-log4net">
-        <h2 class="post-title">serilog vs log4net</h2>
-      </a>
-      <div class="post-info">
-        <span>
-          2019-08-07
-        </span>
-        <span>
-          1 min read
-        </span>
-        
-          <a href="https://xiwan.github.io/tag/xhJdIDktV" class="post-tag">
-            # benchmark
-          </a>
-        
-      </div>
-      
-      <div class="post-abstract">
-        <h3 id="目的">目的</h3>
-<p>通过测试数值来比较两个库的优劣</p>
+    </div>
+    <script type="application/javascript">
 
-      </di>
-    </article>
-  
-    <article class="post">
-      <a href="https://xiwan.github.io/post/JMW1yxHv1">
-        <h2 class="post-title">基于docker搭建centos模板环境</h2>
-      </a>
-      <div class="post-info">
-        <span>
-          2019-08-07
-        </span>
-        <span>
-          2 min read
-        </span>
-        
-          <a href="https://xiwan.github.io/tag/WLQnCbVL4" class="post-tag">
-            # docker
-          </a>
-        
-      </div>
-      
-      <div class="post-abstract">
-        <h1 id="背景">背景</h1>
-<p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
+hljs.initHighlightingOnLoad()
 
-      </di>
-    </article>
-  
-    <article class="post">
-      <a href="https://xiwan.github.io/post/test">
-        <h2 class="post-title">2d 光照研究</h2>
-      </a>
-      <div class="post-info">
-        <span>
-          2019-08-01
-        </span>
-        <span>
-          1 min read
-        </span>
-        
-          <a href="https://xiwan.github.io/tag/pWl5SQFpg" class="post-tag">
-            # unity
-          </a>
-        
-      </div>
-      
-      <div class="post-abstract">
-        <h1 id="背景">背景</h1>
-<p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
-
-      </di>
-    </article>
-  
-</div>
-
-    
-        <div class="pagination-container">
-  
-  
-</div>
-
-    
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
-  <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
-</div>
-
-<script>
-  hljs.initHighlightingOnLoad()
-
-  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
-
-  // This should probably be throttled.
-  // Especially because it triggers during smooth scrolling.
-  // https://lodash.com/docs/4.17.10#throttle
-  // You could do like...
-  // window.addEventListener("scroll", () => {
-  //    _.throttle(doThatStuff, 100);
-  // });
-  // Only not doing it here to keep this Pen dependency-free.
-
-  window.addEventListener("scroll", event => {
-    let fromTop = window.scrollY;
-
-    mainNavLinks.forEach((link, index) => {
-      let section = document.getElementById(decodeURI(link.hash).substring(1));
-      let nextSection = null
-      if (mainNavLinks[index + 1]) {
-        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-      }
-      console.log('section.offsetHeight', section.offsetHeight);
-      if (section.offsetTop <= fromTop) {
-        if (nextSection) {
-          if (nextSection.offsetTop > fromTop) {
-            link.classList.add("current");
-          } else {
-            link.classList.remove("current");    
-          }
-        } else {
-          link.classList.add("current");
-        }
-      } else {
-        link.classList.remove("current");
-      }
-    });
-  });
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
 
 </script>
 
-      </div>
-    </div>
+
+
+
   </body>
 </html>
