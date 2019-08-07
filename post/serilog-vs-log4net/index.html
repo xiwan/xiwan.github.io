@@ -1,0 +1,347 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>serilog vs log4net | Keep Thinking</title>
+<meta name="description" content="有美人兮心不怿" />
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565175669815">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xiwan.github.io">
+  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565175669815" alt="">
+  </a>
+  <h1 class="site-title">
+    Keep Thinking
+  </h1>
+  <p class="site-description">
+    有美人兮心不怿
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu">
+          about
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              serilog vs log4net
+            </h2>
+            <div class="post-info">
+              <span>
+                2019-08-07
+              </span>
+              <span>
+                1 min read
+              </span>
+              
+                <a href="https://xiwan.github.io/tag/xhJdIDktV" class="post-tag">
+                  # benchmark
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h3 id="目的">目的</h3>
+<p>通过测试数值来比较两个库的优劣</p>
+<h3 id="场景">场景</h3>
+<h4 id="login-接口带业务">Login 接口（带业务）</h4>
+<p>参数： 线程250， 时间20分钟， 队列长度：5w, 队列读取间隔： 1s， 不做合并写<br>
+数据：<br>
+0000001c00000003088080b807120464646464120012054465627567</p>
+<p>log4net:<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf26878b66af.png" alt=""></p>
+<p>serilog:<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf268d599233.png" alt=""></p>
+<p>相同参数：队列积压：4k-5k区间， cpu: 300%, mem: 4% 都是差不多的。<br>
+差异参数：偏差值: serilog(8.64) &lt; log4net(13.28), 吞吐量serilog也优秀5%左右。</p>
+<h4 id="hearbeat-接口">hearbeat 接口</h4>
+<p>参数： 线程3000， 时间20分钟， 队列长度：5w, 队列读取间隔： 1s， 不做合并写<br>
+数据：<br>
+000000130000000108ffffff07120130120131</p>
+<p>log4net:<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf2759097410.png" alt=""></p>
+<p>serilog:<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf26d2ba7bdb.png" alt=""></p>
+<p>相同参数：cpu: 300%； mem: 4%；都是差不多的。<br>
+差异参数：队列积压：serilog(25-30k), log4net(40k+)；；吞吐量:serilog(2.6w)， log4net(1.5w)；偏差值：serilog(33.42), log4net(17.78)</p>
+<h3 id="观察">观察</h3>
+<p>在低压力（上千并发）情况下： log4net和serilog的差距不是很明显。</p>
+<p>在高压力（上万并发）情况下：这里log4net由于写的并发不高，导致它的吞吐也是一个慢慢爬坡的过程，并且队列积压严重（超过80%）；相反serilog对于写的优秀支持，它可以很快的到达吞吐并发，队列积压只有log4net的一半左右。</p>
+<h3 id="延申">延申</h3>
+<p>再日志放大10倍的压力下，serilog的效率和log4net差不多，都降到了1万每秒，并且有10%的错误率。原因是这个时候，大家都已经把队列撑爆了，这个时候的瓶颈就是队列了。那么通过调整参数得出下表</p>
+<table>
+<thead>
+<tr>
+<th>serilog</th>
+<th>tps</th>
+<th>错误率</th>
+<th>队列积压 (5w)</th>
+<th>预估能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10条</td>
+<td>1.1w/s</td>
+<td>10%</td>
+<td>5w</td>
+<td>-</td>
+</tr>
+<tr>
+<td>3条</td>
+<td>2.1w/s</td>
+<td>0.6%</td>
+<td>5w</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2条</td>
+<td>2.5w/s</td>
+<td>0.01%</td>
+<td>4.1w</td>
+<td>5w/s</td>
+</tr>
+<tr>
+<td>1条</td>
+<td>2.5w/s</td>
+<td>0%</td>
+<td>2.5w</td>
+<td>2.3w/s</td>
+</tr>
+</tbody>
+</table>
+<p>从这里看出，再队列预设5w长度情况下，serilog可以到达5w/s(但并不是它的峰值)。这么看来后续需要加长队列继续测试：</p>
+<p>10w队列</p>
+<table>
+<thead>
+<tr>
+<th>serilog</th>
+<th>tps</th>
+<th>错误率</th>
+<th>队列积压</th>
+<th>预估能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10条</td>
+<td>1.3w/s</td>
+<td>10%</td>
+<td>10w</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>20w队列</p>
+<table>
+<thead>
+<tr>
+<th>serilog</th>
+<th>tps</th>
+<th>错误率</th>
+<th>队列积压</th>
+<th>预估能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10条</td>
+<td>1.6w/s</td>
+<td>1%</td>
+<td>16w</td>
+<td>15w/s</td>
+</tr>
+</tbody>
+</table>
+<p>100w队列</p>
+<table>
+<thead>
+<tr>
+<th>serilog</th>
+<th>tps</th>
+<th>错误率</th>
+<th>队列积压</th>
+<th>预估能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10条</td>
+<td>1.8w/s</td>
+<td>0.03%</td>
+<td>2w</td>
+<td>18w/s</td>
+</tr>
+</tbody>
+</table>
+<p>所以可以预估在内存充足的情况下serilog的写入能力为15w-18w之间</p>
+<p>网上另一位测试者的结果也侧面证明了我的结果<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-20/5bf3b95b2663c.png" alt=""></p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E7%9B%AE%E7%9A%84">目的</a></li>
+<li><a href="#%E5%9C%BA%E6%99%AF">场景</a>
+<ul>
+<li><a href="#login-%E6%8E%A5%E5%8F%A3%E5%B8%A6%E4%B8%9A%E5%8A%A1">Login 接口（带业务）</a></li>
+<li><a href="#hearbeat-%E6%8E%A5%E5%8F%A3">hearbeat 接口</a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%82%E5%AF%9F">观察</a></li>
+<li><a href="#%E5%BB%B6%E7%94%B3">延申</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xiwan.github.io/post/JMW1yxHv1">
+              <h3 class="post-title">
+                基于docker搭建centos模板环境
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'c8d7ebef73924ce0e7ad',
+    clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+    repo: 'xiwan.github.io',
+    owner: 'xiwan',
+    admin: ['xiwan'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
