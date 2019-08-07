@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-07T11:05:26.392Z</updated>
+    <updated>2019-08-07T11:06:54.465Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -11,13 +11,40 @@
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
     <entry>
+        <title type="html"><![CDATA[dotnetty定时器与断线重连]]></title>
+        <id>https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian</id>
+        <link href="https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian">
+        </link>
+        <updated>2019-08-07T11:05:47.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="定时器">定时器</h3>
+<p>netty定时器使用比较简单，只需要作如下设置。<br>
+其中，第一位为读超时时间，第二位为写超时时间，第三位为所有超时时间。如果设置为0，表示不启用。</p>
+<pre><code class="language-csharp">pipeline.AddLast(&quot;IdleStateHandler&quot;, new IdleStateHandler(0, 10, 0));
+</code></pre>
+<p>一般来说服务器主要监听读超时事件，而客户端监听写超时事件。</p>
+<p>主要通过重写 <strong>UserEventTriggered</strong> 方法来做具体的业务逻辑。</p>
+<p>下面这段代码是当服务器发现丢失了三个心跳包以后直接关闭客户端的连接<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16979352b7.png" alt=""></p>
+<h3 id="断线重连">断线重连</h3>
+<p>断线重连的逻辑主要是实现在客户端代码这边<strong>ChannelInactive</strong>方法</p>
+<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be169f378c3b.png" alt=""></p>
+<h4 id="测试">测试</h4>
+<p>我们可以看到，每经过3个丢失的包，服务器便会主动断开客户端的连接；然后客户端知道自己被断开后，会间隔5秒尝试连接服务器，直到成功为止。</p>
+<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16b2d3febe.png" alt=""></p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[dotnettty大包与粘包]]></title>
         <id>https://xiwan.github.io/post/dotnettty-da-bao-yu-nian-bao</id>
         <link href="https://xiwan.github.io/post/dotnettty-da-bao-yu-nian-bao">
         </link>
         <updated>2019-08-07T11:04:11.000Z</updated>
+        <summary type="html"><![CDATA[<h4 id="目的">目的</h4>
+<p>主要测试dotnetty在大包体，或者粘包情况下的表现</p>
+]]></summary>
         <content type="html"><![CDATA[<h4 id="目的">目的</h4>
 <p>主要测试dotnetty在大包体，或者粘包情况下的表现</p>
+<!-- more -->
 <h4 id="测试">测试</h4>
 <h5 id="准备数据">准备数据</h5>
 <p>代码部分：</p>
@@ -60,8 +87,12 @@ Console.WriteLine(bytes.Length);
         <link href="https://xiwan.github.io/post/serilog-vs-log4net">
         </link>
         <updated>2019-08-07T10:58:59.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="目的">目的</h3>
+<p>通过测试数值来比较两个库的优劣</p>
+]]></summary>
         <content type="html"><![CDATA[<h3 id="目的">目的</h3>
 <p>通过测试数值来比较两个库的优劣</p>
+<!-- more -->
 <h3 id="场景">场景</h3>
 <h4 id="login-接口带业务">Login 接口（带业务）</h4>
 <p>参数： 线程250， 时间20分钟， 队列长度：5w, 队列读取间隔： 1s， 不做合并写<br>
