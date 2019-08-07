@@ -1,0 +1,277 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>基于docker搭建centos模板环境 | Keep Thinking</title>
+<meta name="description" content="有美人兮心不怿" />
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565175055067">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xiwan.github.io">
+  <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565175055067" alt="">
+  </a>
+  <h1 class="site-title">
+    Keep Thinking
+  </h1>
+  <p class="site-description">
+    有美人兮心不怿
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu">
+          about
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              基于docker搭建centos模板环境
+            </h2>
+            <div class="post-info">
+              <span>
+                2019-08-07
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xiwan.github.io/tag/WLQnCbVL4" class="post-tag">
+                  # docker
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="背景">背景</h1>
+<p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
+<!-- more -->
+<p>以下的流程只是一个测试例子，真实环境需要对不同环境来写不同的镜像。由于我比较懒，所以暂且把所有服务都放在一个镜像里面。</p>
+<h1 id="基本流程">基本流程</h1>
+<ol>
+<li>基于centos 镜像</li>
+<li>准备环境的镜像</li>
+<li>导出镜像/容器</li>
+</ol>
+<h1 id="基于centos镜像">基于centos镜像</h1>
+<p>这个比较简单，可以到docker hub上面找centos:7， 然后编写dockerfile</p>
+<pre><code>FROM centos:7 AS s1
+ENV container docker
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
+systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+VOLUME [ &quot;/data/docker/kaki&quot; ]
+CMD [&quot;/usr/sbin/init&quot;]
+</code></pre>
+<p>这里主要设置的就是根据不同环境而挂载的VOLUME。目的是为了让镜像无状态化，中间的数据都需要存储到宿主机。</p>
+<h1 id="制作环境准备的镜像">制作环境准备的镜像</h1>
+<p>上一步只是完成了一些最基本的设置，接下来需要按照应用或者游戏需要应用到的服务来安装和启动。</p>
+<ol>
+<li>安装网络和设置yum源（通常已经有了）</li>
+<li>更新yum</li>
+<li>安装软件</li>
+<li>配置端口</li>
+</ol>
+<pre><code>FROM allinone:s1 AS s2
+USER root
+RUN yum -y install net-tools \
+  # update热更新
+  &amp;&amp; yum provides '*/applydeltarpm' \ 
+  &amp;&amp; yum install deltarpm -y \
+  &amp;&amp; yum -y update \ 
+  # 安装sshpass
+  &amp;&amp; yum -y install sshpass \
+  &amp;&amp; yum -y install python-setuptools \
+  # 安装supervisor
+  &amp;&amp; easy_install supervisor \
+  # 安装subversion
+  &amp;&amp; yum -y install subversion \
+  # 安装dotnet
+  &amp;&amp; rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm \
+  &amp;&amp; yum -y install aspnetcore-runtime-2.1 \
+  &amp;&amp; yum -y install dotnet-sdk-2.1 \
+
+EXPOSE 80 6379 8001 8009 8010 8011 8012 8013
+CMD [&quot;/usr/sbin/init&quot;]
+</code></pre>
+<p>这里要注意的是，<strong>我们不能在此步骤种进行任何的service或者systemctl之类后台任务的命令</strong>，否则会导致镜像建立的失败。</p>
+<p>主要原因是：Docker的设计理念是在容器里面不运行后台服务，容器本身就是宿主机上的一个独立的主进程，也可以间接的理解为就是容器里运行服务的应用进程。一个容器的生命周期是围绕这个主进程存在的，所以正确的使用容器方法是将里面的服务运行在前台。</p>
+<p>systemd维护系统服务程序，它需要特权去会访问Linux内核。而容器并不是一个完整的操作系统，只有一个文件系统，而且默认启动只是普通用户这样的权限访问Linux内核，也就是没有特权，所以自然就用不了！</p>
+<p>当然我们可以稍后在运行容器时候使用<strong>特权模式</strong>就可以绕开这个问题了。</p>
+<p>当我们运行上述dockerfile后，检查镜像列表<br>
+<img src="https://xiwan.github.io/post-images/1565169711513.png" alt=""></p>
+<p><em>centos:7是最基础的，<br>
+然后基于它我们构建了allinone:s1, 由于它并没有实质性的安装任何软件，所以看到大小并没有变化，这里我们可以只是作一些最基础的设置<br>
+接下来看allinone:s2，可以看到大小有2G多，这里主要是安装应用需要的软件。在实际运用种可以根据服务器的角色不同而安装不同的软件。</em></p>
+<h1 id="导出镜像容器">导出镜像/容器</h1>
+<p>先找到容器 id导出成tar/zip都可以</p>
+<pre><code>docker export df5138d2e73d &gt; test.tar
+</code></pre>
+<p>然后就可以把这个文件上传到公共服务器，其他服务器只需要去拉取这个镜像就可以了</p>
+<pre><code>cat test.tar | docker import - allinone:s2
+</code></pre>
+<p>正如前面描述，由于在镜像生成中无法进行systemctl或者service的后台工作，在实际运用中导出容器比较方便。我们可以在容器中将所有的服务都挂载后台起来后，然后再导出。这样才能做到真正的开箱即用。</p>
+<p>不过开箱有一个要注意的地方，需要在run/create 容器命令最后加上对应的CMD(也就是启动命令，而不是简单的bash)<br>
+比如：</p>
+<pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s2 /usr/sbin/init
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E8%83%8C%E6%99%AF">背景</a></li>
+<li><a href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B">基本流程</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8Ecentos%E9%95%9C%E5%83%8F">基于centos镜像</a></li>
+<li><a href="#%E5%88%B6%E4%BD%9C%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E7%9A%84%E9%95%9C%E5%83%8F">制作环境准备的镜像</a></li>
+<li><a href="#%E5%AF%BC%E5%87%BA%E9%95%9C%E5%83%8F%E5%AE%B9%E5%99%A8">导出镜像/容器</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xiwan.github.io/post/test">
+              <h3 class="post-title">
+                2d 光照研究
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'c8d7ebef73924ce0e7ad',
+    clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+    repo: 'xiwan.github.io',
+    owner: 'xiwan',
+    admin: ['xiwan'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
