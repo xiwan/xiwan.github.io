@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565176239495">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565264667750">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565176239495" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565264667750" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -125,7 +125,7 @@ rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
 rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
-VOLUME [ &quot;/data/docker/kaki&quot; ]
+VOLUME [ &quot;/data/game&quot; ]
 CMD [&quot;/usr/sbin/init&quot;]
 </code></pre>
 <p>这里主要设置的就是根据不同环境而挂载的VOLUME。目的是为了让镜像无状态化，中间的数据都需要存储到宿主机。</p>
@@ -137,26 +137,54 @@ CMD [&quot;/usr/sbin/init&quot;]
 <li>安装软件</li>
 <li>配置端口</li>
 </ol>
+<p>s2依赖于s1</p>
 <pre><code>FROM allinone:s1 AS s2
 USER root
 RUN yum -y install net-tools \
+  &amp;&amp; yum -y install wget \
+  &amp;&amp; yum remove epel-release \
+  &amp;&amp; wget https://mirrors.ustc.edu.cn/epel//7/x86_64/Packages/e/epel-release-7-11.noarch.rpm \
+  &amp;&amp; rpm -ivh epel-release-7-11.noarch.rpm \
+  &amp;&amp; yum clean all \
+  &amp;&amp; yum makecache \
   # update热更新
   &amp;&amp; yum provides '*/applydeltarpm' \ 
   &amp;&amp; yum install deltarpm -y \
-  &amp;&amp; yum -y update \ 
+  &amp;&amp; yum -y update \
   # 安装sshpass
   &amp;&amp; yum -y install sshpass \
-  &amp;&amp; yum -y install python-setuptools \
-  # 安装supervisor
-  &amp;&amp; easy_install supervisor \
   # 安装subversion
   &amp;&amp; yum -y install subversion \
-  # 安装dotnet
-  &amp;&amp; rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm \
-  &amp;&amp; yum -y install aspnetcore-runtime-2.1 \
-  &amp;&amp; yum -y install dotnet-sdk-2.1 \
+  # 安装xinetd
+  &amp;&amp; yum -y install xinetd \
+  #&amp;&amp; yum -y install ntpd \
+  &amp;&amp; yum -y install rsync \
+  &amp;&amp; yum install -y unzip zip \
+  &amp;&amp; yum -y install crontabs
 
-EXPOSE 80 6379 8001 8009 8010 8011 8012 8013
+CMD [&quot;/usr/sbin/init&quot;]
+</code></pre>
+<p>s3又依赖于s2</p>
+<pre><code>FROM allinone:s2 AS s3
+USER root
+RUN yum -y install nginx \
+  # 安装supervisor
+  &amp;&amp; yum -y install python-setuptools \
+  &amp;&amp; easy_install supervisor \
+  # 安装 redis
+  &amp;&amp; yum -y install redis \
+  # 安装 mysql
+  &amp;&amp; wget http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm \
+  &amp;&amp; rpm -ivh mysql-community-release-el7-5.noarch.rpm \
+  &amp;&amp; yum -y install mysql-community-server \
+  &amp;&amp; yum -y install mysql-community-client \
+  # 安装 dotnet
+  &amp;&amp; rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm \
+  &amp;&amp; yum update \
+  &amp;&amp; yum -y install aspnetcore-runtime-2.1 \
+  &amp;&amp; yum -y install dotnet-sdk-2.1
+
+EXPOSE 80 3306 6379 7000 8001 8009 8010 8011 8012 8013
 CMD [&quot;/usr/sbin/init&quot;]
 </code></pre>
 <p>这里要注意的是，<strong>我们不能在此步骤种进行任何的service或者systemctl之类后台任务的命令</strong>，否则会导致镜像建立的失败。</p>
@@ -168,6 +196,7 @@ CMD [&quot;/usr/sbin/init&quot;]
 <p><em>centos:7是最基础的，<br>
 然后基于它我们构建了allinone:s1, 由于它并没有实质性的安装任何软件，所以看到大小并没有变化，这里我们可以只是作一些最基础的设置<br>
 接下来看allinone:s2，可以看到大小有2G多，这里主要是安装应用需要的软件。在实际运用种可以根据服务器的角色不同而安装不同的软件。</em></p>
+<p><em>这里，我们可以把上述所有的dockerfile合并成一个，利用target参数来分步执行。</em></p>
 <h1 id="导出镜像容器">导出镜像/容器</h1>
 <p>先找到容器 id导出成tar/zip都可以</p>
 <pre><code>docker export df5138d2e73d &gt; test.tar
@@ -179,6 +208,29 @@ CMD [&quot;/usr/sbin/init&quot;]
 <p>不过开箱有一个要注意的地方，需要在run/create 容器命令最后加上对应的CMD(也就是启动命令，而不是简单的bash)<br>
 比如：</p>
 <pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s2 /usr/sbin/init
+</code></pre>
+<h1 id="后续">后续</h1>
+<p>可以引入docker-compose这种方案，来优化容器的管理和部属。这样就避免了繁琐的create和start。编排好yml文件后，直接up就可以启动整个容器了。一个例子：</p>
+<pre><code>version: '2'
+services:
+  all-in-one:
+    image: &quot;allinone:s3&quot;
+    build: ./
+    environment:
+      - JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai 
+    ports:
+      - 13306:3306
+			- 18001:8001
+    container_name: docker-test
+    privileged: true
+    restart: always
+    volumes:
+        - /data/game:/data/game
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
 </code></pre>
 
           </div>
