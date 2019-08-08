@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565264667750">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1565264748924">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565264667750" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1565264748924" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -202,12 +202,12 @@ CMD [&quot;/usr/sbin/init&quot;]
 <pre><code>docker export df5138d2e73d &gt; test.tar
 </code></pre>
 <p>然后就可以把这个文件上传到公共服务器，其他服务器只需要去拉取这个镜像就可以了</p>
-<pre><code>cat test.tar | docker import - allinone:s2
+<pre><code>cat test.tar | docker import - allinone:s3
 </code></pre>
 <p>正如前面描述，由于在镜像生成中无法进行systemctl或者service的后台工作，在实际运用中导出容器比较方便。我们可以在容器中将所有的服务都挂载后台起来后，然后再导出。这样才能做到真正的开箱即用。</p>
 <p>不过开箱有一个要注意的地方，需要在run/create 容器命令最后加上对应的CMD(也就是启动命令，而不是简单的bash)<br>
 比如：</p>
-<pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s2 /usr/sbin/init
+<pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s3 /usr/sbin/init
 </code></pre>
 <h1 id="后续">后续</h1>
 <p>可以引入docker-compose这种方案，来优化容器的管理和部属。这样就避免了繁琐的create和start。编排好yml文件后，直接up就可以启动整个容器了。一个例子：</p>
