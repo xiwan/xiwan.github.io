@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-08T11:45:51.156Z</updated>
+    <updated>2019-08-08T11:50:01.756Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -368,6 +368,8 @@ services:
         soft: 20000
         hard: 40000
 </code></pre>
+<h1 id="参考">参考</h1>
+<p><a href="https://yeasy.gitbooks.io/docker_practice/content/compose/commands.html#build">dockerfile</a></p>
 ]]></content>
     </entry>
     <entry>
