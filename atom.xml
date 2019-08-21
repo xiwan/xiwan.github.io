@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-08T11:50:01.756Z</updated>
+    <updated>2019-08-21T07:04:39.279Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,76 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[如何跳过heroselection]]></title>
+        <id>https://xiwan.github.io/post/ru-he-tiao-guo-heroselection</id>
+        <link href="https://xiwan.github.io/post/ru-he-tiao-guo-heroselection">
+        </link>
+        <updated>2019-08-20T11:57:47.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="背景">背景</h3>
+<p>最近研究dota2rpg时候发现一个问题：游戏流程如果使用官方的做法会比较死板。比如你必须选完队伍，然后再去选择英雄，然后再开始游戏。当然这个不是说它不好，但对于一款高度定制化的地图编辑器来说，这着实会束缚开发者的能力。很多优秀的rpg地图都可以定制整个游戏前的流程。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="背景">背景</h3>
+<p>最近研究dota2rpg时候发现一个问题：游戏流程如果使用官方的做法会比较死板。比如你必须选完队伍，然后再去选择英雄，然后再开始游戏。当然这个不是说它不好，但对于一款高度定制化的地图编辑器来说，这着实会束缚开发者的能力。很多优秀的rpg地图都可以定制整个游戏前的流程。</p>
+<!-- more -->
+<h3 id="调查">调查</h3>
+<p>首先，最重要的是搞清楚已有的dota游戏流程是如何的。<br>
+<img src="https://xiwan.github.io/post-images/1566368060441.png" alt=""><br>
+可以看到整个流程还是比较详细的，也容易看懂。其中比较重要的就是game_setup和hero_selection了。</p>
+<p>一般来说要修改game_setup界面还是比较简单的。比如：</p>
+<pre><code>	&lt;Panel&gt;
+		&lt;!-- Ingame HUD --&gt;
+		&lt;CustomUIElement type=&quot;GameSetup&quot; layoutfile=&quot;file://{resources}/layout/custom_game/team_selection.xml&quot; /&gt;
+	&lt;/Panel&gt;
+</code></pre>
+<p>同理我们也可以添加</p>
+<pre><code>&lt;CustomUIElement type=&quot;HeroSelection&quot; layoutfile=&quot;file://{resources}/layout/custom_game/pick_hero.xml&quot; /&gt;
+</code></pre>
+<p>这样来达到自定义界面的效果。<br>
+当我尝试出来效果一般。首先按照这个思路我们还是必须严格按照流程来进行界面设置。也就是必须设置完了队伍再去选择英雄之类。那如果游戏的设定不希望是这个流程呢？其次感觉要覆盖掉原来的英雄选择界面比较麻烦。我摸索出来的思路就是一个覆盖而已，效果如下：</p>
+<p><img src="https://xiwan.github.io/post-images/1566369563083.png" alt=""></p>
+<h3 id="跳出盒子">跳出盒子</h3>
+<p>有没有可能我在game_setup里面就直接做完了所有的事情呢。这样的话我们就不必完全按照预设的流程。</p>
+<h4 id="准备工作">准备工作：</h4>
+<p>我们需要让game_setup不往hero_selection走。那么需要这么设置：</p>
+<pre><code>function COverthrowGameMode:OnGameRulesStateChange()
+	local nNewState = GameRules:State_Get()
+
+	-- Disable auto launch when entering custom game setup, it can be
+	-- re-enabled at any point later while still in custom game setup
+	if nNewState == DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP then
+		GameRules:EnableCustomGameSetupAutoLaunch( false )
+	end
+end
+</code></pre>
+<p>这样就不会发生跳转了。</p>
+<p>接下来的问题是：我们可以自己做一个英雄界面(或者其他准备界面)，但怎么跳过默认的hero_selection？官网并没提供可以跳过某个步骤的接口。就是说按照dota2底层实现它是必须严格按照上面的顺序来做的。</p>
+<p>经过摸索，其实道理很简单。为什么默认机制是会强行你进入hero_selection?那是因为你没有英雄。如果你能在hero_selection之前让底层认为你选定了英雄就一切搞定了。顺着这个思路寻找的话，我们可以有两种方案达到：</p>
+<ol>
+<li>地图中拖一个  dota_custom_game_events 进去，设置里面的属性ForceSelectHero = &quot;npc_dota_hero_wisp&quot;。</li>
+<li>代码中调用 GameRules:GetGameModeEntity():SetCustomGameForceHero(keys.HeroName);</li>
+</ol>
+<p>个人比较推荐第二种，虽然第一种也可以达到效果。经过测试发现我们在hero_selection之前就选定好了英雄，达到欺骗底层的目的了。</p>
+<p><img src="https://xiwan.github.io/post-images/1566370679793.png" alt=""></p>
+<h3 id="展开">展开</h3>
+<p>按照上面的思路，我们甚至可以做到进入游戏后再选择英雄也是可以的。重点是我们跳过了hero_selection，鼓掌散花。。。</p>
+<h3 id="建议">建议</h3>
+<p>首先，你必须喜欢玩moba类游戏，尤其是dota。当然不是要求你多么高的天体分，而是说你要对于大部分dota的机制都很清楚。这样理解整个dota2rpg的开发也是相当有帮助的。<br>
+其次，由于valve官网的文档很难用，整个dota2rpg的入门还是没有那么容易。所以最好的方案还是看源代码配合官方文档来用，当然amhc社区对于英文不是特别好的小伙伴来说也是不错的选择。<br>
+最后也是最重要的，就是要坚持，有了这一点什么事情都能做好了。</p>
+<h3 id="参考">参考</h3>
+<p><a href="https://developer.valvesoftware.com/wiki/Dota_2_Workshop_Tools/Custom_Game_Setup">Custom Game Setup</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[dota2 文件格式]]></title>
+        <id>https://xiwan.github.io/post/dota2-wen-jian-ge-shi</id>
+        <link href="https://xiwan.github.io/post/dota2-wen-jian-ge-shi">
+        </link>
+        <updated>2019-08-13T07:18:01.000Z</updated>
+        <content type="html"><![CDATA[<p><img src="https://xiwan.github.io/post-images/1565680703810.png" alt=""></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[dotnetty定时器与断线重连]]></title>
         <id>https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian</id>
