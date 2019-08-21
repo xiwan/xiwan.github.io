@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1566373011208">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1566380297008">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1566373011208" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1566380297008" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -140,11 +140,13 @@ end
 <p>经过摸索，其实道理很简单。为什么默认机制是会强行你进入hero_selection?那是因为你没有英雄。如果你能在hero_selection之前让底层认为你选定了英雄就一切搞定了。顺着这个思路寻找的话，我们可以有两种方案达到：</p>
 <ol>
 <li>地图中拖一个  dota_custom_game_events 进去，设置里面的属性ForceSelectHero = &quot;npc_dota_hero_wisp&quot;。</li>
-<li>代码中调用 GameRules:GetGameModeEntity():SetCustomGameForceHero(keys.HeroName);</li>
+<li>强行设定某个英雄 GameRules:GetGameModeEntity():SetCustomGameForceHero(keys.HeroName);</li>
+<li>设定自定义英雄 CreateHeroForPlayer(keys.HeroName, player)</li>
 </ol>
 <p><img src="https://s2.ax1x.com/2019/08/21/mNgAHK.gif" alt="最终效果"><br>
-个人比较推荐第二种，虽然第一种也可以达到效果。经过测试发现我们在hero_selection之前就选定好了英雄，达到欺骗底层的目的了。<br>
-<img src="https://xiwan.github.io/post-images/1566370679793.png" alt=""></p>
+个人比较推荐后面两种，虽然第一种也可以达到效果。经过测试发现我们在hero_selection之前就选定好了英雄，达到欺骗底层的目的了。</p>
+<p>可以注意到我们还是经历了所有的STATE,只是我们在页面上没有感知而已。<br>
+<img src="https://xiwan.github.io/post-images/1566377670998.png" alt=""></p>
 <h3 id="展开">展开</h3>
 <p>按照上面的思路，我们甚至可以做到进入游戏后再选择英雄也是可以的。重点是我们跳过了hero_selection，鼓掌散花。。。</p>
 <h3 id="建议">建议</h3>
@@ -159,9 +161,9 @@ end
 
         
           <div class="next-post">
-            <a class="purple-link" href="https://xiwan.github.io/post/dota2-wen-jian-ge-shi">
+            <a class="purple-link" href="https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian">
               <h3 class="post-title">
-                下一篇：dota2 文件格式
+                下一篇：dotnetty定时器与断线重连
               </h3>
             </a>
           </div>
