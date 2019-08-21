@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-21T07:04:39.279Z</updated>
+    <updated>2019-08-21T07:36:54.793Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -59,8 +59,9 @@ end
 <li>地图中拖一个  dota_custom_game_events 进去，设置里面的属性ForceSelectHero = &quot;npc_dota_hero_wisp&quot;。</li>
 <li>代码中调用 GameRules:GetGameModeEntity():SetCustomGameForceHero(keys.HeroName);</li>
 </ol>
-<p>个人比较推荐第二种，虽然第一种也可以达到效果。经过测试发现我们在hero_selection之前就选定好了英雄，达到欺骗底层的目的了。</p>
-<p><img src="https://xiwan.github.io/post-images/1566370679793.png" alt=""></p>
+<p><img src="https://s2.ax1x.com/2019/08/21/mNgAHK.gif" alt="最终效果"><br>
+个人比较推荐第二种，虽然第一种也可以达到效果。经过测试发现我们在hero_selection之前就选定好了英雄，达到欺骗底层的目的了。<br>
+<img src="https://xiwan.github.io/post-images/1566370679793.png" alt=""></p>
 <h3 id="展开">展开</h3>
 <p>按照上面的思路，我们甚至可以做到进入游戏后再选择英雄也是可以的。重点是我们跳过了hero_selection，鼓掌散花。。。</p>
 <h3 id="建议">建议</h3>
