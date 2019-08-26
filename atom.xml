@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-21T09:38:27.439Z</updated>
+    <updated>2019-08-26T08:13:45.550Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,44 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[bot相关]]></title>
+        <id>https://xiwan.github.io/post/bot-xiang-guan</id>
+        <link href="https://xiwan.github.io/post/bot-xiang-guan">
+        </link>
+        <updated>2019-08-26T07:35:31.000Z</updated>
+        <summary type="html"><![CDATA[<p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
+<!-- more -->
+<h3 id="与bot相关的几个函数">与bot相关的几个函数</h3>
+<p>int GetConnectionState(int iPlayerID)</p>
+<p><code>Returns a status code indication the connection state of the player. 0 - no connection. 1 - bot connected. 2 - player connected. 3 bot/player disconnected.</code></p>
+<p>bool IsControllableByAnyPlayer()</p>
+<p><code>Is this unit controlled by any non-bot player?</code></p>
+<p>bool IsOwnedByAnyPlayer()</p>
+<p><code>Is this unit owned by any non-bot player?</code></p>
+<p>void SetBotDifficulty(int nDifficulty)</p>
+<p><code>Sets the bot's difficulty level (0 = passive, 1 = easy, 2 = medium, 3 = hard, 4 = unfair)</code></p>
+<p><img src="https://xiwan.github.io/post-images/1566805414719.png" alt=""></p>
+<p>bool AddBot(string string_1, string string_2, string string_3, bool bool_4)</p>
+<p><code>Add a computer controlled bot.</code></p>
+<h3 id="addbot用法">AddBot用法</h3>
+<p>这里面比较重要的就是AddBot方法了。<br>
+string_1 = 英雄单位的名字（默认的和自定义应该都是可以的）<br>
+string_2 = 英雄位置（mid, top, bot）三条线的分路<br>
+string_3 = passive/positive ？？<br>
+bool_4 = 这个表示是否和玩家为队友，但可以不在一个阵营</p>
+<p>如果要设置阵营，需要调用</p>
+<pre><code>PlayerResource:SetCustomTeamAssignment( 0, DOTA_TEAM_GOODGUYS )
+PlayerResource:SetCustomTeamAssignment( 1, DOTA_TEAM_GOODGUYS )
+</code></pre>
+<p><img src="https://xiwan.github.io/post-images/1566806951528.png" alt=""></p>
+<p>当然，我可以枚举上面的组合来达到一下效果：同阵营队友，同阵营非队友，不同阵营队友，不同阵营非队友之类。</p>
+<p>最终效果，不通阵营的队友，互相不能攻击</p>
+<p><img src="https://xiwan.github.io/post-images/1566807155157.png" alt=""></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[如何跳过heroselection]]></title>
         <id>https://xiwan.github.io/post/ru-he-tiao-guo-heroselection</id>
@@ -72,6 +110,16 @@ end
 最后也是最重要的，就是要坚持，有了这一点什么事情都能做好了。</p>
 <h3 id="参考">参考</h3>
 <p><a href="https://developer.valvesoftware.com/wiki/Dota_2_Workshop_Tools/Custom_Game_Setup">Custom Game Setup</a></p>
+<p><a href="https://github.com/Perryvw/CustomHeroSelection">CustomHeroSelection</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[dota2 文件格式]]></title>
+        <id>https://xiwan.github.io/post/dota2-wen-jian-ge-shi</id>
+        <link href="https://xiwan.github.io/post/dota2-wen-jian-ge-shi">
+        </link>
+        <updated>2019-08-13T07:18:01.000Z</updated>
+        <content type="html"><![CDATA[<p><img src="https://xiwan.github.io/post-images/1565680703810.png" alt="">)</p>
 ]]></content>
     </entry>
     <entry>
