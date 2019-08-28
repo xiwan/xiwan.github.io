@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-08-28T11:28:00.350Z</updated>
+    <updated>2019-08-28T13:47:30.690Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -41,65 +41,6 @@
 翻译官方的一些文档</p>
 <h3 id="截图">截图</h3>
 <p><img src="https://xiwan.github.io/post-images/1566991427426.png" alt=""></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Dota1V5]]></title>
-        <id>https://xiwan.github.io/post/dota1v5</id>
-        <link href="https://xiwan.github.io/post/dota1v5">
-        </link>
-        <updated>2019-08-26T08:29:39.000Z</updated>
-        <summary type="html"><![CDATA[<h2 id="intro">Intro</h2>
-<p>&quot;Dead by Daylight&quot; dota2 mod: 2 teams Master and Slave. Master have only one player, but Slave have 5.<br>
-Every match have 10-mins time for the Slave team eascaping from the pursuit of Master.</p>
-]]></summary>
-        <content type="html"><![CDATA[<h2 id="intro">Intro</h2>
-<p>&quot;Dead by Daylight&quot; dota2 mod: 2 teams Master and Slave. Master have only one player, but Slave have 5.<br>
-Every match have 10-mins time for the Slave team eascaping from the pursuit of Master.</p>
-<!-- more -->
-<h2 id="slave-team">Slave Team</h2>
-<h3 id="nurse">Nurse</h3>
-<h4 id="borned-skills">borned skills</h4>
-<ol>
-<li>Bandage:<br>
-small radius, continous spell, heal some amout of health<br>
-target: unit</li>
-<li>Injection:<br>
-small radius, quick spell, cost some unit's health for high speed<br>
-target: unit</li>
-</ol>
-<h3 id="solider">Solider</h3>
-<h4 id="borned-skill">borned skill:</h4>
-<ol>
-<li>Shield Hammer: Stun target 2s</li>
-<li></li>
-</ol>
-<h3 id="engineer">Engineer</h3>
-<h4 id="borned-skill-2">borned skill:</h4>
-<ol>
-<li>Amend：small radius, fix-up trap, light, engin and etc.</li>
-<li>Build: small radius, Trap, light</li>
-</ol>
-<h3 id="burglar">Burglar</h3>
-<h4 id="borned-skill-3">borned skill:</h4>
-<ol>
-<li>Agility: very fast</li>
-<li>Swipe: steal equips from master house</li>
-</ol>
-<h2 id="master-team">Master Team</h2>
-<h3 id="butcher">Butcher</h3>
-<h4 id="borned-skill-4">borned skill:</h4>
-<ol>
-<li>Hook：pull  target back</li>
-<li>Hang:</li>
-</ol>
-<h3 id="warden">warden</h3>
-<h4 id="borned-skill-5">borned skill:</h4>
-<ol>
-<li>Horify: Slow target movement 50%</li>
-<li>Hound: Command a hound attacking unit</li>
-<li>Prision:</li>
-</ol>
 ]]></content>
     </entry>
     <entry>
