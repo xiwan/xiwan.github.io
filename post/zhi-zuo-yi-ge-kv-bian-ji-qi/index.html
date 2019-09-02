@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1567000047160">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1567421782239">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1567000047160" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1567421782239" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -123,6 +123,19 @@
 2. 	新建：创建一个新的KV<br>
 [字典]<br>
 翻译官方的一些文档</p>
+<h3 id="excel">excel</h3>
+<p>为了快速反应基础的变化，需要一个基于excel导入的数据库。这样可以很方便地导入导出。<br>
+通用的结构：</p>
+<ul>
+<li>ID: 主要是标识用</li>
+<li>KEY: 内置KEY名字，在输入时候会进行智能匹配 (如果是#开头，表示需要从POINT范围选取)</li>
+<li>GROUP: 分组用，方便展示或者其他目的</li>
+<li>VALUE: 从官方搞的一些默认值</li>
+<li>COMMENT: 收集的一些说明</li>
+<li>PARENT: 表明KEY之间的父子关系</li>
+<li>POINT: KV的取值源头（比如DOTA_ABILITY_ATTRIBUTE#DOTAUnitAttackCapability_t  表示查看比如DOTA_ABILITY_ATTRIBUTE表的DOTAUnitAttackCapability_t的分组）</li>
+</ul>
+<p><img src="https://xiwan.github.io/post-images/1567421279321.png" alt=""></p>
 <h3 id="截图">截图</h3>
 <p><img src="https://xiwan.github.io/post-images/1566991427426.png" alt=""></p>
 
