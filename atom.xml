@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-09-02T10:56:27.399Z</updated>
+    <updated>2019-09-04T08:03:35.301Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,41 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[如何接入支付]]></title>
+        <id>https://xiwan.github.io/post/ru-he-jie-ru-zhi-fu</id>
+        <link href="https://xiwan.github.io/post/ru-he-jie-ru-zhi-fu">
+        </link>
+        <updated>2019-09-04T07:41:37.000Z</updated>
+        <summary type="html"><![CDATA[<p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
+<!-- more -->
+<h3 id="主体流程">主体流程</h3>
+<p><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></p>
+<h4 id="预支付部分">预支付部分</h4>
+<ol>
+<li>ui界面发起向lua服务器的支付请求，同时监听支付返回事件。</li>
+<li>lua服务器调用游戏服务器支付api，这里一般使用的是CreateHTTPRequestScriptVM 方法来拉起http请求。具体用法建议参考其他项目。</li>
+<li>游戏服务器接入好支付sdk后，通过sdk的api拉起预支付请求（如何配置可以参考网上很多例子）。如果是java的服务器代码，就调用 AlipayTradePrecreateRequest 接口就好了。同时也可以在这里完成创建订单的操作。</li>
+<li>同步等待平台预支付结果。</li>
+<li>这里可以根据返回结果来做一些数据更新的操作。然后将二维码地址告知lua服务器端。</li>
+<li>lua服务器获取到预支付的结果，告知ui界面展示二维码。</li>
+</ol>
+<h4 id="支付部分">支付部分</h4>
+<ol start="7">
+<li>客户扫描二维码，与平台交互支付过程。</li>
+<li>支付成功后，平台返回结果给客户</li>
+<li>同时，平台会异步告知交易结果给游戏服务器。游戏服务器继续完成数据更新操作。</li>
+<li>似乎没啥用。</li>
+</ol>
+<h4 id="测试结果">测试结果</h4>
+<p><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></p>
+<h4 id="注意">注意</h4>
+<p>如果使用沙箱环境，要注意签名方式和对应的公钥不要弄错。就支付宝来说，需要记录两个公钥，一个是与签名方式对应的应用公钥，还有一个是基于这个公钥签发的平台公钥。</p>
+<p>还有一点就是支付参数中的product_code部分需要根据签约的活动来写，不能乱写。否则会一直导致参数失败的错误。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[制作一个KV编辑器]]></title>
         <id>https://xiwan.github.io/post/zhi-zuo-yi-ge-kv-bian-ji-qi</id>
