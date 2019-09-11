@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1567584297219">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1568173344781">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1567584297219" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1568173344781" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -209,7 +209,10 @@ CMD [&quot;/usr/sbin/init&quot;]
 比如：</p>
 <pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s3 /usr/sbin/init
 </code></pre>
-<h1 id="后续">后续</h1>
+<h1 id="如何制作和配置无关的容器">如何制作和配置无关的容器</h1>
+<p>由于我们在编排docker时候，不大可能为了每套测试或者生产环境设置一个对应的容器。比较直接的做法是上线后替换配置文件的内容。这个操作用脚本还是可以做到的。但不停的替换文件内容，其实是一个比较容易出错的操作。</p>
+<p>个人认为比较好的一种做法：启动文件固定成一个软连接的路径，或者可以称它为代理。到了不同环境利用脚本替换代理的指向即可。</p>
+<h1 id="引入docker-compose">引入docker-compose</h1>
 <p>可以引入docker-compose这种方案，来优化容器的管理和部属。这样就避免了繁琐的create和start。编排好yml文件后，直接up就可以启动整个容器了。一个例子：</p>
 <pre><code>version: '2'
 services:
