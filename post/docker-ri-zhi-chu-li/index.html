@@ -5,14 +5,14 @@
     
 <meta charset="utf-8" >
 
-<title>docker 日志 | Keep Thinking</title>
+<title>docker 日志处理 | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1568793458102">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1568793932615">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1568793458102" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1568793932615" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -86,7 +86,7 @@
       <div class="content-container">
         <div class="post-detail">
           
-          <h2 class="post-title">docker 日志</h2>
+          <h2 class="post-title">docker 日志处理</h2>
           <div class="post-info post-detail-info">
             <span><i class="icon-calendar-outline"></i> 2019-09-18</span>
             
@@ -118,10 +118,8 @@
 <strong>Boot2Docker</strong>	/var/log/docker.log</p>
 <h3 id="docker-容器日志">docker 容器日志</h3>
 <p>容器的日志 则可以通过 docker logs 命令来访问，而且可以像 tail -f 一样，使用 docker logs -f 来实时查看。如果使用 Docker Compose，则可以通过 docker-compose logs &lt;服务名&gt; 来查看。</p>
-<p>如果需要查看容器日志的具体位置可以调用命令：</p>
-<pre><code>docker inspect --format='{{.LogPath}}' &lt;容器名字&gt;
-</code></pre>
-<p><img src="https://xiwan.github.io/post-images/1568779631501.png" alt=""></p>
+<p>如果需要查看容器日志的具体位置可以调用命令：<br>
+<img src="https://xiwan.github.io/post-images/1568779631501.png" alt=""></p>
 <p>可以看到这个是一个非常复杂的路径，每次看这个文件是非常不方便的。比较好的解决方案是用一个日志收集器来收集这些日志，比如利用<a href="https://tonybai.com/2016/03/25/ship-docker-container-log-with-filebeat/">filebeat</a>来收集日志，然后集中到ES中查询。不过需要一些软件安装或者配置。</p>
 <p>这里我使用一个比较简单的方案， 利用docker-compose 的logs命令将对应service输出到默认的位置。这样不用担心频繁的up down导致的容器号变化。</p>
 <pre><code>nohup docker-compose -f docker-compose-esk.yml logs -f kibana &gt;&gt; /data/game/logs/elk/VM_18_7_centos-kibana.log &amp;
