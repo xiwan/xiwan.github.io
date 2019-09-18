@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-09-18T07:55:42.137Z</updated>
+    <updated>2019-09-18T07:57:41.740Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -45,7 +45,7 @@
 </code></pre>
 <p>当然，不同机器上的日志可以通过定时rsync命令拉取到同一台机器方便查找。</p>
 <h3 id="docker应用日志">docker应用日志</h3>
-<p>由于docker是无状态的，可以通过volums来实现和宿主机的互通。我们可以将docker内应用日志和数据方便地放在宿主机管理，比较简单。</p>
+<p>由于docker是无状态的，可以通过volums来实现和宿主机的互通。我们可以将docker内应用日志和数据方便地放在宿主机管理，比较简单。可以同时在宿主机上启动一个filebeat将日志发送到内部es机器即可。</p>
 ]]></content>
     </entry>
     <entry>
