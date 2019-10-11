@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>最近... | Keep Thinking</title>
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1570784552286">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1570784552286" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">最近...</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2019-10-11</span>
+            
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://xiwan.github.io/tag/u_2Pe30Rt">
+                    life
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content">
+            <p>这一个月经过努力好不容易把我们的游戏送上了steam。中间踩了不少坑，无数次的加班才换来的结果。当然现在回国头去看一切还是挺值的。游戏在没有任何推广情况下，口碑和数据都保持得不错。每天在留言板和q群里面看玩家和我们的互动也慢慢成为我得日常部分。今天好不容易闲下来了一点，对过去一段时间做个回顾看看</p>
+<!-- more -->
+<h2 id="游戏方面">游戏方面</h2>
+<p>首先steam这个平台对于我们这种小团队来说是当前来说比较好的选择。由于大环境的影响，手游的排期一直在等消息。投资人也是急于将我们游戏变现一部分来度过寒冬。前面3次测试我们还算是稳扎稳打，手机上数据不算经验但也能交代。中途突然说我们改方向去PC，其实团队还是很担忧的。毕竟PC的玩家和手机并不能算完全重合的一波人。需要为PC做很多改动，让它看起来不是那么的手游。玩法上的调整也是一个挑战。</p>
+<p>总的说来就是时间紧任务急。这段时间团队不少人996来赶进度。当然老板也是挺拼的一人，这里要着重说下，几乎所有的游戏玩法和服务器逻辑部分都是他在搞。那么我在干嘛？哈哈哈。我现在算是这个小团队的技术负责人，是在做很多看不见的部分，游戏底层的架构，高并发，日志收集分析和运维自动化之类，当然包括很多团队都头疼的平台接入。小公司并没有特别富裕的人手，并且很多人还良莠不齐。所以这些东西都需要我自己来搞。</p>
+<p>大概讲下我的一些做法吧。</p>
+<h3 id="底层部分">底层部分</h3>
+<p>这边游戏底子是C#写的，方便前后端公用些公共库。但不好是老板写这些东西时候都是东平西凑加上自己的积累写的一套底层协议。只是看上去可以用而已，经常会出现一些诡异的问题。比如第一次测试就发现服务器经常不响应，然后得手动重启机器。不过好在老板本身还是认识到了这个问题，并没有执着于过去得经验。我过来的第一件事情就是整理这个部分。</p>
+<p>自己认为经验还是可以，所以先自己是用jmeter做了套压测系统来做各种关键接口的评测。后面又找了dotnetty来替换底层进行新的一轮压测。用数据说话来证明野路子只是能用，但没法长久用。当然这个部分也是前前后后搞了我一个多月才完成。事实证明这个替换是值得的，在我们第三次测试时候我们就顺利抗住了大量玩家的请求。</p>
+<p>当然对于一些中间件的使用我还是比较有话语权的，尤其是redis部分。感觉刚开始老板的用法都是极其粗暴简单，基本就是用下hash, string之类，复杂的结构几乎不触及。处于一个知其然但不知其所以然的状态。这都是小团队的痛楚。反正就是这么一点点磨啊磨，现在也开始有点像模像样了吧。</p>
+<p>总结下来：如果你不是天才，请不要相信自己造轮子的能力，因为前路崎岖且慢慢。</p>
+<h3 id="日志部分">日志部分</h3>
+<p>同样老的做法是记录好日志后，导入mysql，然后写各种查询。但同样由于不深入研究这个东西得化，没法抗住海量日志的。我一开始也是挠头，幸好在前面公司有看他们使用过ELK。于是就硬着头皮啃下来了这个部分。现在回头看，从最简单的demo跑通，到现在做到了集群分布。这中间的坑也是踩了不少。比如原来日志格式在logstash中需要自己手动写分析规则，elasticsearch那些恶心的查询语句，当然少不了调优参数时候各种痛苦。</p>
+<p>现在出来的效果还是不错的，团队成员也基本适应了如何进行简单检索，我们也抗过了亿级别的日志流量。当然我自己也很习惯在上面做二次开发，做各种维度的日志分析了。</p>
+<h3 id="自动化">自动化</h3>
+<p>这个其实也是慢慢发现的。刚开始我需要去接一个渠道的包，然后这个手动过程异常恶心。通常打一个包需要一个多小时。当然以前我就知道这个东西恶心了，之前的团队我并不需要搞，而是由专门的“包王”来处理。</p>
+<p>作为程序的我，干了几次就不舒服了。这lifestyle也太差了！幸好我对于脚本还比较在行，由于大环境我们也是从windows往linux转，所以我索性开始用脚本记录自己的操作步骤了。接着慢慢又引入了jenkins这个东西，一切都顺理成章的这么发生了。现在团队的前台后台所有的程序包都通过自动化来控制，无疑大大地解放了生产力。我现在要做地也只是教会他们如何选择下拉框而已。</p>
+<p>在做自动化过程中我还培养了出来一个算可以的运维人员，从linux不懂，到现在也能产出不少脚本了。自然也解放了我不少的精力。同时也不用我半夜起来对接运营了。</p>
+<p>自动化其实是一种体系，并不是一个脚本两个脚本就算自动化了。简单脚本其实是只能算小工具的。这中间需要吃透管理，架构，甚至一些人性来做。我自己也算是摸索到了一些思路。以后倒可以开篇说。</p>
+<h3 id="测试">测试</h3>
+<p>这也是一个项目能否走远的重要保障。但小团队往往都是最后一天才交货，认为自己写完了就算功能完了，甚至连基本的自测都没有。随便使用一个小的bug工具就算有管理了。感觉就是有点自欺欺人吧。我来这边后显示把后台重要接口都压测一遍，然后对于前端的要求就是：重要的基础功能要自己写用例自己来测试，并且我都会盯着看。因为越是那些底层的越容易忽视，比如偶尔出现的连不上去啊，或者网络交互的不稳定啊。其实总结下来：就是测试不到位，自己很多逻辑上的漏洞都没有发现。为了改变这个现状，我把重要的基础功能都用showdoc清楚的设计出来，用例也严格按照这个写。终于前面2测发现的很多制命问题，在第三测都没有了。也算是长须了一口气。</p>
+<h3 id="管理">管理</h3>
+<p>这个部分对于一直写代码的我来说并不是特别在行。我也会套用一些敏捷的原则，指定主从分支，版本号管理，提交节点之类的东西。但怎么说呢？效果不好。尤其是在小团队上面，人员精神面貌和积极性就摆在那里。这个东西关键靠的是执行。所以一旦碰上点业务忙就容易把之前的节奏打乱。我还是属于那种比较佛系思维的人，所以干了一阵子还是去找了专业项目经理来比较好。</p>
+<h2 id="总结">总结</h2>
+<p>写了一大通，感觉有点牢骚表现。毕竟自己当初脑子一热从明星上市企业出来，追求自己的游戏梦吧。结果这一年多下来做的还是更偏底层的东西了。中间有一段时间我自己还是有些执念。自己会学习Unity之类的东西，写各种最后无疾而终的小游戏。可能还是有想法哪天自己可以写写酷炫的前端吧（应该没啥问题😁）</p>
+<p>反正就这么过来了，现在游戏的上线，更感觉是自己是幕后的扫地僧。虽然感觉不出来游戏中的贡献，但正如老板说的：没我这游戏出不来。。。</p>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://xiwan.github.io/post/docker-ri-zhi-chu-li">
+              <h3 class="post-title">
+                下一篇：docker 日志处理
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+        
+          <div id="gitalk-container"></div>
+        
+
+        
+      
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/xiwan" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-09-18T08:05:42.623Z</updated>
+    <updated>2019-10-11T09:02:36.592Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,42 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[最近...]]></title>
+        <id>https://xiwan.github.io/post/zui-jin</id>
+        <link href="https://xiwan.github.io/post/zui-jin">
+        </link>
+        <updated>2019-10-11T07:58:54.000Z</updated>
+        <summary type="html"><![CDATA[<p>这一个月经过努力好不容易把我们的游戏送上了steam。中间踩了不少坑，无数次的加班才换来的结果。当然现在回国头去看一切还是挺值的。游戏在没有任何推广情况下，口碑和数据都保持得不错。每天在留言板和q群里面看玩家和我们的互动也慢慢成为我得日常部分。今天好不容易闲下来了一点，对过去一段时间做个回顾看看</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这一个月经过努力好不容易把我们的游戏送上了steam。中间踩了不少坑，无数次的加班才换来的结果。当然现在回国头去看一切还是挺值的。游戏在没有任何推广情况下，口碑和数据都保持得不错。每天在留言板和q群里面看玩家和我们的互动也慢慢成为我得日常部分。今天好不容易闲下来了一点，对过去一段时间做个回顾看看</p>
+<!-- more -->
+<h2 id="游戏方面">游戏方面</h2>
+<p>首先steam这个平台对于我们这种小团队来说是当前来说比较好的选择。由于大环境的影响，手游的排期一直在等消息。投资人也是急于将我们游戏变现一部分来度过寒冬。前面3次测试我们还算是稳扎稳打，手机上数据不算经验但也能交代。中途突然说我们改方向去PC，其实团队还是很担忧的。毕竟PC的玩家和手机并不能算完全重合的一波人。需要为PC做很多改动，让它看起来不是那么的手游。玩法上的调整也是一个挑战。</p>
+<p>总的说来就是时间紧任务急。这段时间团队不少人996来赶进度。当然老板也是挺拼的一人，这里要着重说下，几乎所有的游戏玩法和服务器逻辑部分都是他在搞。那么我在干嘛？哈哈哈。我现在算是这个小团队的技术负责人，是在做很多看不见的部分，游戏底层的架构，高并发，日志收集分析和运维自动化之类，当然包括很多团队都头疼的平台接入。小公司并没有特别富裕的人手，并且很多人还良莠不齐。所以这些东西都需要我自己来搞。</p>
+<p>大概讲下我的一些做法吧。</p>
+<h3 id="底层部分">底层部分</h3>
+<p>这边游戏底子是C#写的，方便前后端公用些公共库。但不好是老板写这些东西时候都是东平西凑加上自己的积累写的一套底层协议。只是看上去可以用而已，经常会出现一些诡异的问题。比如第一次测试就发现服务器经常不响应，然后得手动重启机器。不过好在老板本身还是认识到了这个问题，并没有执着于过去得经验。我过来的第一件事情就是整理这个部分。</p>
+<p>自己认为经验还是可以，所以先自己是用jmeter做了套压测系统来做各种关键接口的评测。后面又找了dotnetty来替换底层进行新的一轮压测。用数据说话来证明野路子只是能用，但没法长久用。当然这个部分也是前前后后搞了我一个多月才完成。事实证明这个替换是值得的，在我们第三次测试时候我们就顺利抗住了大量玩家的请求。</p>
+<p>当然对于一些中间件的使用我还是比较有话语权的，尤其是redis部分。感觉刚开始老板的用法都是极其粗暴简单，基本就是用下hash, string之类，复杂的结构几乎不触及。处于一个知其然但不知其所以然的状态。这都是小团队的痛楚。反正就是这么一点点磨啊磨，现在也开始有点像模像样了吧。</p>
+<p>总结下来：如果你不是天才，请不要相信自己造轮子的能力，因为前路崎岖且慢慢。</p>
+<h3 id="日志部分">日志部分</h3>
+<p>同样老的做法是记录好日志后，导入mysql，然后写各种查询。但同样由于不深入研究这个东西得化，没法抗住海量日志的。我一开始也是挠头，幸好在前面公司有看他们使用过ELK。于是就硬着头皮啃下来了这个部分。现在回头看，从最简单的demo跑通，到现在做到了集群分布。这中间的坑也是踩了不少。比如原来日志格式在logstash中需要自己手动写分析规则，elasticsearch那些恶心的查询语句，当然少不了调优参数时候各种痛苦。</p>
+<p>现在出来的效果还是不错的，团队成员也基本适应了如何进行简单检索，我们也抗过了亿级别的日志流量。当然我自己也很习惯在上面做二次开发，做各种维度的日志分析了。</p>
+<h3 id="自动化">自动化</h3>
+<p>这个其实也是慢慢发现的。刚开始我需要去接一个渠道的包，然后这个手动过程异常恶心。通常打一个包需要一个多小时。当然以前我就知道这个东西恶心了，之前的团队我并不需要搞，而是由专门的“包王”来处理。</p>
+<p>作为程序的我，干了几次就不舒服了。这lifestyle也太差了！幸好我对于脚本还比较在行，由于大环境我们也是从windows往linux转，所以我索性开始用脚本记录自己的操作步骤了。接着慢慢又引入了jenkins这个东西，一切都顺理成章的这么发生了。现在团队的前台后台所有的程序包都通过自动化来控制，无疑大大地解放了生产力。我现在要做地也只是教会他们如何选择下拉框而已。</p>
+<p>在做自动化过程中我还培养了出来一个算可以的运维人员，从linux不懂，到现在也能产出不少脚本了。自然也解放了我不少的精力。同时也不用我半夜起来对接运营了。</p>
+<p>自动化其实是一种体系，并不是一个脚本两个脚本就算自动化了。简单脚本其实是只能算小工具的。这中间需要吃透管理，架构，甚至一些人性来做。我自己也算是摸索到了一些思路。以后倒可以开篇说。</p>
+<h3 id="测试">测试</h3>
+<p>这也是一个项目能否走远的重要保障。但小团队往往都是最后一天才交货，认为自己写完了就算功能完了，甚至连基本的自测都没有。随便使用一个小的bug工具就算有管理了。感觉就是有点自欺欺人吧。我来这边后显示把后台重要接口都压测一遍，然后对于前端的要求就是：重要的基础功能要自己写用例自己来测试，并且我都会盯着看。因为越是那些底层的越容易忽视，比如偶尔出现的连不上去啊，或者网络交互的不稳定啊。其实总结下来：就是测试不到位，自己很多逻辑上的漏洞都没有发现。为了改变这个现状，我把重要的基础功能都用showdoc清楚的设计出来，用例也严格按照这个写。终于前面2测发现的很多制命问题，在第三测都没有了。也算是长须了一口气。</p>
+<h3 id="管理">管理</h3>
+<p>这个部分对于一直写代码的我来说并不是特别在行。我也会套用一些敏捷的原则，指定主从分支，版本号管理，提交节点之类的东西。但怎么说呢？效果不好。尤其是在小团队上面，人员精神面貌和积极性就摆在那里。这个东西关键靠的是执行。所以一旦碰上点业务忙就容易把之前的节奏打乱。我还是属于那种比较佛系思维的人，所以干了一阵子还是去找了专业项目经理来比较好。</p>
+<h2 id="总结">总结</h2>
+<p>写了一大通，感觉有点牢骚表现。毕竟自己当初脑子一热从明星上市企业出来，追求自己的游戏梦吧。结果这一年多下来做的还是更偏底层的东西了。中间有一段时间我自己还是有些执念。自己会学习Unity之类的东西，写各种最后无疾而终的小游戏。可能还是有想法哪天自己可以写写酷炫的前端吧（应该没啥问题😁）</p>
+<p>反正就这么过来了，现在游戏的上线，更感觉是自己是幕后的扫地僧。虽然感觉不出来游戏中的贡献，但正如老板说的：没我这游戏出不来。。。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[docker 日志处理]]></title>
         <id>https://xiwan.github.io/post/docker-ri-zhi-chu-li</id>
@@ -57,7 +93,7 @@
         <content type="html"><![CDATA[<p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
 <!-- more -->
 <h3 id="主体流程">主体流程</h3>
-<p><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></figure>
 <h4 id="预支付部分">预支付部分</h4>
 <ol>
 <li>ui界面发起向lua服务器的支付请求，同时监听支付返回事件。</li>
@@ -75,7 +111,7 @@
 <li>似乎没啥用。</li>
 </ol>
 <h4 id="测试结果">测试结果</h4>
-<p><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></figure>
 <h4 id="注意">注意</h4>
 <p>如果使用沙箱环境，要注意签名方式和对应的公钥不要弄错。就支付宝来说，需要记录两个公钥，一个是与签名方式对应的应用公钥，还有一个是基于这个公钥签发的平台公钥。</p>
 <p>还有一点就是支付参数中的product_code部分需要根据签约的活动来写，不能乱写。否则会一直导致参数失败的错误。</p>
@@ -122,9 +158,9 @@
 <li>PARENT: 表明KEY之间的父子关系</li>
 <li>POINT: KV的取值源头（比如DOTA_ABILITY_ATTRIBUTE#DOTAUnitAttackCapability_t  表示查看比如DOTA_ABILITY_ATTRIBUTE表的DOTAUnitAttackCapability_t的分组）</li>
 </ul>
-<p><img src="https://xiwan.github.io/post-images/1567421279321.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567421279321.png" alt=""></figure>
 <h3 id="截图">截图</h3>
-<p><img src="https://xiwan.github.io/post-images/1566991427426.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1566991427426.png" alt=""></figure>
 ]]></content>
     </entry>
     <entry>
@@ -146,7 +182,7 @@
 <p><code>Is this unit owned by any non-bot player?</code></p>
 <p>void SetBotDifficulty(int nDifficulty)</p>
 <p><code>Sets the bot's difficulty level (0 = passive, 1 = easy, 2 = medium, 3 = hard, 4 = unfair)</code></p>
-<p><img src="https://xiwan.github.io/post-images/1566805414719.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1566805414719.png" alt=""></figure>
 <p>bool AddBot(string string_1, string string_2, string string_3, bool bool_4)</p>
 <p><code>Add a computer controlled bot.</code></p>
 <h3 id="addbot用法">AddBot用法</h3>
@@ -159,10 +195,10 @@ bool_4 = 这个表示是否和玩家为队友，但可以不在一个阵营</p>
 <pre><code>PlayerResource:SetCustomTeamAssignment( 0, DOTA_TEAM_GOODGUYS )
 PlayerResource:SetCustomTeamAssignment( 1, DOTA_TEAM_GOODGUYS )
 </code></pre>
-<p><img src="https://xiwan.github.io/post-images/1566806951528.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1566806951528.png" alt=""></figure>
 <p>当然，我可以枚举上面的组合来达到一下效果：同阵营队友，同阵营非队友，不同阵营队友，不同阵营非队友之类。</p>
 <p>最终效果，不通阵营的队友，互相不能攻击</p>
-<p><img src="https://xiwan.github.io/post-images/1566807155157.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1566807155157.png" alt=""></figure>
 ]]></content>
     </entry>
     <entry>
@@ -192,7 +228,7 @@ PlayerResource:SetCustomTeamAssignment( 1, DOTA_TEAM_GOODGUYS )
 </code></pre>
 <p>这样来达到自定义界面的效果。<br>
 当我尝试出来效果一般。首先按照这个思路我们还是必须严格按照流程来进行界面设置。也就是必须设置完了队伍再去选择英雄之类。那如果游戏的设定不希望是这个流程呢？其次感觉要覆盖掉原来的英雄选择界面比较麻烦。我摸索出来的思路就是一个覆盖而已，效果如下：</p>
-<p><img src="https://xiwan.github.io/post-images/1566369563083.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1566369563083.png" alt=""></figure>
 <h3 id="跳出盒子">跳出盒子</h3>
 <p>有没有可能我在game_setup里面就直接做完了所有的事情呢。这样的话我们就不必完全按照预设的流程。</p>
 <h4 id="准备工作">准备工作：</h4>
@@ -256,10 +292,10 @@ end
 <img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16979352b7.png" alt=""></p>
 <h3 id="断线重连">断线重连</h3>
 <p>断线重连的逻辑主要是实现在客户端代码这边<strong>ChannelInactive</strong>方法</p>
-<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be169f378c3b.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be169f378c3b.png" alt=""></figure>
 <h4 id="测试">测试</h4>
 <p>我们可以看到，每经过3个丢失的包，服务器便会主动断开客户端的连接；然后客户端知道自己被断开后，会间隔5秒尝试连接服务器，直到成功为止。</p>
-<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16b2d3febe.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16b2d3febe.png" alt=""></figure>
 ]]></content>
     </entry>
     <entry>
@@ -456,152 +492,6 @@ Console.WriteLine(bytes.Length);
 <p>所以可以预估在内存充足的情况下serilog的写入能力为15w-18w之间</p>
 <p>网上另一位测试者的结果也侧面证明了我的结果<br>
 <img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-20/5bf3b95b2663c.png" alt=""></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[基于docker搭建centos模板环境]]></title>
-        <id>https://xiwan.github.io/post/JMW1yxHv1</id>
-        <link href="https://xiwan.github.io/post/JMW1yxHv1">
-        </link>
-        <updated>2019-08-07T08:29:00.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="背景">背景</h1>
-<p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="背景">背景</h1>
-<p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
-<!-- more -->
-<p>以下的流程只是一个测试例子，真实环境需要对不同环境来写不同的镜像。由于我比较懒，所以暂且把所有服务都放在一个镜像里面。</p>
-<h1 id="基本流程">基本流程</h1>
-<ol>
-<li>基于centos 镜像</li>
-<li>准备环境的镜像</li>
-<li>导出镜像/容器</li>
-</ol>
-<h1 id="基于centos镜像">基于centos镜像</h1>
-<p>这个比较简单，可以到docker hub上面找centos:7， 然后编写dockerfile</p>
-<pre><code>FROM centos:7 AS s1
-ENV container docker
-RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
-systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-rm -f /lib/systemd/system/multi-user.target.wants/*;\
-rm -f /etc/systemd/system/*.wants/*;\
-rm -f /lib/systemd/system/local-fs.target.wants/*; \
-rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-rm -f /lib/systemd/system/basic.target.wants/*;\
-rm -f /lib/systemd/system/anaconda.target.wants/*;
-VOLUME [ &quot;/data/game&quot; ]
-CMD [&quot;/usr/sbin/init&quot;]
-</code></pre>
-<p>这里主要设置的就是根据不同环境而挂载的VOLUME。目的是为了让镜像无状态化，中间的数据都需要存储到宿主机。</p>
-<h1 id="制作环境准备的镜像">制作环境准备的镜像</h1>
-<p>上一步只是完成了一些最基本的设置，接下来需要按照应用或者游戏需要应用到的服务来安装和启动。</p>
-<ol>
-<li>安装网络和设置yum源（通常已经有了）</li>
-<li>更新yum</li>
-<li>安装软件</li>
-<li>配置端口</li>
-</ol>
-<p>s2依赖于s1</p>
-<pre><code>FROM allinone:s1 AS s2
-USER root
-RUN yum -y install net-tools \
-  &amp;&amp; yum -y install wget \
-  &amp;&amp; yum remove epel-release \
-  &amp;&amp; wget https://mirrors.ustc.edu.cn/epel//7/x86_64/Packages/e/epel-release-7-11.noarch.rpm \
-  &amp;&amp; rpm -ivh epel-release-7-11.noarch.rpm \
-  &amp;&amp; yum clean all \
-  &amp;&amp; yum makecache \
-  # update热更新
-  &amp;&amp; yum provides '*/applydeltarpm' \ 
-  &amp;&amp; yum install deltarpm -y \
-  &amp;&amp; yum -y update \
-  # 安装sshpass
-  &amp;&amp; yum -y install sshpass \
-  # 安装subversion
-  &amp;&amp; yum -y install subversion \
-  # 安装xinetd
-  &amp;&amp; yum -y install xinetd \
-  #&amp;&amp; yum -y install ntpd \
-  &amp;&amp; yum -y install rsync \
-  &amp;&amp; yum install -y unzip zip \
-  &amp;&amp; yum -y install crontabs
-
-CMD [&quot;/usr/sbin/init&quot;]
-</code></pre>
-<p>s3又依赖于s2</p>
-<pre><code>FROM allinone:s2 AS s3
-USER root
-RUN yum -y install nginx \
-  # 安装supervisor
-  &amp;&amp; yum -y install python-setuptools \
-  &amp;&amp; easy_install supervisor \
-  # 安装 redis
-  &amp;&amp; yum -y install redis \
-  # 安装 mysql
-  &amp;&amp; wget http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm \
-  &amp;&amp; rpm -ivh mysql-community-release-el7-5.noarch.rpm \
-  &amp;&amp; yum -y install mysql-community-server \
-  &amp;&amp; yum -y install mysql-community-client \
-  # 安装 dotnet
-  &amp;&amp; rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm \
-  &amp;&amp; yum update \
-  &amp;&amp; yum -y install aspnetcore-runtime-2.1 \
-  &amp;&amp; yum -y install dotnet-sdk-2.1
-
-EXPOSE 80 3306 6379 7000 8001 8009 8010 8011 8012 8013
-CMD [&quot;/usr/sbin/init&quot;]
-</code></pre>
-<p>这里要注意的是，<strong>我们不能在此步骤种进行任何的service或者systemctl之类后台任务的命令</strong>，否则会导致镜像建立的失败。</p>
-<p>主要原因是：Docker的设计理念是在容器里面不运行后台服务，容器本身就是宿主机上的一个独立的主进程，也可以间接的理解为就是容器里运行服务的应用进程。一个容器的生命周期是围绕这个主进程存在的，所以正确的使用容器方法是将里面的服务运行在前台。</p>
-<p>systemd维护系统服务程序，它需要特权去会访问Linux内核。而容器并不是一个完整的操作系统，只有一个文件系统，而且默认启动只是普通用户这样的权限访问Linux内核，也就是没有特权，所以自然就用不了！</p>
-<p>当然我们可以稍后在运行容器时候使用<strong>特权模式</strong>就可以绕开这个问题了。</p>
-<p>当我们运行上述dockerfile后，检查镜像列表<br>
-<img src="https://xiwan.github.io/post-images/1565169711513.png" alt=""></p>
-<p><em>centos:7是最基础的，<br>
-然后基于它我们构建了allinone:s1, 由于它并没有实质性的安装任何软件，所以看到大小并没有变化，这里我们可以只是作一些最基础的设置<br>
-接下来看allinone:s2，可以看到大小有2G多，这里主要是安装应用需要的软件。在实际运用种可以根据服务器的角色不同而安装不同的软件。</em></p>
-<p><em>这里，我们可以把上述所有的dockerfile合并成一个，利用target参数来分步执行。</em></p>
-<h1 id="导出镜像容器">导出镜像/容器</h1>
-<p>先找到容器 id导出成tar/zip都可以</p>
-<pre><code>docker export df5138d2e73d &gt; test.tar
-</code></pre>
-<p>然后就可以把这个文件上传到公共服务器，其他服务器只需要去拉取这个镜像就可以了</p>
-<pre><code>cat test.tar | docker import - allinone:s3
-</code></pre>
-<p>正如前面描述，由于在镜像生成中无法进行systemctl或者service的后台工作，在实际运用中导出容器比较方便。我们可以在容器中将所有的服务都挂载后台起来后，然后再导出。这样才能做到真正的开箱即用。</p>
-<p>不过开箱有一个要注意的地方，需要在run/create 容器命令最后加上对应的CMD(也就是启动命令，而不是简单的bash)<br>
-比如：</p>
-<pre><code>docker create -v /data/docker/kaki:/data/docker/kaki --privileged=true --name=kakigameserver -p 80:80 -i allinone:s3 /usr/sbin/init
-</code></pre>
-<h1 id="如何制作和配置无关的容器">如何制作和配置无关的容器</h1>
-<p>由于我们在编排docker时候，不大可能为了每套测试或者生产环境设置一个对应的容器。比较直接的做法是上线后替换配置文件的内容。这个操作用脚本还是可以做到的。但不停的替换文件内容，其实是一个比较容易出错的操作。</p>
-<p>个人认为比较好的一种做法：启动文件固定成一个软连接的路径，或者可以称它为代理。到了不同环境利用脚本替换代理的指向即可。</p>
-<h1 id="引入docker-compose">引入docker-compose</h1>
-<p>可以引入docker-compose这种方案，来优化容器的管理和部属。这样就避免了繁琐的create和start。编排好yml文件后，直接up就可以启动整个容器了。一个例子：</p>
-<pre><code>version: '2'
-services:
-  all-in-one:
-    image: &quot;allinone:s3&quot;
-    build: ./
-    environment:
-      - JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai 
-    ports:
-      - 13306:3306
-			- 18001:8001
-    container_name: docker-test
-    privileged: true
-    restart: always
-    volumes:
-        - /data/game:/data/game
-    ulimits:
-      nproc: 65535
-      nofile:
-        soft: 20000
-        hard: 40000
-</code></pre>
-<h1 id="参考">参考</h1>
-<p><a href="https://yeasy.gitbooks.io/docker_practice/content/compose/commands.html#build">dockerfile</a></p>
 ]]></content>
     </entry>
 </feed>

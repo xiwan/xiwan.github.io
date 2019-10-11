@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1568793932615">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1570784552286">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1568793932615" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1570784552286" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -108,7 +108,7 @@
             <p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
 <!-- more -->
 <h3 id="主体流程">主体流程</h3>
-<p><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></figure>
 <h4 id="预支付部分">预支付部分</h4>
 <ol>
 <li>ui界面发起向lua服务器的支付请求，同时监听支付返回事件。</li>
@@ -126,7 +126,7 @@
 <li>似乎没啥用。</li>
 </ol>
 <h4 id="测试结果">测试结果</h4>
-<p><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></figure>
 <h4 id="注意">注意</h4>
 <p>如果使用沙箱环境，要注意签名方式和对应的公钥不要弄错。就支付宝来说，需要记录两个公钥，一个是与签名方式对应的应用公钥，还有一个是基于这个公钥签发的平台公钥。</p>
 <p>还有一点就是支付参数中的product_code部分需要根据签约的活动来写，不能乱写。否则会一直导致参数失败的错误。</p>
