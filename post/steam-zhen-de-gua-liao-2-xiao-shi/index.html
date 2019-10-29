@@ -5,7 +5,7 @@
     
 <meta charset="utf-8" >
 
-<title>2d 光照研究 | Keep Thinking</title>
+<title>steam真的挂了2小时 | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -86,15 +86,18 @@
       <div class="content-container">
         <div class="post-detail">
           
-          <h2 class="post-title">2d 光照研究</h2>
+            <div class="feature-container" style="background-image: url('https://xiwan.github.io/post-images/steam-zhen-de-gua-liao-2-xiao-shi.png')">
+            </div>
+          
+          <h2 class="post-title">steam真的挂了2小时</h2>
           <div class="post-info post-detail-info">
-            <span><i class="icon-calendar-outline"></i> 2019-08-01</span>
+            <span><i class="icon-calendar-outline"></i> 2019-10-29</span>
             
               <span>
                 <i class="icon-pricetags-outline"></i>
                 
-                  <a href="https://xiwan.github.io/tag/pWl5SQFpg">
-                    unity
+                  <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                    benchmark
                     
                   </a>
                 
@@ -102,41 +105,46 @@
             
           </div>
           <div class="post-content">
-            <h1 id="背景">背景</h1>
-<p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
-<!-- more -->
-<h2 id="原理">原理</h2>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1564653884231.png" alt=" 原始贴图与法线贴图"></figure>
-<p>法线图： 基于原始图生成的。这是因为它把图片的法线向量转成了rgp通道。而面向我们的一般是z轴，所以颜色偏蓝。</p>
-<pre><code>//下面是两者的互相转换公式
-Color.rgb = Normal.xyz / 2.0 + 0.5;
-Normal.xyz = Color.rgb * 2.0 - 1.0
+            <p>早上一起来被告知昨晚有将近两个小时的游戏服务器连接失败。大概的样子是这样：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1572334369507.png" alt=""></figure>
+<p>第一排查的是机房网络情况，经过询问得知网络正常。然后开始分析日志，发现如下特点：</p>
+<ol>
+<li>连接失败的开始时间和结束时间差不多（夜里2点-4点）</li>
+<li>两个机房都出现了上面的情况（国内，国外）</li>
+</ol>
+<p>根据以上两条进一步分析，机房的网络问题被排除了。</p>
+<p>排除掉机房后，我又看了下当时的cpu内存情况也没有异常。接下来只能重新掉头分析上报内容了，感觉大部分失败都是在登陆界面。游戏内玩家报告失败的情况没有。这个时候反应是不是steam平台炸了。但是这个怎么验证呢？这么大的平台炸了，为啥网上没有一点消息。。。</p>
+<p>接着只能硬着头皮查日志了</p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1572334817578.png" alt=""></figure>
+<p>根据日志这段时间分析也发现了几个特点：</p>
+<pre><code>1. 两个机房出现情况的时间点不单单是差不多，而是精确到秒级别的同步。
+2. 一般的超时差不多就是几百毫秒，这段时间的超时居然高达了100秒。
 </code></pre>
-<h2 id="渲染步骤">渲染步骤</h2>
-<p>将生成的法线和原图分别贴到材质球上面。接下来就是需要写一些shader了。至于怎么写，其实有很多教程。这里主要说明下基本的渲染步骤：</p>
-<pre><code>N = normalize(Normal.xyz)
-L = normalize(LightDir.xyz)
-Diffuse = LightColor * max(dot(N, L), 0.0)
-Ambient = AmbientColor * AmbientIntensity
-Attenuation = 1.0 / (ConstantAtt + (LinearAtt * Distance) + (QuadraticAtt * Distance * Distance)) 
-Intensity = Ambient + Diffuse * Attenuation
-FinalColor = DiffuseColor.rgb * Intensity.rgb
+<p>根据1来推断有两种可能性。第一种是我们又被攻击了，不过我很快否定了这个想法。因为攻击不可能挑选半夜人少时候，并且只持续了2小时左右就停止了，这个不大符合规律。那么就是最不可能的肯能了：steam平台昨晚挂了。</p>
+<p>steam平台有波动是很正常，但2个小时的时间算是一个不小的事故了。会不会是因为某次波动导致的底层bug，从而请求阻塞之类？不过经过老板提点，还是否定了这个思路，因为两个机房，相同的时间节点。由于两边环境的差异，不可能这么凑巧的。所以真相只有一个：steam 挂了2小时。</p>
+<p>顺着这个思路，我终于找到了一个作证：</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1572335271678.png" alt=""></figure>
+<p>相关网站 https://outage.report/steam 。这个是一个专门给玩家们上报steam 挂机了的网站。报告的热点图几乎都在北美和欧洲，国内似乎知道的人很少，并且由于出问题时间在半夜，所以并没有人会怀疑到steam上面去。</p>
+<p>这下一切就解释得通了：steam昨晚真得挂了2个小时！根据宕机历史来看，steam不算太靠谱。。。</p>
+<h2 id="隐患">隐患</h2>
+<p>当解决完上面的疑惑后，还有一个问题：为啥steam宕机时候我们居然挂机了100秒？幸亏这个问题是半夜发生，如果是高峰期，可能直接导致游戏内玩家都会无法使用。这也算是一个比较大的隐患了。当然，最后解决这个问题是比较简单，重新设置下timeout和readwritetimeout时间就好了。</p>
+<p>对于request里面给的解释：</p>
+<pre><code>timeout 相当于请求发出到建立连接所花费的时间，默认100秒
+readwritetimeout 相当于建立连接到下载完整个包体需要的时间，默认300秒
 </code></pre>
-<h1 id="法线贴图">法线贴图</h1>
-<p>这里比较有意思的一点是：这里的序列帧都可以获得该shader效果。</p>
-<figure data-type="image" tabindex="2"><img src="https://s2.ax1x.com/2019/08/02/e0QoSP.gif" alt="e0QoSP.gif"></figure>
-<h1 id="添加阴影效果">添加阴影效果</h1>
-<p>前景虽然看起来不错，但是有一个问题就是没有阴影</p>
-<h2 id="阴影效果">阴影效果</h2>
-<figure data-type="image" tabindex="3"><img src="https://s2.ax1x.com/2019/08/02/eBEE6J.gif" alt="eBEE6J.gif"></figure>
-<h1 id="参考">参考</h1>
-<p><a href="https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6">ShaderLesson6</a><br>
-<a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>
 
           </div>
         </div>
 
         
+          <div class="next-post">
+            <a class="purple-link" href="https://xiwan.github.io/post/zui-jin">
+              <h3 class="post-title">
+                下一篇：最近...
+              </h3>
+            </a>
+          </div>
+          
       </div>
 
       

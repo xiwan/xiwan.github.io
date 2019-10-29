@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-10-11T09:02:36.592Z</updated>
+    <updated>2019-10-29T07:57:56.383Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,41 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[steam真的挂了2小时]]></title>
+        <id>https://xiwan.github.io/post/steam-zhen-de-gua-liao-2-xiao-shi</id>
+        <link href="https://xiwan.github.io/post/steam-zhen-de-gua-liao-2-xiao-shi">
+        </link>
+        <updated>2019-10-29T07:30:59.000Z</updated>
+        <content type="html"><![CDATA[<p>早上一起来被告知昨晚有将近两个小时的游戏服务器连接失败。大概的样子是这样：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1572334369507.png" alt=""></figure>
+<p>第一排查的是机房网络情况，经过询问得知网络正常。然后开始分析日志，发现如下特点：</p>
+<ol>
+<li>连接失败的开始时间和结束时间差不多（夜里2点-4点）</li>
+<li>两个机房都出现了上面的情况（国内，国外）</li>
+</ol>
+<p>根据以上两条进一步分析，机房的网络问题被排除了。</p>
+<p>排除掉机房后，我又看了下当时的cpu内存情况也没有异常。接下来只能重新掉头分析上报内容了，感觉大部分失败都是在登陆界面。游戏内玩家报告失败的情况没有。这个时候反应是不是steam平台炸了。但是这个怎么验证呢？这么大的平台炸了，为啥网上没有一点消息。。。</p>
+<p>接着只能硬着头皮查日志了</p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1572334817578.png" alt=""></figure>
+<p>根据日志这段时间分析也发现了几个特点：</p>
+<pre><code>1. 两个机房出现情况的时间点不单单是差不多，而是精确到秒级别的同步。
+2. 一般的超时差不多就是几百毫秒，这段时间的超时居然高达了100秒。
+</code></pre>
+<p>根据1来推断有两种可能性。第一种是我们又被攻击了，不过我很快否定了这个想法。因为攻击不可能挑选半夜人少时候，并且只持续了2小时左右就停止了，这个不大符合规律。那么就是最不可能的肯能了：steam平台昨晚挂了。</p>
+<p>steam平台有波动是很正常，但2个小时的时间算是一个不小的事故了。会不会是因为某次波动导致的底层bug，从而请求阻塞之类？不过经过老板提点，还是否定了这个思路，因为两个机房，相同的时间节点。由于两边环境的差异，不可能这么凑巧的。所以真相只有一个：steam 挂了2小时。</p>
+<p>顺着这个思路，我终于找到了一个作证：</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1572335271678.png" alt=""></figure>
+<p>相关网站 https://outage.report/steam 。这个是一个专门给玩家们上报steam 挂机了的网站。报告的热点图几乎都在北美和欧洲，国内似乎知道的人很少，并且由于出问题时间在半夜，所以并没有人会怀疑到steam上面去。</p>
+<p>这下一切就解释得通了：steam昨晚真得挂了2个小时！根据宕机历史来看，steam不算太靠谱。。。</p>
+<h2 id="隐患">隐患</h2>
+<p>当解决完上面的疑惑后，还有一个问题：为啥steam宕机时候我们居然挂机了100秒？幸亏这个问题是半夜发生，如果是高峰期，可能直接导致游戏内玩家都会无法使用。这也算是一个比较大的隐患了。当然，最后解决这个问题是比较简单，重新设置下timeout和readwritetimeout时间就好了。</p>
+<p>对于request里面给的解释：</p>
+<pre><code>timeout 相当于请求发出到建立连接所花费的时间，默认100秒
+readwritetimeout 相当于建立连接到下载完整个包体需要的时间，默认300秒
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[最近...]]></title>
         <id>https://xiwan.github.io/post/zui-jin</id>
@@ -344,154 +379,6 @@ Console.WriteLine(bytes.Length);
 <p>开始第二个包体前半部分读取,ridx=0，读取剩下的155长度数据<br>
 <img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaaa5d398f9.png" alt=""></p>
 <p>由于tcp可以保持包的顺序，所以只要等待下一个包体到来就可以完成第二个包体的读取了。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[serilog vs log4net]]></title>
-        <id>https://xiwan.github.io/post/serilog-vs-log4net</id>
-        <link href="https://xiwan.github.io/post/serilog-vs-log4net">
-        </link>
-        <updated>2019-08-07T10:58:59.000Z</updated>
-        <summary type="html"><![CDATA[<h3 id="目的">目的</h3>
-<p>通过测试数值来比较两个库的优劣</p>
-]]></summary>
-        <content type="html"><![CDATA[<h3 id="目的">目的</h3>
-<p>通过测试数值来比较两个库的优劣</p>
-<!-- more -->
-<h3 id="场景">场景</h3>
-<h4 id="login-接口带业务">Login 接口（带业务）</h4>
-<p>参数： 线程250， 时间20分钟， 队列长度：5w, 队列读取间隔： 1s， 不做合并写<br>
-数据：<br>
-0000001c00000003088080b807120464646464120012054465627567</p>
-<p>log4net:<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf26878b66af.png" alt=""></p>
-<p>serilog:<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf268d599233.png" alt=""></p>
-<p>相同参数：队列积压：4k-5k区间， cpu: 300%, mem: 4% 都是差不多的。<br>
-差异参数：偏差值: serilog(8.64) &lt; log4net(13.28), 吞吐量serilog也优秀5%左右。</p>
-<h4 id="hearbeat-接口">hearbeat 接口</h4>
-<p>参数： 线程3000， 时间20分钟， 队列长度：5w, 队列读取间隔： 1s， 不做合并写<br>
-数据：<br>
-000000130000000108ffffff07120130120131</p>
-<p>log4net:<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf2759097410.png" alt=""></p>
-<p>serilog:<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-19/5bf26d2ba7bdb.png" alt=""></p>
-<p>相同参数：cpu: 300%； mem: 4%；都是差不多的。<br>
-差异参数：队列积压：serilog(25-30k), log4net(40k+)；；吞吐量:serilog(2.6w)， log4net(1.5w)；偏差值：serilog(33.42), log4net(17.78)</p>
-<h3 id="观察">观察</h3>
-<p>在低压力（上千并发）情况下： log4net和serilog的差距不是很明显。</p>
-<p>在高压力（上万并发）情况下：这里log4net由于写的并发不高，导致它的吞吐也是一个慢慢爬坡的过程，并且队列积压严重（超过80%）；相反serilog对于写的优秀支持，它可以很快的到达吞吐并发，队列积压只有log4net的一半左右。</p>
-<h3 id="延申">延申</h3>
-<p>再日志放大10倍的压力下，serilog的效率和log4net差不多，都降到了1万每秒，并且有10%的错误率。原因是这个时候，大家都已经把队列撑爆了，这个时候的瓶颈就是队列了。那么通过调整参数得出下表</p>
-<table>
-<thead>
-<tr>
-<th>serilog</th>
-<th>tps</th>
-<th>错误率</th>
-<th>队列积压 (5w)</th>
-<th>预估能力</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10条</td>
-<td>1.1w/s</td>
-<td>10%</td>
-<td>5w</td>
-<td>-</td>
-</tr>
-<tr>
-<td>3条</td>
-<td>2.1w/s</td>
-<td>0.6%</td>
-<td>5w</td>
-<td>-</td>
-</tr>
-<tr>
-<td>2条</td>
-<td>2.5w/s</td>
-<td>0.01%</td>
-<td>4.1w</td>
-<td>5w/s</td>
-</tr>
-<tr>
-<td>1条</td>
-<td>2.5w/s</td>
-<td>0%</td>
-<td>2.5w</td>
-<td>2.3w/s</td>
-</tr>
-</tbody>
-</table>
-<p>从这里看出，再队列预设5w长度情况下，serilog可以到达5w/s(但并不是它的峰值)。这么看来后续需要加长队列继续测试：</p>
-<p>10w队列</p>
-<table>
-<thead>
-<tr>
-<th>serilog</th>
-<th>tps</th>
-<th>错误率</th>
-<th>队列积压</th>
-<th>预估能力</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10条</td>
-<td>1.3w/s</td>
-<td>10%</td>
-<td>10w</td>
-<td>-</td>
-</tr>
-</tbody>
-</table>
-<p>20w队列</p>
-<table>
-<thead>
-<tr>
-<th>serilog</th>
-<th>tps</th>
-<th>错误率</th>
-<th>队列积压</th>
-<th>预估能力</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10条</td>
-<td>1.6w/s</td>
-<td>1%</td>
-<td>16w</td>
-<td>15w/s</td>
-</tr>
-</tbody>
-</table>
-<p>100w队列</p>
-<table>
-<thead>
-<tr>
-<th>serilog</th>
-<th>tps</th>
-<th>错误率</th>
-<th>队列积压</th>
-<th>预估能力</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10条</td>
-<td>1.8w/s</td>
-<td>0.03%</td>
-<td>2w</td>
-<td>18w/s</td>
-</tr>
-</tbody>
-</table>
-<p>所以可以预估在内存充足的情况下serilog的写入能力为15w-18w之间</p>
-<p>网上另一位测试者的结果也侧面证明了我的结果<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-20/5bf3b95b2663c.png" alt=""></p>
 ]]></content>
     </entry>
 </feed>
