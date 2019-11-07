@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1573103456806">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1573115459864">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1573103456806" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1573115459864" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -149,14 +149,23 @@
 <figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1573102105886.png" alt=""></figure>
 <h2 id="善用builder模式">善用Builder模式</h2>
 <p>经常写代码时候会碰到要创建一个对象块，由于成员变量过多，会导致代码块十分臃肿。这个时候可以用Builder模式来改造类。</p>
-<p>通常的思路是创建一个Builder类专门负责生成目标对象，Builder本身是否单例没强制要求。这么做的好处主要是如下考虑<br>
-1. 在生成对象的地方代码会十分简洁，配合链式声明，整个代码的可读性也会很好。<br>
-2. 解耦了对象生成和具体的业务逻辑，对调用者保持透明性。</p>
 <figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1573102260623.png" alt=""></figure>
 <p>上图这个列子中p1和p2就是很好解释了前面的观点。<br>
-不过正如第二点说明那样，业务逻辑被挪到了Builder里面去做了，这并不会少写不少代码。不过就我个人来说，这点花费还是比较值的。</p>
+p2是一种普通的生成类的方式，十分简单直白，但不好的是业务逻辑和生命混杂在一起十分乱。p1比较起来就会显得简单很多。</p>
+<p>通常的思路是创建一个Builder类专门负责生成目标对象。这么做的好处主要是如下考虑<br>
+1. 在生成对象的地方代码会十分简洁，配合链式声明，整个代码的可读性也会很好。<br>
+2. 解耦了对象生成和具体的业务逻辑，对调用者保持透明性。</p>
+<p>不过正如第二点说明那样，业务逻辑被挪到了Builder里面去做了，这并不会少写不少代码。不过就我个人来说，目前还是比较值的。</p>
 <figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1573102774966.png" alt=""></figure>
-<h2 id="未完待续">未完待续</h2>
+<h2 id="builder继续优化">Builder继续优化</h2>
+<p>通过观察发现这些设置成员变量的方法似乎都是差不多模式：通过一个key算出一个值，然后赋予成员便令，最后返回Builder本身。这样我们可以使用delegate模式，把这个部分的逻辑通过方法参数传入进来。</p>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1573114364942.png" alt=""></figure>
+<p>这样我们的Builder就会变得十分轻量了，前面所有的赋值操作以及返回都变作了一个delegate函数：</p>
+<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1573114497904.png" alt=""></figure>
+<p>这样我们使用Builder生成对象也有相应变化：</p>
+<figure data-type="image" tabindex="6"><img src="https://xiwan.github.io/post-images/1573114673344.png" alt=""></figure>
+<p>如上图所示，我们发现p3和p1比较起来似乎更加复杂了，也不如p2直观。 其实这一来一去，我们从p2模式到p1主要是为了解决代码块比较笨重的问题，扩展性也差。但是新的问题是业务逻辑被隐藏到了Builder里面。其实仔细想想，对于Builder来说它并不需要关心你业务逻辑是怎样的，它唯一要做的就是把某个业务逻辑（规则）产生的结果赋予给相应的值就好了。基于这个考虑，我们也要把业务逻辑解耦开来。所以通过delegate这种方式，很好地做到了这点。整个builder赋值时候做地也是最存粹地操作而已！</p>
+<p>p3的做法把这也业务规则包装成方法后，可以写一个专门地处理业务逻辑类，它负责封装各种业务算法然后输出而已。同样也保持了简单高效的模式。</p>
 
           </div>
         </div>
