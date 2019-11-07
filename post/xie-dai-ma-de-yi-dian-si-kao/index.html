@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>写代码的一点思考 | Keep Thinking</title>
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1573103101322">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1573103101322" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">写代码的一点思考</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2019-11-07</span>
+            
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://xiwan.github.io/tag/gbFeC4W9H">
+                    code
+                    
+                      ，
+                    
+                  </a>
+                
+                  <a href="https://xiwan.github.io/tag/pWl5SQFpg">
+                    unity
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content">
+            <p>专门用来总结一些经验和想法，不一定正确</p>
+<!-- more -->
+<h2 id="利用反射和泛型快速创造一个对象">利用反射和泛型快速创造一个对象</h2>
+<p>这里可以看到一个Single类的写法<br>
+<img src="https://xiwan.github.io/post-images/1573101268759.png" alt=""></p>
+<p>那么当我们需要让另外一个类成为单例时候就可以很简单的继承它即可</p>
+<pre><code>    public class Director : Single&lt;Director&gt;
+</code></pre>
+<h2 id="通过多重继承来继承多个类">通过多重继承来继承多个类</h2>
+<p>一般来说单个类都是无法一次性继承多个类的，但是我们可以让这类之间行成父子关系。这样最终的儿子类是可以拥有所有先辈的公共成员的。</p>
+<p>我们创建了一个抽象类继承了Single，则它拥有了单例的特性</p>
+<pre><code>    public abstract class SheetObj&lt;T, V&gt; : Single&lt;T&gt; 
+        where T: class where V : ExtendObj
+</code></pre>
+<p>然后又创建了三个子类继承了SheetObj</p>
+<pre><code>    public class EnumBook : SheetObj&lt;EnumBook, Enum&gt;
+    public class RangeBook : SheetObj&lt;RangeBook, Range&gt;
+    public class EnumBook : SheetObj&lt;EnumBook, Enum&gt;
+</code></pre>
+<p>那么我们在使用这些子类时候就可以这么用：</p>
+<pre><code>// Single类的初始化方法
+    RangeBook.Initialize();
+    EnumBook.Initialize();
+    TreeBook.Initialize();
+// SheetObj的加载数据方法
+    RangeBook.Instance.Load(MasterDataFilePath);
+    EnumBook.Instance.Load(MasterDataFilePath);
+    TreeBook.Instance.Load(MasterDataFilePath);
+</code></pre>
+<p>实际上使用时候还可以考虑抽象函数，虚函数或者协议接口之类来满足自己的需求。</p>
+<h2 id="抽取共同的成员到基类">抽取共同的成员到基类</h2>
+<p>比如类A,B,C都有一个成员变量为ID，那么就可以先做一个基类，其余的类可以通过继承方式获取到这个成员变量。当然，这个思路可以扩展开来，会让类的结构有些复杂。但是能节省很多重复劳动工作。<br>
+不过有些项目不在乎这些重复，希望简单直白的类来节约debug时间。所以真正如何使用还是需要权衡。</p>
+<p>不过现在很多代码插件都有一键生成各种set, get方法。甚至还有比较邪门的lombook这类东西。底层似乎是用了动态类的机制。在这里就不展开了。</p>
+<h2 id="覆盖object的tostring方法">覆盖object的ToString()方法</h2>
+<p>在基类中重写ToString()方法，这样可以在Debug问题时候十分方便的查看对象的具体数据。</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1573102105886.png" alt=""></figure>
+<h2 id="善用builder模式">善用Builder模式</h2>
+<p>经常写代码时候会碰到要创建一个对象块，由于成员变量过多，会导致代码块十分臃肿。这个时候可以用Builder模式来改造类。</p>
+<p>通常的思路是创建一个Builder类专门负责生成目标对象，Builder本身是否单例没强制要求。这么做的好处主要是如下考虑<br>
+1. 在生成对象的地方代码会十分简洁，配合链式声明，整个代码的可读性也会很好。<br>
+2. 解耦了对象生成和具体的业务逻辑，对调用者保持透明性。</p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1573102260623.png" alt=""></figure>
+<p>上图这个列子中p1和p2就是很好解释了前面的观点。<br>
+不过正如第二点说明那样，业务逻辑被挪到了Builder里面去做了，这并不会少写不少代码。不过就我个人来说，这点花费还是比较值的。</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1573102774966.png" alt=""></figure>
+<h2 id="未完待续">未完待续</h2>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://xiwan.github.io/post/steam-zhen-de-gua-liao-2-xiao-shi">
+              <h3 class="post-title">
+                下一篇：steam真的挂了2小时
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+        
+          <div id="gitalk-container"></div>
+        
+
+        
+      
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/xiwan" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
