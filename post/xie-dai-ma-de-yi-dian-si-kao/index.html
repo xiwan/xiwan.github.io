@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1573103101322">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1573103456806">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1573103101322" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1573103456806" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -117,6 +117,7 @@
 <p>那么当我们需要让另外一个类成为单例时候就可以很简单的继承它即可</p>
 <pre><code>    public class Director : Single&lt;Director&gt;
 </code></pre>
+<p>这个写法只是适合部分场景，对于对于常用的Helper类，其实直接用static类就可以了。</p>
 <h2 id="通过多重继承来继承多个类">通过多重继承来继承多个类</h2>
 <p>一般来说单个类都是无法一次性继承多个类的，但是我们可以让这类之间行成父子关系。这样最终的儿子类是可以拥有所有先辈的公共成员的。</p>
 <p>我们创建了一个抽象类继承了Single，则它拥有了单例的特性</p>
