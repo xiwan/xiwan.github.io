@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-11-07T08:32:26.953Z</updated>
+    <updated>2019-11-18T08:16:08.592Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,50 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[filebeat踩坑inode]]></title>
+        <id>https://xiwan.github.io/post/filebeat-cai-keng-inode</id>
+        <link href="https://xiwan.github.io/post/filebeat-cai-keng-inode">
+        </link>
+        <updated>2019-11-18T07:39:13.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="背景">背景</h2>
+<p>最近我们游戏调整了服务器架构，所以涉及到一些文件系统的改动。类似于文件重命名之类。按照之前的理解这种操作在停服时候做，通过脚本应该是比较安全快捷的。不过正式由于这个操作，让我花了一个通宵才查明一个filebeat的问题。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="背景">背景</h2>
+<p>最近我们游戏调整了服务器架构，所以涉及到一些文件系统的改动。类似于文件重命名之类。按照之前的理解这种操作在停服时候做，通过脚本应该是比较安全快捷的。不过正式由于这个操作，让我花了一个通宵才查明一个filebeat的问题。</p>
+<!-- more -->
+<h2 id="表现">表现</h2>
+<p>说到具体表现就是重启服务器后，发现ELK收集日志部分Load十分高。排查下来发现filebeat重新在收集已经收集过的日志。对于日志量少的服务器这个变化应该是很难察觉的。但不巧的是，我们玩家服务器已经积累了几亿的日志，集群的速度估计3kw-5kw之间。这么算下来，我们至少有一个礼拜没法看日志了。</p>
+<p>反复检查完配置，也确认了registery没有被误删除的情况下，怎么filebeat会突然抽风。不认识已经收集过的日志了？思来想去，只能硬着头皮查Registry相关信息：</p>
+<h3 id="registry文件">Registry文件</h3>
+<p>Filebeat会将自己处理日志文件的进度信息写入到registry文件中，以保证filebeat在重启之后能够接着处理未处理过的数据，而无需从头开始</p>
+<p>registry文件内容为一个list，list里的每个元素都是一个字典，字典的格式如下：</p>
+<pre><code>source： 记录采集日志的完整路径
+offset： 采集这个日志文件到了哪个位置，总采集字节数
+inode： 日志文件的inode号，关于inode的详细解释看下文
+device： 日志所在的磁盘编号，下文stat命令中Device的值
+timestamp： 日志最后一次发生变化的时间戳
+ttl： 采集失效时间，-1表示永不失效
+</code></pre>
+<p>Filebeat在每次启动时都会来读取这个文件，如果文件不存在则会创建新文件。</p>
+<h3 id="inode解释">inode解释</h3>
+<p>那么Filebeat是怎么判断一个文件是否认识呢？原来它是基于inode这个字段。可以说这个是linux文件系统的一个比较核心的东西。它这个结构体定义了一系列文件的元信息，比如文件的创建者、创建时间、文件大小等等。每个文件都对应了它，一般可以用 <strong>stat</strong> 命令查看。</p>
+<p>简单理解就是在linux中，同一个文件的判断条件就是inode值是否相等。如果要快速查看inode，可以用 <strong>ls -i</strong>命令看到这里，我有了一个推断：这次调整结构为了脚本的方便调整了日志的路径。但是具体的脚本是用cp方式建立的。cp方式虽然会让文件的内容和名字一致，但是会去重新申请inode值。当然如果系统的inode值耗尽了，尽管还有磁盘空间，也会导致无法建立新的文件。如果要保持inode不变，需要用的是mv方式或者ln（硬链接，不是软连接）方式，并且不能跨磁盘（区）。</p>
+<h2 id="验证">验证</h2>
+<p>估计filebeat底层也是沿用的这一套。为了验证我的猜想，于是做了下面的实验：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1574064453379.png" alt=""></figure>
+<p>可以看到同一个文件通过cp方式，inode值的确变化了。相应的我们用mv方式就不会有影响：</p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1574064532919.png" alt=""></figure>
+<p>网上也查到filebeat的文件说明：</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1574064603448.png" alt=""></figure>
+<h2 id="解决">解决</h2>
+<p>到这里，自然解决方案也出来了</p>
+<pre><code>1. 写脚本用mv的方式来移动老的日志文件
+2. 不要随意改变既定的文件结构
+</code></pre>
+<p>操作完之后，果然filebeat又重新识别出来老的日志文件了。整个elk的压力也下去了。回过头看这一次踩坑：感觉linux底层还是值得好好研究下的。写写脚本简单，但也只是知其然不知其所以然。对于cp，mv, rm这类常用命令的理解也深刻了不少。自己操作或者指导别人时候也会特别小心了。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[写代码的一点思考]]></title>
         <id>https://xiwan.github.io/post/xie-dai-ma-de-yi-dian-si-kao</id>
@@ -375,29 +419,6 @@ end
         </link>
         <updated>2019-08-13T07:18:01.000Z</updated>
         <content type="html"><![CDATA[<p><img src="https://xiwan.github.io/post-images/1565680703810.png" alt="">)</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[dotnetty定时器与断线重连]]></title>
-        <id>https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian</id>
-        <link href="https://xiwan.github.io/post/dotnetty-ding-shi-qi-yu-duan-xian-chong-lian">
-        </link>
-        <updated>2019-08-07T11:05:47.000Z</updated>
-        <content type="html"><![CDATA[<h3 id="定时器">定时器</h3>
-<p>netty定时器使用比较简单，只需要作如下设置。<br>
-其中，第一位为读超时时间，第二位为写超时时间，第三位为所有超时时间。如果设置为0，表示不启用。</p>
-<pre><code class="language-csharp">pipeline.AddLast(&quot;IdleStateHandler&quot;, new IdleStateHandler(0, 10, 0));
-</code></pre>
-<p>一般来说服务器主要监听读超时事件，而客户端监听写超时事件。</p>
-<p>主要通过重写 <strong>UserEventTriggered</strong> 方法来做具体的业务逻辑。</p>
-<p>下面这段代码是当服务器发现丢失了三个心跳包以后直接关闭客户端的连接<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16979352b7.png" alt=""></p>
-<h3 id="断线重连">断线重连</h3>
-<p>断线重连的逻辑主要是实现在客户端代码这边<strong>ChannelInactive</strong>方法</p>
-<figure data-type="image" tabindex="1"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be169f378c3b.png" alt=""></figure>
-<h4 id="测试">测试</h4>
-<p>我们可以看到，每经过3个丢失的包，服务器便会主动断开客户端的连接；然后客户端知道自己被断开后，会间隔5秒尝试连接服务器，直到成功为止。</p>
-<figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-06/5be16b2d3febe.png" alt=""></figure>
 ]]></content>
     </entry>
 </feed>
