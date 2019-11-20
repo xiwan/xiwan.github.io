@@ -5,14 +5,14 @@
     
 <meta charset="utf-8" >
 
-<title>如何接入支付 | Keep Thinking</title>
+<title>docker 日志处理 | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1574240886489">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1574241079900">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1574240886489" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1574241079900" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -86,18 +86,15 @@
       <div class="content-container">
         <div class="post-detail">
           
-            <div class="feature-container" style="background-image: url('https://s.cn.bing.net/th?id=OUWL.Dota2_648&amp;w=648&amp;h=120&amp;c=1&amp;rs=2&amp;qlt=80&amp;pid=SANGAM')">
-            </div>
-          
-          <h2 class="post-title">如何接入支付</h2>
+          <h2 class="post-title">docker 日志处理</h2>
           <div class="post-info post-detail-info">
-            <span><i class="icon-calendar-outline"></i> 2019-09-04</span>
+            <span><i class="icon-calendar-outline"></i> 2019-09-18</span>
             
               <span>
                 <i class="icon-pricetags-outline"></i>
                 
-                  <a href="https://xiwan.github.io/tag/3fNBcHlD4">
-                    dota2
+                  <a href="https://xiwan.github.io/tag/WLQnCbVL4">
+                    docker
                     
                   </a>
                 
@@ -105,40 +102,40 @@
             
           </div>
           <div class="post-content">
-            <p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
+            <p>docker 启动后有一个需求便是如何处理以及收集它产生的日志。<br>
+这里的日志可以分为3类： docker的引擎日志， docker 容器日志， docker 应用日志</p>
 <!-- more -->
-<h3 id="主体流程">主体流程</h3>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></figure>
-<h4 id="预支付部分">预支付部分</h4>
-<ol>
-<li>ui界面发起向lua服务器的支付请求，同时监听支付返回事件。</li>
-<li>lua服务器调用游戏服务器支付api，这里一般使用的是CreateHTTPRequestScriptVM 方法来拉起http请求。具体用法建议参考其他项目。</li>
-<li>游戏服务器接入好支付sdk后，通过sdk的api拉起预支付请求（如何配置可以参考网上很多例子）。如果是java的服务器代码，就调用 AlipayTradePrecreateRequest 接口就好了。同时也可以在这里完成创建订单的操作。</li>
-<li>同步等待平台预支付结果。</li>
-<li>这里可以根据返回结果来做一些数据更新的操作。然后将二维码地址告知lua服务器端。</li>
-<li>lua服务器获取到预支付的结果，告知ui界面展示二维码。</li>
-</ol>
-<h4 id="支付部分">支付部分</h4>
-<ol start="7">
-<li>客户扫描二维码，与平台交互支付过程。</li>
-<li>支付成功后，平台返回结果给客户</li>
-<li>同时，平台会异步告知交易结果给游戏服务器。游戏服务器继续完成数据更新操作。</li>
-<li>似乎没啥用。</li>
-</ol>
-<h4 id="测试结果">测试结果</h4>
-<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></figure>
-<h4 id="注意">注意</h4>
-<p>如果使用沙箱环境，要注意签名方式和对应的公钥不要弄错。就支付宝来说，需要记录两个公钥，一个是与签名方式对应的应用公钥，还有一个是基于这个公钥签发的平台公钥。</p>
-<p>还有一点就是支付参数中的product_code部分需要根据签约的活动来写，不能乱写。否则会一直导致参数失败的错误。</p>
+<h3 id="docker-引擎日志">docker 引擎日志</h3>
+<p>这个查找了写文章后总结如下，根据自己对应的系统去查找即可</p>
+<p><strong>Ubuntu(14.04)</strong>	/var/log/upstart/docker.log<br>
+<strong>Ubuntu(16.04)</strong>	journalctl -u docker.service<br>
+<strong>CentOS 7/RHEL 7/Fedora</strong>	journalctl -u docker.service<br>
+<strong>CoreOS</strong>	journalctl -u docker.service<br>
+<strong>OpenSuSE</strong>	journalctl -u docker.service<br>
+<strong>OSX</strong>	~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/log/d‌​ocker.log<br>
+<strong>Debian GNU/Linux 7</strong>	/var/log/daemon.log<br>
+<strong>Debian GNU/Linux 8</strong>	journalctl -u docker.service<br>
+<strong>Boot2Docker</strong>	/var/log/docker.log</p>
+<h3 id="docker-容器日志">docker 容器日志</h3>
+<p>容器的日志 则可以通过 docker logs 命令来访问，而且可以像 tail -f 一样，使用 docker logs -f 来实时查看。如果使用 Docker Compose，则可以通过 docker-compose logs &lt;服务名&gt; 来查看。</p>
+<p>如果需要查看容器日志的具体位置可以调用命令：<br>
+<img src="https://xiwan.github.io/post-images/1568779631501.png" alt=""></p>
+<p>可以看到这个是一个非常复杂的路径，每次看这个文件是非常不方便的。比较好的解决方案是用一个日志收集器来收集这些日志，比如利用<a href="https://tonybai.com/2016/03/25/ship-docker-container-log-with-filebeat/">filebeat</a>来收集日志，然后集中到ES中查询。不过需要一些软件安装或者配置。</p>
+<p>这里我使用一个比较简单的方案， 利用docker-compose 的logs命令将对应service输出到默认的位置。这样不用担心频繁的up down导致的容器号变化。</p>
+<pre><code>nohup docker-compose -f docker-compose-esk.yml logs -f kibana &gt;&gt; /data/game/logs/elk/VM_18_7_centos-kibana.log &amp;
+</code></pre>
+<p>当然，不同机器上的日志可以通过定时rsync命令拉取到同一台机器方便查找。</p>
+<h3 id="docker应用日志">docker应用日志</h3>
+<p>由于docker是无状态的，可以通过volums来实现和宿主机的互通。我们可以将docker内应用日志和数据方便地放在宿主机管理，比较简单。可以同时在宿主机上启动一个filebeat将日志发送到内部es机器即可。</p>
 
           </div>
         </div>
 
         
           <div class="next-post">
-            <a class="purple-link" href="https://xiwan.github.io/post/zhi-zuo-yi-ge-kv-bian-ji-qi">
+            <a class="purple-link" href="https://xiwan.github.io/post/dota如何接入支付">
               <h3 class="post-title">
-                下一篇：制作一个KV编辑器
+                下一篇：dota如何接入支付
               </h3>
             </a>
           </div>
