@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1574240821664">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1574240886489">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1574240821664" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1574240886489" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -102,8 +102,7 @@
             
           </div>
           <div class="post-content">
-            <h2 id="背景">背景</h2>
-<p>最近我们游戏调整了服务器架构，所以涉及到一些文件系统的改动。类似于文件重命名之类。按照之前的理解这种操作在停服时候做，通过脚本应该是比较安全快捷的。不过正式由于这个操作，让我花了一个通宵才查明一个filebeat的问题。</p>
+            <p>最近我们游戏调整了服务器架构，所以涉及到一些文件系统的改动。类似于文件重命名之类。按照之前的理解这种操作在停服时候做，通过脚本应该是比较安全快捷的。不过正式由于这个操作，让我花了一个通宵才查明一个filebeat的问题。</p>
 <!-- more -->
 <h2 id="表现">表现</h2>
 <p>说到具体表现就是重启服务器后，发现ELK收集日志部分Load十分高。排查下来发现filebeat重新在收集已经收集过的日志。对于日志量少的服务器这个变化应该是很难察觉的。但不巧的是，我们玩家服务器已经积累了几亿的日志，集群的速度估计3kw-5kw之间。这么算下来，我们至少有一个礼拜没法看日志了。</p>
