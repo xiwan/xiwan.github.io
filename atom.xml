@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-11-20T09:21:30.846Z</updated>
+    <updated>2019-12-16T05:02:29.852Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,116 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[redis 大key处理]]></title>
+        <id>https://xiwan.github.io/post/b0uwzUXQ8</id>
+        <link href="https://xiwan.github.io/post/b0uwzUXQ8">
+        </link>
+        <updated>2019-12-16T04:38:38.000Z</updated>
+        <summary type="html"><![CDATA[<p>最近压测登陆接口，发现处理超过1k的byte对象（我们初始化就有3k,跑起来后可以达到40k）时候，整体的tqs下降得十分厉害。从一般几千得并发掉落倒了不到一千，还有不少得错误。<br>
+<img src="https://xiwan.github.io/post-images/1576471294178.png" alt=""></p>
+]]></summary>
+        <content type="html"><![CDATA[<p>最近压测登陆接口，发现处理超过1k的byte对象（我们初始化就有3k,跑起来后可以达到40k）时候，整体的tqs下降得十分厉害。从一般几千得并发掉落倒了不到一千，还有不少得错误。<br>
+<img src="https://xiwan.github.io/post-images/1576471294178.png" alt=""></p>
+<!-- more -->
+<p>经过调查这个应该是redis在处理大key时候的一个坑，每次的全量更新让单线程的redis十分缓慢，无法在规定时间内完成操作。</p>
+<h2 id="解决办法">解决办法</h2>
+<p>对于大key,网上查了下给了两种解决方案：</p>
+<pre><code>1. 改成hash格式，每次更新hash的一个部分
+2. 将大key改成多个小key的组合，使用multiSet,或者multiGet来完成业务。
+</code></pre>
+<p>这两种方案其实大同小异，但比较不爽的是需要对业务部分进行从新梳理。这样才可以控制每个部分的大小。改造方案其实是十分昂贵的。如果不是一开始就有考虑这个部分，其实不建议这么操作。</p>
+<p>对于redis的key-value模型，value其实作为stream存储的话，我们可以采用一种另存整取的思路来做。比如每次我按照200Byte存一次，对于一个1KB的数据，我们需要存5条记录就可以了。相应的，在我们需要读取时候，我们把对应key所有的相关的key数据按照一定顺序还原就可以恢复成原来的对象了。</p>
+<h3 id="零存方案">零存方案</h3>
+<pre><code>        public async Task SegmentWrite(string key, byte[] data)
+        {
+            IByteBuffer bytesBuffer = Unpooled.Buffer(data.Length);
+            try
+            {
+                // 加锁
+                if (!await Lock(key))
+                {
+                    throw new Exception(&quot;lock-fail&quot;);
+                }
+
+                IBatch batch = DB().CreateBatch();
+                bytesBuffer.WriteBytes(data);
+                int j = 0;
+                while (bytesBuffer.ReadableBytes &gt; 0)
+                {
+                    var ReadableBytes = Math.Min(segmentLength, bytesBuffer.ReadableBytes);
+                    var segKey = key + &quot;-&quot; + j++;
+                    //await batch.StringAppendAsync(segKey, bytesBuffer.ReadBytes(ReadableBytes).Array, flags: CommandFlags.FireAndForget);
+                    batch.StringSetAsync(segKey, bytesBuffer.ReadBytes(ReadableBytes).Array, flags: CommandFlags.FireAndForget);
+                }
+                if (j&gt;0)
+                    batch.Execute();
+
+                if (!await Unlock(key))
+                {
+                    throw new Exception(&quot;Unlock-fail&quot;);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                bytesBuffer.Release();
+                data = null;
+            }
+        }
+</code></pre>
+<h4 id="整取方案">整取方案</h4>
+<pre><code>        public async Task&lt;T&gt; SegmentRead&lt;T&gt;(String key)
+        {
+            IByteBuffer bytesBuffer = Unpooled.Buffer(segmentLength);
+            try
+            {
+                if (!await Wait(key))
+                {
+                    throw new Exception(&quot;Wait-fail&quot;);
+                }
+                RedisResult keysResult = await DB().ExecuteAsync(&quot;keys&quot;, key + &quot;-*&quot;);
+                if (keysResult.IsNull) {
+                    return default;
+                }
+                RedisResult[] keyList = (RedisResult[])keysResult;
+
+                List&lt;Task&gt; ayncTaskList = new List&lt;Task&gt;();
+                foreach (var _key in keyList.OrderBy(k =&gt; Encoding.Default.GetString((byte[])k)).ToArray())
+                {
+                    var keystr = Encoding.Default.GetString((byte[])_key);
+                    bytesBuffer.WriteBytes(await DB().StringGetAsync(keystr));
+                }
+                return bytesBuffer.ReadableBytes &gt; 0 ? bytesBuffer.ReadBytes(bytesBuffer.ReadableBytes).Array.Deserialize&lt;T&gt;() : default;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return default;
+            }
+            finally
+            {
+                bytesBuffer.Release();
+            }
+
+        }
+</code></pre>
+<h3 id="注意事项">注意事项</h3>
+<ol>
+<li>由于对于大key单次的写入和读取操作都被分割成了小块，所以redis的原子操作已经被破坏。所以我们每次写之前对于同一个key要加锁，写完之后再释放锁。同理，在读的时候也要检查是否有写的锁，如果某个进程正在写入同一个key，则需要等待。</li>
+<li>等待不能无止境的持续下去，要做好保护，防止程序卡死。</li>
+<li>对于切割出来的基本单元可以采用pipeline写入方式保证效率</li>
+<li>读取key的时候一定要做好排序，保证结果的正确性。</li>
+<li>不能将基本单元切割得过小，产生的key过多也会成为性能瓶颈。</li>
+</ol>
+<h3 id="测试结果">测试结果</h3>
+<p>在500B为一个基本单元情况下的测试结果。可以看到错误率明显下降，整体的tqs也上升了20%左右。<br>
+<img src="https://xiwan.github.io/post-images/1576472238470.png" alt=""></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[filebeat踩坑inode]]></title>
         <id>https://xiwan.github.io/post/filebeat踩坑inode</id>
@@ -408,15 +518,6 @@ end
 <h3 id="参考">参考</h3>
 <p><a href="https://developer.valvesoftware.com/wiki/Dota_2_Workshop_Tools/Custom_Game_Setup">Custom Game Setup</a></p>
 <p><a href="https://github.com/Perryvw/CustomHeroSelection">CustomHeroSelection</a></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[dota2 文件格式]]></title>
-        <id>https://xiwan.github.io/post/dota2-wen-jian-ge-shi</id>
-        <link href="https://xiwan.github.io/post/dota2-wen-jian-ge-shi">
-        </link>
-        <updated>2019-08-13T07:18:01.000Z</updated>
-        <content type="html"><![CDATA[<p><img src="https://xiwan.github.io/post-images/1565680703810.png" alt="">)</p>
 ]]></content>
     </entry>
 </feed>
