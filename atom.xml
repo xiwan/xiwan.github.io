@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-12-25T10:15:41.228Z</updated>
+    <updated>2019-12-26T10:56:44.991Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,166 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[logstash 如何处理复杂日志]]></title>
+        <id>https://xiwan.github.io/post/6SadtR1zT</id>
+        <link href="https://xiwan.github.io/post/6SadtR1zT">
+        </link>
+        <updated>2019-12-26T10:30:44.000Z</updated>
+        <summary type="html"><![CDATA[<p>最近压测发现日志在抽奖接口会放大百倍，直接把10万长度的日志队列挤爆！</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>最近压测发现日志在抽奖接口会放大百倍，直接把10万长度的日志队列挤爆！</p>
+<!-- more -->
+<p>深入调查后发现，抽奖接口的逻辑是得到一个物品就会对应一条日志。然后经常用户会大量开卡包的情况下，会单次获得许多物品，这样照成了日志的放大。压测时候每次请求会产生261条日志！！！</p>
+<p>第一个想到的解决方案是日志合并，在抽奖的最后再写一条日志。不过这带来新的挑战，日志的维度会增加。导致现阶段的分析方式都无法使用了。</p>
+<p>举例来说，对于这样一条日志，它是以分隔符竖线来区别每个字段意思的：</p>
+<pre><code>2019-12-24 23:59:59|9|116504|76561198271728609@STEAM|4|86|9|127|32|-1|4||10011|1462231
+</code></pre>
+<p>这样我们在logstash里面处理时候简单的split结果，然后按照位置即可获得字段的意思。一次抽卡有可能产生多条这样的日志，所以上面的处理方案就会合并成</p>
+<pre><code>2019-12-26 17:11:29|9|10001889532|bot1234567890|0|16|1617,87|1504^1,1551^1,1536^1,1539^1,1511^1,1503^1,1533^1,1552^1,1535^1,1504^1,1505^1,1528^1,1542^1,1519^1,1533^1,1525^1,1502^1,1503^1,1503^1,1502^1,1534^1,1545^1,1502^1,1502^1,1502^1,1505^1,1526^1,1510^1,1503^1,1549^1,1531^1,1509^1,1501^1,1526^1,1551^1,1501^1,1530^1,1504^1,1551^1,1548^1,1513^1,1521^1,1554^1,1511^1,1526^1,1551^1,1508^1,1529^1,1514^1,1516^1,1536^1,1526^1,1528^1,1554^1,1526^1,1551^1,1524^1,1541^1,1536^1,1502^1,1539^1,1549^1,1505^1,1511^1,1504^1,1539^1,1501^1,1501^1,1529^1,1529^1,1503^1,1551^1,1509^1,1519^1,1541^1,1528^1,1514^1,1507^1,1548^1,1512^1,1534^1,1523^1,1501^1,1501^1,1503^1,1534^1,1538^1,1529^1,1505^1,1517^1,1531^1,1536^1,1505^1,1539^1,1547^1,1504^1,1540^1,1504^1,1551^1,1535^1,1505^1,1519^1,1518^1,1504^1,1526^1,1525^1,1504^1,1501^1,1550^1,1542^1,1529^1,1554^1,1509^1,1552^1,1554^1,1512^1,1501^1,1521^1,1515^1,1525^1,1535^1,1552^1,1510^1,1527^1,1507^1,1523^1,1516^1,1513^1,1538^1,1551^1,1502^1,1536^1,1501^1,1506^1,1533^1,1543^1,1527^1,1539^1,1521^1,1513^1,1540^1,1504^1,1503^1,1530^1,1549^1,1552^1,1545^1,1553^1,1501^1,1536^1,1533^1,1551^1,1511^1,1502^1,1502^1,1529^1,1536^1,1549^1,1508^1,1552^1,1503^1,1533^1,1540^1,1512^1,1524^1,1501^1,1541^1,1536^1,1505^1,1503^1,1528^1,1523^1,1551^1,1513^1,1504^1,1527^1,1539^1,1512^1,1551^1,1550^1,1552^1,1507^1,1528^1,1536^1,1552^1,1505^1,1552^1,1548^1,1530^1,1536^1,1523^1,1509^1,1541^1,1503^1,1503^1,1533^1,1505^1,1505^1,1508^1,1501^1,1535^1,1543^1,1508^1,1523^1,1536^1,1514^1,1542^1,1547^1,1505^1,1504^1,1539^1,1503^1,1503^1,1502^1,1551^1,1525^1,1545^1,1516^1,1522^1,1543^1,1552^1,1501^1,1503^1,1504^1,1532^1,1531^1,1505^1,1518^1,1536^1,1552^1,1501^1,1551^1,1509^1,1535^1,1520^1,1511^1,1539^1,1523^1,1514^1,1504^1,1546^1,1515^1,1504^1,1527^1,1529^1,1524^1,1547^1,1534^1,1548^1,1525^1,1501^1,1552^1,1547^1,1548^1,1527^1,1501^1,1551^1,1546^1,1504^1,1552^1,1547^1||10021|199
+</code></pre>
+<p>对的，你没看错也没有搞错！一下子日志维度就上去了。</p>
+<h3 id="改造logstash">改造logstash</h3>
+<p>由于单纯的写logstash的split似乎无法完成上面的任务了（主要问题是不定长array处理起来十分麻烦），所以我对准了它的ruby插件:</p>
+<pre><code>ruby {
+      code =&gt; '
+        item_array=event.get(&quot;[log_json][t9_item_id]&quot;).split(&quot;,&quot;)
+        event.set(&quot;[log_json][t9_item_length]&quot;, item_array.length)
+        for item in item_array
+          event.set(&quot;[log_json][t9_item_#{item.split(&quot;^&quot;)[0]}]&quot;, item.split(&quot;^&quot;)[1].to_i)
+        end
+      '
+    }
+</code></pre>
+<p>可以看到在ruby内部, 每一条日志其实是一个event. 通过内置的event.set 和 get方法就可以很简单的将日志继续分割下去。</p>
+<p>最后得到的结果为：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1577357078972.png" alt=""></figure>
+<p>当然我们也关系加入新的ruby插件后的效率问题。找了台4G，2核的普通机器在没有调优参数的情况下，pv 压测后的结果为:</p>
+<p><strong>99.3KiB 0:00:56 [1.75KiB/s]</strong></p>
+<p>这里有个比较有意思的收获，原来获取array的尾部在conf里面可以写-1...</p>
+<h3 id="elk查询">elk查询</h3>
+<p>上面基本解决了logstash在多维度结构时候的解析问题，对于elk中一个按照物品id的聚合查询该如何做呢？</p>
+<p>我想的思路是： 传入item_id, 匹配日志name, 由于value是记录了数目，那么query里面的条件则是Numeric Range Query Usage来进行比较（大于0即可）。在aggregator里面的则是用总和sum操作即可。</p>
+<h3 id="附件压测配置">附件压测配置</h3>
+<pre><code># Sample Logstash configuration for creating a simple
+# Beats -&gt; Logstash -&gt; Elasticsearch pipeline.
+
+input {
+    generator {
+        count =&gt; 100000
+        message =&gt; '2019-12-26 17:11:29|9|10001889532|bot1234567890|0|16|1617,87|1504^1,1551^1,1536^1,1539^1,1511^1,1503^1,1533^1,1552^1,1535^1,1504^1,1505^1,1528^1,1542^1,1519^1,1533^1,1525^1,1502^1,1503^1,1503^1,1502^1,1534^1,1545^1,1502^1,1502^1,1502^1,1505^1,1526^1,1510^1,1503^1,1549^1,1531^1,1509^1,1501^1,1526^1,1551^1,1501^1,1530^1,1504^1,1551^1,1548^1,1513^1,1521^1,1554^1,1511^1,1526^1,1551^1,1508^1,1529^1,1514^1,1516^1,1536^1,1526^1,1528^1,1554^1,1526^1,1551^1,1524^1,1541^1,1536^1,1502^1,1539^1,1549^1,1505^1,1511^1,1504^1,1539^1,1501^1,1501^1,1529^1,1529^1,1503^1,1551^1,1509^1,1519^1,1541^1,1528^1,1514^1,1507^1,1548^1,1512^1,1534^1,1523^1,1501^1,1501^1,1503^1,1534^1,1538^1,1529^1,1505^1,1517^1,1531^1,1536^1,1505^1,1539^1,1547^1,1504^1,1540^1,1504^1,1551^1,1535^1,1505^1,1519^1,1518^1,1504^1,1526^1,1525^1,1504^1,1501^1,1550^1,1542^1,1529^1,1554^1,1509^1,1552^1,1554^1,1512^1,1501^1,1521^1,1515^1,1525^1,1535^1,1552^1,1510^1,1527^1,1507^1,1523^1,1516^1,1513^1,1538^1,1551^1,1502^1,1536^1,1501^1,1506^1,1533^1,1543^1,1527^1,1539^1,1521^1,1513^1,1540^1,1504^1,1503^1,1530^1,1549^1,1552^1,1545^1,1553^1,1501^1,1536^1,1533^1,1551^1,1511^1,1502^1,1502^1,1529^1,1536^1,1549^1,1508^1,1552^1,1503^1,1533^1,1540^1,1512^1,1524^1,1501^1,1541^1,1536^1,1505^1,1503^1,1528^1,1523^1,1551^1,1513^1,1504^1,1527^1,1539^1,1512^1,1551^1,1550^1,1552^1,1507^1,1528^1,1536^1,1552^1,1505^1,1552^1,1548^1,1530^1,1536^1,1523^1,1509^1,1541^1,1503^1,1503^1,1533^1,1505^1,1505^1,1508^1,1501^1,1535^1,1543^1,1508^1,1523^1,1536^1,1514^1,1542^1,1547^1,1505^1,1504^1,1539^1,1503^1,1503^1,1502^1,1551^1,1525^1,1545^1,1516^1,1522^1,1543^1,1552^1,1501^1,1503^1,1504^1,1532^1,1531^1,1505^1,1518^1,1536^1,1552^1,1501^1,1551^1,1509^1,1535^1,1520^1,1511^1,1539^1,1523^1,1514^1,1504^1,1546^1,1515^1,1504^1,1527^1,1529^1,1524^1,1547^1,1534^1,1548^1,1525^1,1501^1,1552^1,1547^1,1548^1,1527^1,1501^1,1551^1,1546^1,1504^1,1552^1,1547^1||10021|199'
+        codec =&gt; plain
+    }
+}
+
+filter {
+  mutate {
+    copy =&gt; {&quot;message&quot; =&gt; &quot;message_origin&quot;}
+  }
+
+  mutate {
+    split =&gt; [&quot;message&quot;, &quot;|&quot;]  
+    add_field =&gt; {
+      &quot;[log_json][log_datetime]&quot; =&gt; &quot;%{[message][0]}&quot;
+    }
+  }
+
+  date {
+    match =&gt; [&quot;[log_json][log_datetime]&quot;, &quot;yyyy-MM-dd HH:mm:ss&quot;]
+    target =&gt; &quot;@timestamp&quot;
+    timezone =&gt; &quot;Asia/Shanghai&quot;
+  }
+
+  grok {
+    match =&gt; {
+      &quot;[log_json][log_datetime]&quot; =&gt; &quot;(?&lt;logdate&gt;%{YEAR}-%{MONTHNUM}-%{MONTHDAY})&quot;
+    }
+  }
+  
+}
+
+filter {
+  
+  mutate {
+    add_field =&gt; {
+      &quot;[log_json][log_type]&quot; =&gt; &quot;%{[message][1]}&quot;
+      &quot;[log_json][social_code]&quot; =&gt; &quot;%{[message][2]}&quot;
+      &quot;[log_json][user_name]&quot; =&gt; &quot;%{[message][3]}&quot;
+      &quot;[log_json][ticket]&quot; =&gt; &quot;%{[message][4]}&quot;
+      &quot;[log_json][log_counter]&quot; =&gt; &quot;%{[message][-1]}&quot;
+      &quot;[log_json][log_serverid]&quot; =&gt; &quot;%{[message][-2]}&quot;
+    }
+  }
+
+  mutate {
+    convert =&gt; {
+      &quot;[log_json][log_type]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][social_code]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][ticket]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][log_counter]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][log_serverid]&quot; =&gt; &quot;integer&quot;
+    }
+  }
+
+  # 物品获得
+  if [message][1] == &quot;9&quot; { 
+    mutate {
+      add_field =&gt; {
+        &quot;[log_json][t9_deposit_type]&quot; =&gt; &quot;%{[message][5]}&quot;
+        &quot;[log_json][t9_deposit_log]&quot; =&gt; &quot;%{[message][6]}&quot;
+        &quot;[log_json][t9_item_id]&quot; =&gt; &quot;%{[message][7]}&quot;
+        &quot;[log_json][t9_number]&quot; =&gt; &quot;%{[message][8]}&quot;
+        &quot;[log_json][t9_current_number]&quot; =&gt; &quot;%{[message][9]}&quot;
+        &quot;[log_json][t9_level]&quot; =&gt; &quot;%{[message][10]}&quot;
+      }
+    }  
+    mutate {
+      convert =&gt; {
+        &quot;[log_json][t9_number]&quot; =&gt; &quot;integer&quot;
+        &quot;[log_json][t9_current_number]&quot; =&gt; &quot;integer&quot;
+        &quot;[log_json][t9_level]&quot; =&gt; &quot;integer&quot;
+      }
+    }
+    ruby {
+      code =&gt; '
+        item_array=event.get(&quot;[log_json][t9_item_id]&quot;).split(&quot;,&quot;)
+        event.set(&quot;[log_json][t9_item_length]&quot;, item_array.length)
+        for item in item_array
+          event.set(&quot;[log_json][t9_item_#{item.split(&quot;^&quot;)[0]}]&quot;, item.split(&quot;^&quot;)[1].to_i)
+        end
+      '
+    }
+  }
+
+}
+
+filter {
+  fingerprint {
+    source =&gt; &quot;message_origin&quot;
+    target =&gt; &quot;[@metadata][fingerprint]&quot;
+    method =&gt; &quot;MD5&quot;
+    key =&gt; &quot;kaki_md5_id&quot;
+  }
+
+  # Always remove sensitive data from all input sources
+  mutate {  
+    remove_field =&gt; &quot;[message]&quot;
+    remove_field =&gt; &quot;[input]&quot;
+    remove_field =&gt; &quot;[prospector]&quot;
+    remove_field =&gt; &quot;[host]&quot;
+    remove_field =&gt; &quot;[beat]&quot;
+    remove_field =&gt; &quot;[tags]&quot;
+    remove_field =&gt; &quot;[offset]&quot;
+    remove_field =&gt; &quot;[log_json][t9_item_id]&quot;
+  }
+}
+
+output {   
+  stdout { codec =&gt; dots }
+}
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[redis 大key处理]]></title>
         <id>https://xiwan.github.io/post/b0uwzUXQ8</id>
@@ -461,71 +621,6 @@ PlayerResource:SetCustomTeamAssignment( 1, DOTA_TEAM_GOODGUYS )
 <p>当然，我可以枚举上面的组合来达到一下效果：同阵营队友，同阵营非队友，不同阵营队友，不同阵营非队友之类。</p>
 <p>最终效果，不通阵营的队友，互相不能攻击</p>
 <figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1566807155157.png" alt=""></figure>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[如何跳过heroselection]]></title>
-        <id>https://xiwan.github.io/post/ru-he-tiao-guo-heroselection</id>
-        <link href="https://xiwan.github.io/post/ru-he-tiao-guo-heroselection">
-        </link>
-        <updated>2019-08-20T11:57:47.000Z</updated>
-        <summary type="html"><![CDATA[<h3 id="背景">背景</h3>
-<p>最近研究dota2rpg时候发现一个问题：游戏流程如果使用官方的做法会比较死板。比如你必须选完队伍，然后再去选择英雄，然后再开始游戏。当然这个不是说它不好，但对于一款高度定制化的地图编辑器来说，这着实会束缚开发者的能力。很多优秀的rpg地图都可以定制整个游戏前的流程。</p>
-]]></summary>
-        <content type="html"><![CDATA[<h3 id="背景">背景</h3>
-<p>最近研究dota2rpg时候发现一个问题：游戏流程如果使用官方的做法会比较死板。比如你必须选完队伍，然后再去选择英雄，然后再开始游戏。当然这个不是说它不好，但对于一款高度定制化的地图编辑器来说，这着实会束缚开发者的能力。很多优秀的rpg地图都可以定制整个游戏前的流程。</p>
-<!-- more -->
-<h3 id="调查">调查</h3>
-<p>首先，最重要的是搞清楚已有的dota游戏流程是如何的。<br>
-<img src="https://xiwan.github.io/post-images/1566368060441.png" alt=""><br>
-可以看到整个流程还是比较详细的，也容易看懂。其中比较重要的就是game_setup和hero_selection了。</p>
-<p>一般来说要修改game_setup界面还是比较简单的。比如：</p>
-<pre><code>	&lt;Panel&gt;
-		&lt;!-- Ingame HUD --&gt;
-		&lt;CustomUIElement type=&quot;GameSetup&quot; layoutfile=&quot;file://{resources}/layout/custom_game/team_selection.xml&quot; /&gt;
-	&lt;/Panel&gt;
-</code></pre>
-<p>同理我们也可以添加</p>
-<pre><code>&lt;CustomUIElement type=&quot;HeroSelection&quot; layoutfile=&quot;file://{resources}/layout/custom_game/pick_hero.xml&quot; /&gt;
-</code></pre>
-<p>这样来达到自定义界面的效果。<br>
-当我尝试出来效果一般。首先按照这个思路我们还是必须严格按照流程来进行界面设置。也就是必须设置完了队伍再去选择英雄之类。那如果游戏的设定不希望是这个流程呢？其次感觉要覆盖掉原来的英雄选择界面比较麻烦。我摸索出来的思路就是一个覆盖而已，效果如下：</p>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1566369563083.png" alt=""></figure>
-<h3 id="跳出盒子">跳出盒子</h3>
-<p>有没有可能我在game_setup里面就直接做完了所有的事情呢。这样的话我们就不必完全按照预设的流程。</p>
-<h4 id="准备工作">准备工作：</h4>
-<p>我们需要让game_setup不往hero_selection走。那么需要这么设置：</p>
-<pre><code>function COverthrowGameMode:OnGameRulesStateChange()
-	local nNewState = GameRules:State_Get()
-
-	-- Disable auto launch when entering custom game setup, it can be
-	-- re-enabled at any point later while still in custom game setup
-	if nNewState == DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP then
-		GameRules:EnableCustomGameSetupAutoLaunch( false )
-	end
-end
-</code></pre>
-<p>这样就不会发生跳转了。</p>
-<p>接下来的问题是：我们可以自己做一个英雄界面(或者其他准备界面)，但怎么跳过默认的hero_selection？官网并没提供可以跳过某个步骤的接口。就是说按照dota2底层实现它是必须严格按照上面的顺序来做的。</p>
-<p>经过摸索，其实道理很简单。为什么默认机制是会强行你进入hero_selection?那是因为你没有英雄。如果你能在hero_selection之前让底层认为你选定了英雄就一切搞定了。顺着这个思路寻找的话，我们可以有两种方案达到：</p>
-<ol>
-<li>地图中拖一个  dota_custom_game_events 进去，设置里面的属性ForceSelectHero = &quot;npc_dota_hero_wisp&quot;。</li>
-<li>强行设定某个英雄 GameRules:GetGameModeEntity():SetCustomGameForceHero(keys.HeroName);</li>
-<li>设定自定义英雄 CreateHeroForPlayer(keys.HeroName, player)</li>
-</ol>
-<p><img src="https://s2.ax1x.com/2019/08/21/mNgAHK.gif" alt="最终效果"><br>
-个人比较推荐后面两种，虽然第一种也可以达到效果。经过测试发现我们在hero_selection之前就选定好了英雄，达到欺骗底层的目的了。</p>
-<p>可以注意到我们还是经历了所有的STATE,只是我们在页面上没有感知而已。<br>
-<img src="https://xiwan.github.io/post-images/1566377670998.png" alt=""></p>
-<h3 id="展开">展开</h3>
-<p>按照上面的思路，我们甚至可以做到进入游戏后再选择英雄也是可以的。重点是我们跳过了hero_selection，鼓掌散花。。。</p>
-<h3 id="建议">建议</h3>
-<p>首先，你必须喜欢玩moba类游戏，尤其是dota。当然不是要求你多么高的天体分，而是说你要对于大部分dota的机制都很清楚。这样理解整个dota2rpg的开发也是相当有帮助的。<br>
-其次，由于valve官网的文档很难用，整个dota2rpg的入门还是没有那么容易。所以最好的方案还是看源代码配合官方文档来用，当然amhc社区对于英文不是特别好的小伙伴来说也是不错的选择。<br>
-最后也是最重要的，就是要坚持，有了这一点什么事情都能做好了。</p>
-<h3 id="参考">参考</h3>
-<p><a href="https://developer.valvesoftware.com/wiki/Dota_2_Workshop_Tools/Custom_Game_Setup">Custom Game Setup</a></p>
-<p><a href="https://github.com/Perryvw/CustomHeroSelection">CustomHeroSelection</a></p>
 ]]></content>
     </entry>
 </feed>

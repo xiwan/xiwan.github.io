@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-<title>dotnettty大包与粘包 | Keep Thinking</title>
+<title>logstash 如何处理复杂日志 | Keep Thinking</title>
 <link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1577357798147">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
@@ -153,60 +153,178 @@
         
 
         <div class="entry-meta">
-          <span class="date">· 2019-08-07 ·</span> <span> / </span>
+          <span class="date">· 2019-12-26 ·</span> <span> / </span>
           <span class="author">
             <a href="https://xiwan.github.io" title="" rel="author"> Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a></a>
           </span>
           
             <span class="category">
                     <span> / </span>
-                    <a href="https://xiwan.github.io/tag/gdya-a8IE">netty</a>
+                    <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
+                </span>
+          
+            <span class="category">
+                    <span> / </span>
+                    <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
                 </span>
           
         </div>
         <div class='entry-header'>
-          <h1 class='entry-title'>dotnettty大包与粘包</h1>
+          <h1 class='entry-title'>logstash 如何处理复杂日志</h1>
         </div>
         <div class="entry-container">
           <div class="entry-content">
             <article>
-              <h4 id="目的">目的</h4>
-<p>主要测试dotnetty在大包体，或者粘包情况下的表现</p>
+              <p>最近压测发现日志在抽奖接口会放大百倍，直接把10万长度的日志队列挤爆！</p>
 <!-- more -->
-<h4 id="测试">测试</h4>
-<h5 id="准备数据">准备数据</h5>
-<p>代码部分：</p>
-<pre><code class="language-csharp">var requestData = new RequestData();
-requestData.Type = 0x0010;
-for (int i = 0; i &lt; 256; i++)
-{
-	requestData.VarTable.Add(i.ToString());
+<p>深入调查后发现，抽奖接口的逻辑是得到一个物品就会对应一条日志。然后经常用户会大量开卡包的情况下，会单次获得许多物品，这样照成了日志的放大。压测时候每次请求会产生261条日志！！！</p>
+<p>第一个想到的解决方案是日志合并，在抽奖的最后再写一条日志。不过这带来新的挑战，日志的维度会增加。导致现阶段的分析方式都无法使用了。</p>
+<p>举例来说，对于这样一条日志，它是以分隔符竖线来区别每个字段意思的：</p>
+<pre><code>2019-12-24 23:59:59|9|116504|76561198271728609@STEAM|4|86|9|127|32|-1|4||10011|1462231
+</code></pre>
+<p>这样我们在logstash里面处理时候简单的split结果，然后按照位置即可获得字段的意思。一次抽卡有可能产生多条这样的日志，所以上面的处理方案就会合并成</p>
+<pre><code>2019-12-26 17:11:29|9|10001889532|bot1234567890|0|16|1617,87|1504^1,1551^1,1536^1,1539^1,1511^1,1503^1,1533^1,1552^1,1535^1,1504^1,1505^1,1528^1,1542^1,1519^1,1533^1,1525^1,1502^1,1503^1,1503^1,1502^1,1534^1,1545^1,1502^1,1502^1,1502^1,1505^1,1526^1,1510^1,1503^1,1549^1,1531^1,1509^1,1501^1,1526^1,1551^1,1501^1,1530^1,1504^1,1551^1,1548^1,1513^1,1521^1,1554^1,1511^1,1526^1,1551^1,1508^1,1529^1,1514^1,1516^1,1536^1,1526^1,1528^1,1554^1,1526^1,1551^1,1524^1,1541^1,1536^1,1502^1,1539^1,1549^1,1505^1,1511^1,1504^1,1539^1,1501^1,1501^1,1529^1,1529^1,1503^1,1551^1,1509^1,1519^1,1541^1,1528^1,1514^1,1507^1,1548^1,1512^1,1534^1,1523^1,1501^1,1501^1,1503^1,1534^1,1538^1,1529^1,1505^1,1517^1,1531^1,1536^1,1505^1,1539^1,1547^1,1504^1,1540^1,1504^1,1551^1,1535^1,1505^1,1519^1,1518^1,1504^1,1526^1,1525^1,1504^1,1501^1,1550^1,1542^1,1529^1,1554^1,1509^1,1552^1,1554^1,1512^1,1501^1,1521^1,1515^1,1525^1,1535^1,1552^1,1510^1,1527^1,1507^1,1523^1,1516^1,1513^1,1538^1,1551^1,1502^1,1536^1,1501^1,1506^1,1533^1,1543^1,1527^1,1539^1,1521^1,1513^1,1540^1,1504^1,1503^1,1530^1,1549^1,1552^1,1545^1,1553^1,1501^1,1536^1,1533^1,1551^1,1511^1,1502^1,1502^1,1529^1,1536^1,1549^1,1508^1,1552^1,1503^1,1533^1,1540^1,1512^1,1524^1,1501^1,1541^1,1536^1,1505^1,1503^1,1528^1,1523^1,1551^1,1513^1,1504^1,1527^1,1539^1,1512^1,1551^1,1550^1,1552^1,1507^1,1528^1,1536^1,1552^1,1505^1,1552^1,1548^1,1530^1,1536^1,1523^1,1509^1,1541^1,1503^1,1503^1,1533^1,1505^1,1505^1,1508^1,1501^1,1535^1,1543^1,1508^1,1523^1,1536^1,1514^1,1542^1,1547^1,1505^1,1504^1,1539^1,1503^1,1503^1,1502^1,1551^1,1525^1,1545^1,1516^1,1522^1,1543^1,1552^1,1501^1,1503^1,1504^1,1532^1,1531^1,1505^1,1518^1,1536^1,1552^1,1501^1,1551^1,1509^1,1535^1,1520^1,1511^1,1539^1,1523^1,1514^1,1504^1,1546^1,1515^1,1504^1,1527^1,1529^1,1524^1,1547^1,1534^1,1548^1,1525^1,1501^1,1552^1,1547^1,1548^1,1527^1,1501^1,1551^1,1546^1,1504^1,1552^1,1547^1||10021|199
+</code></pre>
+<p>对的，你没看错也没有搞错！一下子日志维度就上去了。</p>
+<h3 id="改造logstash">改造logstash</h3>
+<p>由于单纯的写logstash的split似乎无法完成上面的任务了（主要问题是不定长array处理起来十分麻烦），所以我对准了它的ruby插件:</p>
+<pre><code>ruby {
+      code =&gt; '
+        item_array=event.get(&quot;[log_json][t9_item_id]&quot;).split(&quot;,&quot;)
+        event.set(&quot;[log_json][t9_item_length]&quot;, item_array.length)
+        for item in item_array
+          event.set(&quot;[log_json][t9_item_#{item.split(&quot;^&quot;)[0]}]&quot;, item.split(&quot;^&quot;)[1].to_i)
+        end
+      '
+    }
+</code></pre>
+<p>可以看到在ruby内部, 每一条日志其实是一个event. 通过内置的event.set 和 get方法就可以很简单的将日志继续分割下去。</p>
+<p>最后得到的结果为：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1577357078972.png" alt=""></figure>
+<p>当然我们也关系加入新的ruby插件后的效率问题。找了台4G，2核的普通机器在没有调优参数的情况下，pv 压测后的结果为:</p>
+<p><strong>99.3KiB 0:00:56 [1.75KiB/s]</strong></p>
+<p>这里有个比较有意思的收获，原来获取array的尾部在conf里面可以写-1...</p>
+<h3 id="elk查询">elk查询</h3>
+<p>上面基本解决了logstash在多维度结构时候的解析问题，对于elk中一个按照物品id的聚合查询该如何做呢？</p>
+<p>我想的思路是： 传入item_id, 匹配日志name, 由于value是记录了数目，那么query里面的条件则是Numeric Range Query Usage来进行比较（大于0即可）。在aggregator里面的则是用总和sum操作即可。</p>
+<h3 id="附件压测配置">附件压测配置</h3>
+<pre><code># Sample Logstash configuration for creating a simple
+# Beats -&gt; Logstash -&gt; Elasticsearch pipeline.
+
+input {
+    generator {
+        count =&gt; 100000
+        message =&gt; '2019-12-26 17:11:29|9|10001889532|bot1234567890|0|16|1617,87|1504^1,1551^1,1536^1,1539^1,1511^1,1503^1,1533^1,1552^1,1535^1,1504^1,1505^1,1528^1,1542^1,1519^1,1533^1,1525^1,1502^1,1503^1,1503^1,1502^1,1534^1,1545^1,1502^1,1502^1,1502^1,1505^1,1526^1,1510^1,1503^1,1549^1,1531^1,1509^1,1501^1,1526^1,1551^1,1501^1,1530^1,1504^1,1551^1,1548^1,1513^1,1521^1,1554^1,1511^1,1526^1,1551^1,1508^1,1529^1,1514^1,1516^1,1536^1,1526^1,1528^1,1554^1,1526^1,1551^1,1524^1,1541^1,1536^1,1502^1,1539^1,1549^1,1505^1,1511^1,1504^1,1539^1,1501^1,1501^1,1529^1,1529^1,1503^1,1551^1,1509^1,1519^1,1541^1,1528^1,1514^1,1507^1,1548^1,1512^1,1534^1,1523^1,1501^1,1501^1,1503^1,1534^1,1538^1,1529^1,1505^1,1517^1,1531^1,1536^1,1505^1,1539^1,1547^1,1504^1,1540^1,1504^1,1551^1,1535^1,1505^1,1519^1,1518^1,1504^1,1526^1,1525^1,1504^1,1501^1,1550^1,1542^1,1529^1,1554^1,1509^1,1552^1,1554^1,1512^1,1501^1,1521^1,1515^1,1525^1,1535^1,1552^1,1510^1,1527^1,1507^1,1523^1,1516^1,1513^1,1538^1,1551^1,1502^1,1536^1,1501^1,1506^1,1533^1,1543^1,1527^1,1539^1,1521^1,1513^1,1540^1,1504^1,1503^1,1530^1,1549^1,1552^1,1545^1,1553^1,1501^1,1536^1,1533^1,1551^1,1511^1,1502^1,1502^1,1529^1,1536^1,1549^1,1508^1,1552^1,1503^1,1533^1,1540^1,1512^1,1524^1,1501^1,1541^1,1536^1,1505^1,1503^1,1528^1,1523^1,1551^1,1513^1,1504^1,1527^1,1539^1,1512^1,1551^1,1550^1,1552^1,1507^1,1528^1,1536^1,1552^1,1505^1,1552^1,1548^1,1530^1,1536^1,1523^1,1509^1,1541^1,1503^1,1503^1,1533^1,1505^1,1505^1,1508^1,1501^1,1535^1,1543^1,1508^1,1523^1,1536^1,1514^1,1542^1,1547^1,1505^1,1504^1,1539^1,1503^1,1503^1,1502^1,1551^1,1525^1,1545^1,1516^1,1522^1,1543^1,1552^1,1501^1,1503^1,1504^1,1532^1,1531^1,1505^1,1518^1,1536^1,1552^1,1501^1,1551^1,1509^1,1535^1,1520^1,1511^1,1539^1,1523^1,1514^1,1504^1,1546^1,1515^1,1504^1,1527^1,1529^1,1524^1,1547^1,1534^1,1548^1,1525^1,1501^1,1552^1,1547^1,1548^1,1527^1,1501^1,1551^1,1546^1,1504^1,1552^1,1547^1||10021|199'
+        codec =&gt; plain
+    }
 }
 
-var bytes = SerializationHelper.Serialize(requestData);
-Console.WriteLine(ByteBufferUtil.HexDump(bytes));
-Console.WriteLine(bytes.Length);
+filter {
+  mutate {
+    copy =&gt; {&quot;message&quot; =&gt; &quot;message_origin&quot;}
+  }
+
+  mutate {
+    split =&gt; [&quot;message&quot;, &quot;|&quot;]  
+    add_field =&gt; {
+      &quot;[log_json][log_datetime]&quot; =&gt; &quot;%{[message][0]}&quot;
+    }
+  }
+
+  date {
+    match =&gt; [&quot;[log_json][log_datetime]&quot;, &quot;yyyy-MM-dd HH:mm:ss&quot;]
+    target =&gt; &quot;@timestamp&quot;
+    timezone =&gt; &quot;Asia/Shanghai&quot;
+  }
+
+  grok {
+    match =&gt; {
+      &quot;[log_json][log_datetime]&quot; =&gt; &quot;(?&lt;logdate&gt;%{YEAR}-%{MONTHNUM}-%{MONTHDAY})&quot;
+    }
+  }
+  
+}
+
+filter {
+  
+  mutate {
+    add_field =&gt; {
+      &quot;[log_json][log_type]&quot; =&gt; &quot;%{[message][1]}&quot;
+      &quot;[log_json][social_code]&quot; =&gt; &quot;%{[message][2]}&quot;
+      &quot;[log_json][user_name]&quot; =&gt; &quot;%{[message][3]}&quot;
+      &quot;[log_json][ticket]&quot; =&gt; &quot;%{[message][4]}&quot;
+      &quot;[log_json][log_counter]&quot; =&gt; &quot;%{[message][-1]}&quot;
+      &quot;[log_json][log_serverid]&quot; =&gt; &quot;%{[message][-2]}&quot;
+    }
+  }
+
+  mutate {
+    convert =&gt; {
+      &quot;[log_json][log_type]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][social_code]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][ticket]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][log_counter]&quot; =&gt; &quot;integer&quot;
+      &quot;[log_json][log_serverid]&quot; =&gt; &quot;integer&quot;
+    }
+  }
+
+  # 物品获得
+  if [message][1] == &quot;9&quot; { 
+    mutate {
+      add_field =&gt; {
+        &quot;[log_json][t9_deposit_type]&quot; =&gt; &quot;%{[message][5]}&quot;
+        &quot;[log_json][t9_deposit_log]&quot; =&gt; &quot;%{[message][6]}&quot;
+        &quot;[log_json][t9_item_id]&quot; =&gt; &quot;%{[message][7]}&quot;
+        &quot;[log_json][t9_number]&quot; =&gt; &quot;%{[message][8]}&quot;
+        &quot;[log_json][t9_current_number]&quot; =&gt; &quot;%{[message][9]}&quot;
+        &quot;[log_json][t9_level]&quot; =&gt; &quot;%{[message][10]}&quot;
+      }
+    }  
+    mutate {
+      convert =&gt; {
+        &quot;[log_json][t9_number]&quot; =&gt; &quot;integer&quot;
+        &quot;[log_json][t9_current_number]&quot; =&gt; &quot;integer&quot;
+        &quot;[log_json][t9_level]&quot; =&gt; &quot;integer&quot;
+      }
+    }
+    ruby {
+      code =&gt; '
+        item_array=event.get(&quot;[log_json][t9_item_id]&quot;).split(&quot;,&quot;)
+        event.set(&quot;[log_json][t9_item_length]&quot;, item_array.length)
+        for item in item_array
+          event.set(&quot;[log_json][t9_item_#{item.split(&quot;^&quot;)[0]}]&quot;, item.split(&quot;^&quot;)[1].to_i)
+        end
+      '
+    }
+  }
+
+}
+
+filter {
+  fingerprint {
+    source =&gt; &quot;message_origin&quot;
+    target =&gt; &quot;[@metadata][fingerprint]&quot;
+    method =&gt; &quot;MD5&quot;
+    key =&gt; &quot;kaki_md5_id&quot;
+  }
+
+  # Always remove sensitive data from all input sources
+  mutate {  
+    remove_field =&gt; &quot;[message]&quot;
+    remove_field =&gt; &quot;[input]&quot;
+    remove_field =&gt; &quot;[prospector]&quot;
+    remove_field =&gt; &quot;[host]&quot;
+    remove_field =&gt; &quot;[beat]&quot;
+    remove_field =&gt; &quot;[tags]&quot;
+    remove_field =&gt; &quot;[offset]&quot;
+    remove_field =&gt; &quot;[log_json][t9_item_id]&quot;
+  }
+}
+
+output {   
+  stdout { codec =&gt; dots }
+}
 </code></pre>
-<p>执行程序后内容长度为1172，算上包头和ticket部分，最终为1180长度，其中包头值为1176=0x498</p>
-<pre><code>00000498000000010810120130120131120132120133120134120135120136120137120138120139120231301202313112023132120231331202313412023135120231361202313712023138120231391202323012023231120232321202323312023234120232351202323612023237120232381202323912023330120233311202333212023333120233341202333512023336120233371202333812023339120234301202343112023432120234331202343412023435120234361202343712023438120234391202353012023531120235321202353312023534120235351202353612023537120235381202353912023630120236311202363212023633120236341202363512023636120236371202363812023639120237301202373112023732120237331202373412023735120237361202373712023738120237391202383012023831120238321202383312023834120238351202383612023837120238381202383912023930120239311202393212023933120239341202393512023936120239371202393812023939120331303012033130311203313032120331303312033130341203313035120331303612033130371203313038120331303912033131301203313131120331313212033131331203313134120331313512033131361203313137120331313812033131391203313230120331323112033132321203313233120331323412033132351203313236120331323712033132381203313239120331333012033133311203313332120331333312033133341203313335120331333612033133371203313338120331333912033134301203313431120331343212033134331203313434120331343512033134361203313437120331343812033134391203313530120331353112033135321203313533120331353412033135351203313536120331353712033135381203313539120331363012033136311203313632120331363312033136341203313635120331363612033136371203313638120331363912033137301203313731120331373212033137331203313734120331373512033137361203313737120331373812033137391203313830120331383112033138321203313833120331383412033138351203313836120331383712033138381203313839120331393012033139311203313932120331393312033139341203313935120331393612033139371203313938120331393912033230301203323031120332303212033230331203323034120332303512033230361203323037120332303812033230391203323130120332313112033231321203323133120332313412033231351203323136120332313712033231381203323139120332323012033232311203323232120332323312033232341203323235120332323612033232371203323238120332323912033233301203323331120332333212033233331203323334120332333512033233361203323337120332333812033233391203323430120332343112033234321203323433120332343412033234351203323436120332343712033234381203323439120332353012033235311203323532120332353312033235341203323535
-</code></pre>
-<h5 id="执行测试-大包">执行测试 - 大包</h5>
-<p>获取到第一个包1024<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaa175c79a8.png" alt=""></p>
-<p>获取到第二个包体后，可以看到buffer自动扩充到了2k，其中前1180为传输内容，符合预期<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaa1bd3498c.png" alt=""></p>
-<p>执行结果<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaa470a413a.png" alt=""></p>
-<p>由于默认的1k得不到满足，所以每条消息到来都需要重新申请2k的内存，从而更快的消耗内存导致gc<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaa3fc5abd5.png" alt=""></p>
-<h5 id="执行测试-粘包">执行测试 - 粘包</h5>
-<p>制作一个大概1335长度(1180+155)的包体进行发送， 扩充后内存情况如下<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaa9822d1c0.png" alt=""></p>
-<p>读取完第一个包体后，可以看到ridx=1180<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaa9b8594cb.png" alt=""></p>
-<p>开始第二个包体前半部分读取,ridx=0，读取剩下的155长度数据<br>
-<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2018-11-01/5bdaaa5d398f9.png" alt=""></p>
-<p>由于tcp可以保持包的顺序，所以只要等待下一个包体到来就可以完成第二个包体的读取了。</p>
 
             </article>
           </div>
@@ -286,7 +404,7 @@ Console.WriteLine(bytes.Length);
             <nav class="navigation pagination" role="navigation">
               <h2 class="screen-reader-text">Posts navigation</h2>
               <div class="nav-links">
-                <a class="next page-numbers" href="https://xiwan.github.io/post/serilog-vs-log4net">下一篇->serilog vs log4net</a>
+                <a class="next page-numbers" href="https://xiwan.github.io/post/b0uwzUXQ8">下一篇->redis 大key处理</a>
               </div>
             </nav>
           
