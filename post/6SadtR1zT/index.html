@@ -6,7 +6,7 @@
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
 <title>logstash 如何处理复杂日志 | Keep Thinking</title>
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1577777764400">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1577778694133">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
 
@@ -189,105 +189,6 @@
 <h3 id="改造logstash">改造logstash</h3>
 <p>由于单纯的写logstash的split似乎无法完成上面的任务了（主要问题是不定长array处理起来十分麻烦），所以我对准了它的ruby插件:</p>
 <pre><code>ruby {
-      code =&gt; '
-        item_array=event.get(&quot;[log_json][t9_item_id]&quot;).split(&quot;,&quot;)
-        event.set(&quot;[log_json][t9_item_length]&quot;, item_array.length)
-        for item in item_array
-          event.set(&quot;[log_json][t9_item_#{item.split(&quot;^&quot;)[0]}]&quot;, item.split(&quot;^&quot;)[1].to_i)
-        end
-      '
-    }
-</code></pre>
-<p>可以看到在ruby内部, 每一条日志其实是一个event. 通过内置的event.set 和 get方法就可以很简单的将日志继续分割下去。</p>
-<p>最后得到的结果为：</p>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1577357078972.png" alt=""></figure>
-<p>当然我们也关系加入新的ruby插件后的效率问题。找了台4G，2核的普通机器在没有调优参数的情况下，pv 压测后的结果为:</p>
-<p><strong>99.3KiB 0:00:56 [1.75KiB/s]</strong></p>
-<p>这里有个比较有意思的收获，原来获取array的尾部在conf里面可以写-1...</p>
-<h3 id="elk查询">elk查询</h3>
-<p>上面基本解决了logstash在多维度结构时候的解析问题，对于elk中一个按照物品id的聚合查询该如何做呢？</p>
-<p>我想的思路是： 传入item_id, 匹配日志name, 由于value是记录了数目，那么query里面的条件则是Numeric Range Query Usage来进行比较（大于0即可）。在aggregator里面的则是用总和sum操作即可。</p>
-<h3 id="附件压测配置">附件压测配置</h3>
-<pre><code># Sample Logstash configuration for creating a simple
-# Beats -&gt; Logstash -&gt; Elasticsearch pipeline.
-
-input {
-    generator {
-        count =&gt; 100000
-        message =&gt; '2019-12-26 17:11:29|9|10001889532|bot1234567890|0|16|1617,87|1504^1,1551^1,1536^1,1539^1,1511^1,1503^1,1533^1,1552^1,1535^1,1504^1,1505^1,1528^1,1542^1,1519^1,1533^1,1525^1,1502^1,1503^1,1503^1,1502^1,1534^1,1545^1,1502^1,1502^1,1502^1,1505^1,1526^1,1510^1,1503^1,1549^1,1531^1,1509^1,1501^1,1526^1,1551^1,1501^1,1530^1,1504^1,1551^1,1548^1,1513^1,1521^1,1554^1,1511^1,1526^1,1551^1,1508^1,1529^1,1514^1,1516^1,1536^1,1526^1,1528^1,1554^1,1526^1,1551^1,1524^1,1541^1,1536^1,1502^1,1539^1,1549^1,1505^1,1511^1,1504^1,1539^1,1501^1,1501^1,1529^1,1529^1,1503^1,1551^1,1509^1,1519^1,1541^1,1528^1,1514^1,1507^1,1548^1,1512^1,1534^1,1523^1,1501^1,1501^1,1503^1,1534^1,1538^1,1529^1,1505^1,1517^1,1531^1,1536^1,1505^1,1539^1,1547^1,1504^1,1540^1,1504^1,1551^1,1535^1,1505^1,1519^1,1518^1,1504^1,1526^1,1525^1,1504^1,1501^1,1550^1,1542^1,1529^1,1554^1,1509^1,1552^1,1554^1,1512^1,1501^1,1521^1,1515^1,1525^1,1535^1,1552^1,1510^1,1527^1,1507^1,1523^1,1516^1,1513^1,1538^1,1551^1,1502^1,1536^1,1501^1,1506^1,1533^1,1543^1,1527^1,1539^1,1521^1,1513^1,1540^1,1504^1,1503^1,1530^1,1549^1,1552^1,1545^1,1553^1,1501^1,1536^1,1533^1,1551^1,1511^1,1502^1,1502^1,1529^1,1536^1,1549^1,1508^1,1552^1,1503^1,1533^1,1540^1,1512^1,1524^1,1501^1,1541^1,1536^1,1505^1,1503^1,1528^1,1523^1,1551^1,1513^1,1504^1,1527^1,1539^1,1512^1,1551^1,1550^1,1552^1,1507^1,1528^1,1536^1,1552^1,1505^1,1552^1,1548^1,1530^1,1536^1,1523^1,1509^1,1541^1,1503^1,1503^1,1533^1,1505^1,1505^1,1508^1,1501^1,1535^1,1543^1,1508^1,1523^1,1536^1,1514^1,1542^1,1547^1,1505^1,1504^1,1539^1,1503^1,1503^1,1502^1,1551^1,1525^1,1545^1,1516^1,1522^1,1543^1,1552^1,1501^1,1503^1,1504^1,1532^1,1531^1,1505^1,1518^1,1536^1,1552^1,1501^1,1551^1,1509^1,1535^1,1520^1,1511^1,1539^1,1523^1,1514^1,1504^1,1546^1,1515^1,1504^1,1527^1,1529^1,1524^1,1547^1,1534^1,1548^1,1525^1,1501^1,1552^1,1547^1,1548^1,1527^1,1501^1,1551^1,1546^1,1504^1,1552^1,1547^1||10021|199'
-        codec =&gt; plain
-    }
-}
-
-filter {
-  mutate {
-    copy =&gt; {&quot;message&quot; =&gt; &quot;message_origin&quot;}
-  }
-
-  mutate {
-    split =&gt; [&quot;message&quot;, &quot;|&quot;]  
-    add_field =&gt; {
-      &quot;[log_json][log_datetime]&quot; =&gt; &quot;%{[message][0]}&quot;
-    }
-  }
-
-  date {
-    match =&gt; [&quot;[log_json][log_datetime]&quot;, &quot;yyyy-MM-dd HH:mm:ss&quot;]
-    target =&gt; &quot;@timestamp&quot;
-    timezone =&gt; &quot;Asia/Shanghai&quot;
-  }
-
-  grok {
-    match =&gt; {
-      &quot;[log_json][log_datetime]&quot; =&gt; &quot;(?&lt;logdate&gt;%{YEAR}-%{MONTHNUM}-%{MONTHDAY})&quot;
-    }
-  }
-  
-}
-
-filter {
-  
-  mutate {
-    add_field =&gt; {
-      &quot;[log_json][log_type]&quot; =&gt; &quot;%{[message][1]}&quot;
-      &quot;[log_json][social_code]&quot; =&gt; &quot;%{[message][2]}&quot;
-      &quot;[log_json][user_name]&quot; =&gt; &quot;%{[message][3]}&quot;
-      &quot;[log_json][ticket]&quot; =&gt; &quot;%{[message][4]}&quot;
-      &quot;[log_json][log_counter]&quot; =&gt; &quot;%{[message][-1]}&quot;
-      &quot;[log_json][log_serverid]&quot; =&gt; &quot;%{[message][-2]}&quot;
-    }
-  }
-
-  mutate {
-    convert =&gt; {
-      &quot;[log_json][log_type]&quot; =&gt; &quot;integer&quot;
-      &quot;[log_json][social_code]&quot; =&gt; &quot;integer&quot;
-      &quot;[log_json][ticket]&quot; =&gt; &quot;integer&quot;
-      &quot;[log_json][log_counter]&quot; =&gt; &quot;integer&quot;
-      &quot;[log_json][log_serverid]&quot; =&gt; &quot;integer&quot;
-    }
-  }
-
-  # 物品获得
-  if [message][1] == &quot;9&quot; { 
-    mutate {
-      add_field =&gt; {
-        &quot;[log_json][t9_deposit_type]&quot; =&gt; &quot;%{[message][5]}&quot;
-        &quot;[log_json][t9_deposit_log]&quot; =&gt; &quot;%{[message][6]}&quot;
-        &quot;[log_json][t9_item_id]&quot; =&gt; &quot;%{[message][7]}&quot;
-        &quot;[log_json][t9_number]&quot; =&gt; &quot;%{[message][8]}&quot;
-        &quot;[log_json][t9_current_number]&quot; =&gt; &quot;%{[message][9]}&quot;
-        &quot;[log_json][t9_level]&quot; =&gt; &quot;%{[message][10]}&quot;
-      }
-    }  
-    mutate {
-      convert =&gt; {
-        &quot;[log_json][t9_number]&quot; =&gt; &quot;integer&quot;
-        &quot;[log_json][t9_current_number]&quot; =&gt; &quot;integer&quot;
-        &quot;[log_json][t9_level]&quot; =&gt; &quot;integer&quot;
-      }
-    }
-    ruby {
         code =&gt; '
           item_array=event.get(&quot;[log_json][t9_item_id]&quot;).split(&quot;,&quot;)
           event.set(&quot;[log_json][t9_item_length]&quot;, item_array.length)
@@ -301,35 +202,16 @@ filter {
           end
         '
       }
-  }
-
-}
-
-filter {
-  fingerprint {
-    source =&gt; &quot;message_origin&quot;
-    target =&gt; &quot;[@metadata][fingerprint]&quot;
-    method =&gt; &quot;MD5&quot;
-    key =&gt; &quot;kaki_md5_id&quot;
-  }
-
-  # Always remove sensitive data from all input sources
-  mutate {  
-    remove_field =&gt; &quot;[message]&quot;
-    remove_field =&gt; &quot;[input]&quot;
-    remove_field =&gt; &quot;[prospector]&quot;
-    remove_field =&gt; &quot;[host]&quot;
-    remove_field =&gt; &quot;[beat]&quot;
-    remove_field =&gt; &quot;[tags]&quot;
-    remove_field =&gt; &quot;[offset]&quot;
-    remove_field =&gt; &quot;[log_json][t9_item_id]&quot;
-  }
-}
-
-output {   
-  stdout { codec =&gt; dots }
-}
 </code></pre>
+<p>可以看到在ruby内部, 每一条日志其实是一个event. 通过内置的event.set 和 get方法就可以很简单的将日志继续分割下去。</p>
+<p>最后得到的结果为：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1577357078972.png" alt=""></figure>
+<p>当然我们也关系加入新的ruby插件后的效率问题。找了台4G，2核的普通机器在没有调优参数的情况下，pv 压测后的结果为:</p>
+<p>4核4GB的机器结果** 978KiB 0:05:43 [2.85KiB/s]**差不多100万条复杂数据，每秒2.85k个event的速度</p>
+<p>这里有个比较有意思的收获，原来获取array的尾部在conf里面可以写-1...</p>
+<h3 id="elk查询">elk查询</h3>
+<p>上面基本解决了logstash在多维度结构时候的解析问题，对于elk中一个按照物品id的聚合查询该如何做呢？</p>
+<p>我想的思路是： 传入item_id, 匹配日志name, 由于value是记录了数目，那么query里面的条件则是Numeric Range Query Usage来进行比较（大于0即可）。在aggregator里面的则是用总和sum操作即可。</p>
 
             </article>
           </div>
@@ -380,7 +262,7 @@ output {
           </div>
           <div class="author-meta">
             <div class="author">
-              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1577777764400" class='avatar avatar-72 photo' height='72' width='72'>
+              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1577778694133" class='avatar avatar-72 photo' height='72' width='72'>
               <span>WRITTEN BY: &nbsp;&nbsp;&nbsp;<a href='https://xiwan.github.io'></a> </span>
             </div>
             <div class="bio">
