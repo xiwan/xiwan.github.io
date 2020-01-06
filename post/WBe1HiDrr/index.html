@@ -6,7 +6,7 @@
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
 <title>elk的fileds被撑爆了。。。 | Keep Thinking</title>
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1578298267217">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1578298655858">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
 
@@ -205,7 +205,8 @@
 </code></pre>
 <p>其他的是我为了加快索引速度给的一些“调优”。比如refresh_interval这个默认值是1s，虽然看上去日志是所见即所得，但有的时候并不需要这么快。可以适当的延长这个值，让日志在file_cache中多呆一会儿再被可见。其实对于elk来说，文档可见其实只要缓存到了file_cache中即可，并不需要写入到硬盘。当然通过flush也是可以保证这点的，但是它的代价就是磁盘io。</p>
 <h3 id="如何重新装载日志呢">如何重新装载日志呢？</h3>
-<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。因为隔天处理当天日志比较稳妥。隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
+<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。最重要的原因是当天的index还没有完成，处于正在执行状态，是不会接受已经被索引过的日志的。要么就是停止当天的索引，要么就是隔天操作。</p>
+<p>隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
 
             </article>
           </div>
@@ -256,7 +257,7 @@
           </div>
           <div class="author-meta">
             <div class="author">
-              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1578298267217" class='avatar avatar-72 photo' height='72' width='72'>
+              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1578298655858" class='avatar avatar-72 photo' height='72' width='72'>
               <span>WRITTEN BY: &nbsp;&nbsp;&nbsp;<a href='https://xiwan.github.io'></a> </span>
             </div>
             <div class="bio">

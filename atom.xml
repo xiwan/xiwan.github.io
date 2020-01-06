@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-01-06T08:11:10.572Z</updated>
+    <updated>2020-01-06T08:17:38.465Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -53,7 +53,8 @@
 </code></pre>
 <p>其他的是我为了加快索引速度给的一些“调优”。比如refresh_interval这个默认值是1s，虽然看上去日志是所见即所得，但有的时候并不需要这么快。可以适当的延长这个值，让日志在file_cache中多呆一会儿再被可见。其实对于elk来说，文档可见其实只要缓存到了file_cache中即可，并不需要写入到硬盘。当然通过flush也是可以保证这点的，但是它的代价就是磁盘io。</p>
 <h3 id="如何重新装载日志呢">如何重新装载日志呢？</h3>
-<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。因为隔天处理当天日志比较稳妥。隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
+<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。最重要的原因是当天的index还没有完成，处于正在执行状态，是不会接受已经被索引过的日志的。要么就是停止当天的索引，要么就是隔天操作。</p>
+<p>隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
 ]]></content>
     </entry>
     <entry>
