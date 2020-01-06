@@ -6,7 +6,7 @@
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
 <title>elk的fileds被撑爆了。。。 | Keep Thinking</title>
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1578299300700">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1578300765637">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
 
@@ -172,9 +172,16 @@
             <article>
               <p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
 <!-- more -->
+<h3 id="定位问题">定位问题</h3>
 <p>通过调查日志文件本身发现是有记录的，但是没有进入elk。由于前面我已经加上了日志counter和服务器id，那么可以排除日志hash碰撞的可能性。于是开始调查logstash，得到的日志结果:</p>
 <p><strong>[2020-01-06T05:47:02,707][WARN ][logstash.outputs.elasticsearch] Could not index event to Elasticsearch. {:status=&gt;400, :action=&gt;[&quot;index&quot;, {:_id=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, :_index=&gt;&quot;kakiraid-info-2020.01.06&quot;, :_type=&gt;&quot;kakiraid_log&quot;, :_routing=&gt;nil}, #<a href="LogStash::Event:0x2ccdcf00">LogStash::Event:0x2ccdcf00</a>], :response=&gt;{&quot;index&quot;=&gt;{&quot;_index&quot;=&gt;&quot;kakiraid-info-2020.01.06&quot;, &quot;_type&quot;=&gt;&quot;kakiraid_log&quot;, &quot;_id&quot;=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, &quot;status&quot;=&gt;400, &quot;error&quot;=&gt;{&quot;type&quot;=&gt;&quot;illegal_argument_exception&quot;, &quot;reason&quot;=&gt;&quot;Limit of total fields [1000] in index [kakiraid-info-2020.01.06] has been exceeded&quot;}}}}</strong></p>
 <p>原来是索引中的字段给撑爆了。联系起前几天调整的复杂日志结构问题，是有这个可能性的。因为为了分析开卡日志和减少日志放大倍数，为每个item都动态生成了field。没想到在这里给自己挖坑了。</p>
+<p>为了确定是不是这个原因，我们需要统计下当时的情况：</p>
+<pre><code>curl -s -XGET http://host:port/index/_mapping? pretty | grep '&quot;type&quot;' | wc -l
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1578300163529.png" alt=""></figure>
+<p>可以看到3号的field才741个，4号已经飙到1487个了，5号差不多1573个，6号是1463个。默认的field上线是1000个，怪不得会出现上面的错误，并且可以推断丢失的日志应该不止一种。只能说比较幸运的是，影响范围不大。</p>
+<h3 id="解决问题">解决问题</h3>
 <p>好吧，调整下settings。这里最重要的就是这句&quot;index.mapping.total_fields.limit&quot;: 2000(默认值是1000)。当然这里需要考虑下对于开卡这种日志，其实有必要让他自己单独享用一个index，来减少这种问题。</p>
 <pre><code>{
     &quot;index.indexing.slowlog.threshold.index.debug&quot; : &quot;2s&quot;,
@@ -259,7 +266,7 @@
           </div>
           <div class="author-meta">
             <div class="author">
-              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1578299300700" class='avatar avatar-72 photo' height='72' width='72'>
+              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1578300765637" class='avatar avatar-72 photo' height='72' width='72'>
               <span>WRITTEN BY: &nbsp;&nbsp;&nbsp;<a href='https://xiwan.github.io'></a> </span>
             </div>
             <div class="bio">
