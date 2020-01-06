@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-<title>docker 日志处理 | Keep Thinking</title>
+<title>elk的fileds被撑爆了。。。 | Keep Thinking</title>
 <link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1578298267217">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
@@ -153,48 +153,59 @@
         
 
         <div class="entry-meta">
-          <span class="date">· 2019-09-18 ·</span> <span> / </span>
+          <span class="date">· 2020-01-06 ·</span> <span> / </span>
           <span class="author">
             <a href="https://xiwan.github.io" title="" rel="author"> Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a></a>
           </span>
           
             <span class="category">
                     <span> / </span>
-                    <a href="https://xiwan.github.io/tag/WLQnCbVL4">docker</a>
+                    <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
                 </span>
           
         </div>
         <div class='entry-header'>
-          <h1 class='entry-title'>docker 日志处理</h1>
+          <h1 class='entry-title'>elk的fileds被撑爆了。。。</h1>
         </div>
         <div class="entry-container">
           <div class="entry-content">
             <article>
-              <p>docker 启动后有一个需求便是如何处理以及收集它产生的日志。<br>
-这里的日志可以分为3类： docker的引擎日志， docker 容器日志， docker 应用日志</p>
+              <p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
 <!-- more -->
-<h3 id="docker-引擎日志">docker 引擎日志</h3>
-<p>这个查找了写文章后总结如下，根据自己对应的系统去查找即可</p>
-<p><strong>Ubuntu(14.04)</strong>	/var/log/upstart/docker.log<br>
-<strong>Ubuntu(16.04)</strong>	journalctl -u docker.service<br>
-<strong>CentOS 7/RHEL 7/Fedora</strong>	journalctl -u docker.service<br>
-<strong>CoreOS</strong>	journalctl -u docker.service<br>
-<strong>OpenSuSE</strong>	journalctl -u docker.service<br>
-<strong>OSX</strong>	~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/log/d‌​ocker.log<br>
-<strong>Debian GNU/Linux 7</strong>	/var/log/daemon.log<br>
-<strong>Debian GNU/Linux 8</strong>	journalctl -u docker.service<br>
-<strong>Boot2Docker</strong>	/var/log/docker.log</p>
-<h3 id="docker-容器日志">docker 容器日志</h3>
-<p>容器的日志 则可以通过 docker logs 命令来访问，而且可以像 tail -f 一样，使用 docker logs -f 来实时查看。如果使用 Docker Compose，则可以通过 docker-compose logs &lt;服务名&gt; 来查看。</p>
-<p>如果需要查看容器日志的具体位置可以调用命令：<br>
-<img src="https://xiwan.github.io/post-images/1568779631501.png" alt=""></p>
-<p>可以看到这个是一个非常复杂的路径，每次看这个文件是非常不方便的。比较好的解决方案是用一个日志收集器来收集这些日志，比如利用<a href="https://tonybai.com/2016/03/25/ship-docker-container-log-with-filebeat/">filebeat</a>来收集日志，然后集中到ES中查询。不过需要一些软件安装或者配置。</p>
-<p>这里我使用一个比较简单的方案， 利用docker-compose 的logs命令将对应service输出到默认的位置。这样不用担心频繁的up down导致的容器号变化。</p>
-<pre><code>nohup docker-compose -f docker-compose-esk.yml logs -f kibana &gt;&gt; /data/game/logs/elk/VM_18_7_centos-kibana.log &amp;
+<p>通过调查日志文件本身发现是有记录的，但是没有进入elk。由于前面我已经加上了日志counter和服务器id，那么可以排除日志hash碰撞的可能性。于是开始调查logstash，得到的日志结果:</p>
+<p><strong>[2020-01-06T05:47:02,707][WARN ][logstash.outputs.elasticsearch] Could not index event to Elasticsearch. {:status=&gt;400, :action=&gt;[&quot;index&quot;, {:_id=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, :_index=&gt;&quot;kakiraid-info-2020.01.06&quot;, :_type=&gt;&quot;kakiraid_log&quot;, :_routing=&gt;nil}, #<a href="LogStash::Event:0x2ccdcf00">LogStash::Event:0x2ccdcf00</a>], :response=&gt;{&quot;index&quot;=&gt;{&quot;_index&quot;=&gt;&quot;kakiraid-info-2020.01.06&quot;, &quot;_type&quot;=&gt;&quot;kakiraid_log&quot;, &quot;_id&quot;=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, &quot;status&quot;=&gt;400, &quot;error&quot;=&gt;{&quot;type&quot;=&gt;&quot;illegal_argument_exception&quot;, &quot;reason&quot;=&gt;&quot;Limit of total fields [1000] in index [kakiraid-info-2020.01.06] has been exceeded&quot;}}}}</strong></p>
+<p>原来是索引中的字段给撑爆了。联系起前几天调整的复杂日志结构问题，是有这个可能性的。因为为了分析开卡日志和减少日志放大倍数，为每个item都动态生成了field。没想到在这里给自己挖坑了。</p>
+<p>好吧，调整下settings。这里最重要的就是这句&quot;index.mapping.total_fields.limit&quot;: 2000(默认值是1000)。当然这里需要考虑下对于开卡这种日志，其实有必要让他自己单独享用一个index，来减少这种问题。</p>
+<pre><code>{
+    &quot;index.indexing.slowlog.threshold.index.debug&quot; : &quot;2s&quot;,
+    &quot;index.indexing.slowlog.threshold.index.info&quot; : &quot;5s&quot;,
+    &quot;index.indexing.slowlog.threshold.index.trace&quot; : &quot;500ms&quot;,
+    &quot;index.indexing.slowlog.threshold.index.warn&quot; : &quot;10s&quot;,
+    &quot;index.mapping.total_fields.limit&quot;: 2000,
+    &quot;index.merge.policy.max_merged_segment&quot; : &quot;5gb&quot;,
+    &quot;index.merge.policy.segments_per_tier&quot; : &quot;24&quot;,
+    &quot;index.number_of_replicas&quot; : &quot;1&quot;,
+    &quot;index.optimize_auto_generated_id&quot; : &quot;true&quot;,
+    &quot;index.refresh_interval&quot; : &quot;60s&quot;,
+    &quot;index.routing.allocation.total_shards_per_node&quot; : &quot;-1&quot;,
+    &quot;index.search.slowlog.threshold.fetch.debug&quot; : &quot;500ms&quot;,
+    &quot;index.search.slowlog.threshold.fetch.info&quot; : &quot;800ms&quot;,
+    &quot;index.search.slowlog.threshold.fetch.trace&quot; : &quot;200ms&quot;,
+    &quot;index.search.slowlog.threshold.fetch.warn&quot; : &quot;1s&quot;,
+    &quot;index.search.slowlog.threshold.query.debug&quot; : &quot;2s&quot;,
+    &quot;index.search.slowlog.threshold.query.info&quot; : &quot;5s&quot;,
+    &quot;index.search.slowlog.threshold.query.trace&quot; : &quot;500ms&quot;,
+    &quot;index.search.slowlog.threshold.query.warn&quot; : &quot;10s&quot;,
+    &quot;index.translog.durability&quot; : &quot;async&quot;,
+    &quot;index.translog.flush_threshold_size&quot; : &quot;5000mb&quot;,
+    &quot;index.merge.scheduler.max_merge_count&quot; : 10,
+    &quot;index.merge.scheduler.max_thread_count&quot; : 1,
+	&quot;index.unassigned.node_left.delayed_timeout&quot; : &quot;7200m&quot;
+}
 </code></pre>
-<p>当然，不同机器上的日志可以通过定时rsync命令拉取到同一台机器方便查找。</p>
-<h3 id="docker应用日志">docker应用日志</h3>
-<p>由于docker是无状态的，可以通过volums来实现和宿主机的互通。我们可以将docker内应用日志和数据方便地放在宿主机管理，比较简单。可以同时在宿主机上启动一个filebeat将日志发送到内部es机器即可。</p>
+<p>其他的是我为了加快索引速度给的一些“调优”。比如refresh_interval这个默认值是1s，虽然看上去日志是所见即所得，但有的时候并不需要这么快。可以适当的延长这个值，让日志在file_cache中多呆一会儿再被可见。其实对于elk来说，文档可见其实只要缓存到了file_cache中即可，并不需要写入到硬盘。当然通过flush也是可以保证这点的，但是它的代价就是磁盘io。</p>
+<h3 id="如何重新装载日志呢">如何重新装载日志呢？</h3>
+<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。因为隔天处理当天日志比较稳妥。隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
 
             </article>
           </div>
@@ -274,7 +285,7 @@
             <nav class="navigation pagination" role="navigation">
               <h2 class="screen-reader-text">Posts navigation</h2>
               <div class="nav-links">
-                <a class="next page-numbers" href="https://xiwan.github.io/post/dota如何接入支付">下一篇->dota如何接入支付</a>
+                <a class="next page-numbers" href="https://xiwan.github.io/post/6SadtR1zT">下一篇->logstash 如何处理复杂日志</a>
               </div>
             </nav>
           

@@ -2,14 +2,60 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2019-12-31T07:51:37.743Z</updated>
+    <updated>2020-01-06T08:11:10.572Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
     <subtitle>有美人兮心不怿</subtitle>
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2019, Keep Thinking</rights>
+    <rights>All rights reserved 2020, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[elk的fileds被撑爆了。。。]]></title>
+        <id>https://xiwan.github.io/post/WBe1HiDrr</id>
+        <link href="https://xiwan.github.io/post/WBe1HiDrr">
+        </link>
+        <updated>2020-01-06T07:41:25.000Z</updated>
+        <summary type="html"><![CDATA[<p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
+<!-- more -->
+<p>通过调查日志文件本身发现是有记录的，但是没有进入elk。由于前面我已经加上了日志counter和服务器id，那么可以排除日志hash碰撞的可能性。于是开始调查logstash，得到的日志结果:</p>
+<p><strong>[2020-01-06T05:47:02,707][WARN ][logstash.outputs.elasticsearch] Could not index event to Elasticsearch. {:status=&gt;400, :action=&gt;[&quot;index&quot;, {:_id=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, :_index=&gt;&quot;kakiraid-info-2020.01.06&quot;, :_type=&gt;&quot;kakiraid_log&quot;, :_routing=&gt;nil}, #<a href="LogStash::Event:0x2ccdcf00">LogStash::Event:0x2ccdcf00</a>], :response=&gt;{&quot;index&quot;=&gt;{&quot;_index&quot;=&gt;&quot;kakiraid-info-2020.01.06&quot;, &quot;_type&quot;=&gt;&quot;kakiraid_log&quot;, &quot;_id&quot;=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, &quot;status&quot;=&gt;400, &quot;error&quot;=&gt;{&quot;type&quot;=&gt;&quot;illegal_argument_exception&quot;, &quot;reason&quot;=&gt;&quot;Limit of total fields [1000] in index [kakiraid-info-2020.01.06] has been exceeded&quot;}}}}</strong></p>
+<p>原来是索引中的字段给撑爆了。联系起前几天调整的复杂日志结构问题，是有这个可能性的。因为为了分析开卡日志和减少日志放大倍数，为每个item都动态生成了field。没想到在这里给自己挖坑了。</p>
+<p>好吧，调整下settings。这里最重要的就是这句&quot;index.mapping.total_fields.limit&quot;: 2000(默认值是1000)。当然这里需要考虑下对于开卡这种日志，其实有必要让他自己单独享用一个index，来减少这种问题。</p>
+<pre><code>{
+    &quot;index.indexing.slowlog.threshold.index.debug&quot; : &quot;2s&quot;,
+    &quot;index.indexing.slowlog.threshold.index.info&quot; : &quot;5s&quot;,
+    &quot;index.indexing.slowlog.threshold.index.trace&quot; : &quot;500ms&quot;,
+    &quot;index.indexing.slowlog.threshold.index.warn&quot; : &quot;10s&quot;,
+    &quot;index.mapping.total_fields.limit&quot;: 2000,
+    &quot;index.merge.policy.max_merged_segment&quot; : &quot;5gb&quot;,
+    &quot;index.merge.policy.segments_per_tier&quot; : &quot;24&quot;,
+    &quot;index.number_of_replicas&quot; : &quot;1&quot;,
+    &quot;index.optimize_auto_generated_id&quot; : &quot;true&quot;,
+    &quot;index.refresh_interval&quot; : &quot;60s&quot;,
+    &quot;index.routing.allocation.total_shards_per_node&quot; : &quot;-1&quot;,
+    &quot;index.search.slowlog.threshold.fetch.debug&quot; : &quot;500ms&quot;,
+    &quot;index.search.slowlog.threshold.fetch.info&quot; : &quot;800ms&quot;,
+    &quot;index.search.slowlog.threshold.fetch.trace&quot; : &quot;200ms&quot;,
+    &quot;index.search.slowlog.threshold.fetch.warn&quot; : &quot;1s&quot;,
+    &quot;index.search.slowlog.threshold.query.debug&quot; : &quot;2s&quot;,
+    &quot;index.search.slowlog.threshold.query.info&quot; : &quot;5s&quot;,
+    &quot;index.search.slowlog.threshold.query.trace&quot; : &quot;500ms&quot;,
+    &quot;index.search.slowlog.threshold.query.warn&quot; : &quot;10s&quot;,
+    &quot;index.translog.durability&quot; : &quot;async&quot;,
+    &quot;index.translog.flush_threshold_size&quot; : &quot;5000mb&quot;,
+    &quot;index.merge.scheduler.max_merge_count&quot; : 10,
+    &quot;index.merge.scheduler.max_thread_count&quot; : 1,
+	&quot;index.unassigned.node_left.delayed_timeout&quot; : &quot;7200m&quot;
+}
+</code></pre>
+<p>其他的是我为了加快索引速度给的一些“调优”。比如refresh_interval这个默认值是1s，虽然看上去日志是所见即所得，但有的时候并不需要这么快。可以适当的延长这个值，让日志在file_cache中多呆一会儿再被可见。其实对于elk来说，文档可见其实只要缓存到了file_cache中即可，并不需要写入到硬盘。当然通过flush也是可以保证这点的，但是它的代价就是磁盘io。</p>
+<h3 id="如何重新装载日志呢">如何重新装载日志呢？</h3>
+<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。因为隔天处理当天日志比较稳妥。隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[logstash 如何处理复杂日志]]></title>
         <id>https://xiwan.github.io/post/6SadtR1zT</id>
@@ -470,44 +516,6 @@ readwritetimeout 相当于建立连接到下载完整个包体需要的时间，
 <figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567421279321.png" alt=""></figure>
 <h3 id="截图">截图</h3>
 <figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1566991427426.png" alt=""></figure>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[bot相关]]></title>
-        <id>https://xiwan.github.io/post/bot-xiang-guan</id>
-        <link href="https://xiwan.github.io/post/bot-xiang-guan">
-        </link>
-        <updated>2019-08-26T07:35:31.000Z</updated>
-        <summary type="html"><![CDATA[<p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
-<!-- more -->
-<h3 id="与bot相关的几个函数">与bot相关的几个函数</h3>
-<p>int GetConnectionState(int iPlayerID)</p>
-<p><code>Returns a status code indication the connection state of the player. 0 - no connection. 1 - bot connected. 2 - player connected. 3 bot/player disconnected.</code></p>
-<p>bool IsControllableByAnyPlayer()</p>
-<p><code>Is this unit controlled by any non-bot player?</code></p>
-<p>bool IsOwnedByAnyPlayer()</p>
-<p><code>Is this unit owned by any non-bot player?</code></p>
-<p>void SetBotDifficulty(int nDifficulty)</p>
-<p><code>Sets the bot's difficulty level (0 = passive, 1 = easy, 2 = medium, 3 = hard, 4 = unfair)</code></p>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1566805414719.png" alt=""></figure>
-<p>bool AddBot(string string_1, string string_2, string string_3, bool bool_4)</p>
-<p><code>Add a computer controlled bot.</code></p>
-<h3 id="addbot用法">AddBot用法</h3>
-<p>这里面比较重要的就是AddBot方法了。<br>
-string_1 = 英雄单位的名字（默认的和自定义应该都是可以的）<br>
-string_2 = 英雄位置（mid, top, bot）三条线的分路<br>
-string_3 = passive/positive ？？<br>
-bool_4 = 这个表示是否和玩家为队友，但可以不在一个阵营</p>
-<p>如果要设置阵营，需要调用</p>
-<pre><code>PlayerResource:SetCustomTeamAssignment( 0, DOTA_TEAM_GOODGUYS )
-PlayerResource:SetCustomTeamAssignment( 1, DOTA_TEAM_GOODGUYS )
-</code></pre>
-<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1566806951528.png" alt=""></figure>
-<p>当然，我可以枚举上面的组合来达到一下效果：同阵营队友，同阵营非队友，不同阵营队友，不同阵营非队友之类。</p>
-<p>最终效果，不通阵营的队友，互相不能攻击</p>
-<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1566807155157.png" alt=""></figure>
 ]]></content>
     </entry>
 </feed>
