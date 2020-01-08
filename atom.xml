@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-01-06T10:14:17.845Z</updated>
+    <updated>2020-01-08T05:45:25.292Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -40,21 +40,21 @@
 
 {
   &quot;template&quot;: &quot;kakiraid-*&quot;, 
-  &quot;order&quot;:    1, //覆盖掉默认0
+  &quot;order&quot;:    1, 
   &quot;settings&quot;: {
     &quot;index.indexing.slowlog.threshold.index.debug&quot; : &quot;2s&quot;,
     &quot;index.indexing.slowlog.threshold.index.info&quot; : &quot;5s&quot;,
     &quot;index.indexing.slowlog.threshold.index.trace&quot; : &quot;500ms&quot;,
     &quot;index.indexing.slowlog.threshold.index.warn&quot; : &quot;10s&quot;,
-    &quot;index.mapping.total_fields.limit&quot;: 3000, // 增加fields上线
-    &quot;index.merge.policy.max_merged_segment&quot; : &quot;5gb&quot;, // 段合并相关
-    &quot;index.merge.policy.segments_per_tier&quot; : &quot;24&quot;, // 段合并相关
-    &quot;index.merge.scheduler.max_merge_count&quot; : 10, // 段合并相关
-    &quot;index.merge.scheduler.max_thread_count&quot; : 1, // 段合并相关
+    &quot;index.mapping.total_fields.limit&quot;: 3000,
+    &quot;index.merge.policy.max_merged_segment&quot; : &quot;5gb&quot;,
+    &quot;index.merge.policy.segments_per_tier&quot; : &quot;24&quot;,
+    &quot;index.merge.scheduler.max_merge_count&quot; : 10,
+    &quot;index.merge.scheduler.max_thread_count&quot; : 1,
     &quot;index.number_of_shards&quot;: &quot;5&quot;,
     &quot;index.number_of_replicas&quot; : &quot;1&quot;,
     &quot;index.optimize_auto_generated_id&quot; : &quot;true&quot;,
-    &quot;index.refresh_interval&quot; : &quot;60s&quot;, // 日志可见延迟时间
+    &quot;index.refresh_interval&quot; : &quot;60s&quot;,
     &quot;index.routing.allocation.total_shards_per_node&quot; : &quot;-1&quot;,
     &quot;index.search.slowlog.threshold.fetch.debug&quot; : &quot;500ms&quot;,
     &quot;index.search.slowlog.threshold.fetch.info&quot; : &quot;800ms&quot;,
@@ -71,11 +71,35 @@
   },
   &quot;mappings&quot;: {
     &quot;_default_&quot;: { 
-	  &quot;dynamic&quot;: true, // true保证我们没有设定的mapping也不会漏掉, false则相反，strict会报错
+	  &quot;dynamic&quot;: true,
       &quot;_all&quot;: {
         &quot;enabled&quot;: false
       },
       &quot;dynamic_templates&quot;: [
+        {
+          &quot;string_template&quot;: {
+            &quot;match_mapping_type&quot;: &quot;string&quot;,  
+            &quot;match&quot;: &quot;*&quot;,                    
+            &quot;mapping&quot;: {
+              &quot;type&quot;: &quot;text&quot;,
+              &quot;fields&quot;: {
+                    &quot;keyword&quot;: {
+                        &quot;type&quot;: &quot;keyword&quot;,
+                        &quot;ignore_above&quot;: 256
+                    }
+                }
+            }
+          }
+        },
+        {
+          &quot;ip&quot;: {
+            &quot;match_mapping_type&quot;: &quot;*&quot;,
+            &quot;match&quot;: &quot;*_ip&quot;,
+            &quot;mapping&quot;: {
+              &quot;type&quot;: &quot;ip&quot;
+            }
+          }
+        },
         {
           &quot;date&quot;: {
             &quot;match&quot;: &quot;*_date&quot;,            
@@ -86,9 +110,9 @@
           }
         },
         {
-          &quot;strings&quot;: {
+          &quot;keyword&quot;: {
             &quot;match_mapping_type&quot;: &quot;string&quot;,
-            &quot;match&quot;: &quot;*_s&quot;,                 
+            &quot;match&quot;: &quot;*_k&quot;,                 
             &quot;mapping&quot;: {
               &quot;type&quot;: &quot;keyword&quot;,
               &quot;ignore_above&quot;: 256,
@@ -133,25 +157,6 @@
               &quot;null_value&quot;: &quot;null&quot;
             }
           }
-        },
-        {
-          &quot;ip&quot;: {
-            &quot;match_mapping_type&quot;: &quot;*&quot;,
-            &quot;match&quot;: &quot;*_ip&quot;,
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;ip&quot;
-            }
-          }
-        },
-        {
-          &quot;string_template&quot;: {
-            &quot;match_mapping_type&quot;: &quot;string&quot;,  
-            &quot;match&quot;: &quot;*&quot;,                    
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;keyword&quot;,             
-              &quot;null_value&quot;: &quot;null&quot;
-            }
-          }
         }
       ]
     }
@@ -160,7 +165,7 @@
 </code></pre>
 <p>其他的是我为了加快索引速度给的一些“调优”。比如refresh_interval这个默认值是1s，虽然看上去日志是所见即所得，但有的时候并不需要这么快。可以适当的延长这个值，让日志在file_cache中多呆一会儿再被可见。其实对于elk来说，文档可见其实只要缓存到了file_cache中即可，并不需要写入到硬盘。</p>
 <p>当然通过flush也是可以保证这点的，但是它的代价就是磁盘io。所以我这里将translog设定成了异步并且有大小阈值的。因为这些日志文件并不是那么的重要。</p>
-<p>同时我还设定了dynamic_templates来保证未来的扩展性，只要符合命名规则就可以自动解析成想要的类型了。</p>
+<p>同时我还设定了dynamic_templates来保证未来的扩展性，只要符合命名规则就可以自动解析成想要的类型了。这里要注意得是模板其实也有顺序的，个人越是通用的应该要放在上面比较好。然后对于string类型来说，建议还是使用text而不是keyword，这样会使得日常查看日志方便许多。</p>
 <h3 id="如何重新装载日志呢">如何重新装载日志呢？</h3>
 <p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。最重要的原因是当天的index还没有完成，处于正在执行状态，是不会接受已经被索引过的日志的。要么就是停止当天的索引，要么就是隔天操作。</p>
 <p>隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
