@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-01-08T05:45:25.292Z</updated>
+    <updated>2020-01-09T04:07:00.537Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,40 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[elk时区问题]]></title>
+        <id>https://xiwan.github.io/post/zX5LGZjc5</id>
+        <link href="https://xiwan.github.io/post/zX5LGZjc5">
+        </link>
+        <updated>2020-01-09T03:39:22.000Z</updated>
+        <summary type="html"><![CDATA[<p>希望通过这篇文章能解释清楚elk中的时区问题</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>希望通过这篇文章能解释清楚elk中的时区问题</p>
+<!-- more -->
+<p>由于kibana包括es默认是使用UTC时间，对于我们这种常年驻扎在东八的社畜来说十分不友好。比如我们日志是按照东八时间记录的，但到了elk中间你会发现@timestamp会莫名奇妙的少了8个小时。这是因为底层用的就是UTC。</p>
+<p>于是找到一种方案是在Logstash中对齐@timestamp和日志时间：</p>
+<pre><code>  ruby { 
+    code =&gt; &quot;event['timestamp'] = LogStash::Timestamp.new(event['@timestamp']+ 8*60*60)&quot; 
+  }
+  
+  ruby {
+    code =&gt; &quot;event['@timestamp']= event['timestamp']&quot;
+  }
+</code></pre>
+<p>这样做后的结果呢？</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1578541551939.png" alt=""></figure>
+<p>由于默认设置kibana用浏览器时间，所以档这个对齐后，上午11点却只能现实凌晨3点的日志。。。感觉越搞越糟糕了。</p>
+<p>仔细想下，我们其实强行同步这两个时间是有点多余的。因为kibana默认是按照@timestamp来交割，并且用的是utc时区来展示。当我们切换设置为browser，它自动将@timestamp转换到对应时区，而不影响日志展示本身。所以一旦你强行对齐这两个时间，反而会导致部分日志无法展示出来了。如果你服务器一开始就设定UTC时间来记录日志，这种对齐是没有任何问题得。但是一旦设定了其他时区，其实最好得做法就是简单的把日志时间和时区信息设置到@timestamp，剩下的就让elk自己转换即可。</p>
+<pre><code>  date {
+    match =&gt; [&quot;[log_json][log_datetime]&quot;, &quot;yyyy-MM-dd HH:mm:ss&quot;]
+    target =&gt; &quot;@timestamp&quot;
+    timezone =&gt; &quot;+08:00&quot;
+  }
+</code></pre>
+<p>这里多说一点，elk用这个@timestamp除了展示用还有什么作用呢？</p>
+<p>索引分割用。由于我们日志是按天分割，日志文件是按小时记录。由于存在8小时时差，所以索引的一天24小时是跨了日志的两天的。比如索引7号的日志，实际是从7号早上8点到8号早上7点为止。这点明白后，在调整索引时候，最好延迟两天再做，防止对正在写入的索引产生影响。别我是怎么知道的，反正都是血泪史。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[elk的fileds被撑爆了。。。]]></title>
         <id>https://xiwan.github.io/post/WBe1HiDrr</id>
@@ -585,52 +619,6 @@ readwritetimeout 相当于建立连接到下载完整个包体需要的时间，
 <h4 id="注意">注意</h4>
 <p>如果使用沙箱环境，要注意签名方式和对应的公钥不要弄错。就支付宝来说，需要记录两个公钥，一个是与签名方式对应的应用公钥，还有一个是基于这个公钥签发的平台公钥。</p>
 <p>还有一点就是支付参数中的product_code部分需要根据签约的活动来写，不能乱写。否则会一直导致参数失败的错误。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[制作一个KV编辑器]]></title>
-        <id>https://xiwan.github.io/post/zhi-zuo-yi-ge-kv-bian-ji-qi</id>
-        <link href="https://xiwan.github.io/post/zhi-zuo-yi-ge-kv-bian-ji-qi">
-        </link>
-        <updated>2019-08-28T11:12:37.000Z</updated>
-        <summary type="html"><![CDATA[<p>为了后面方便快速开发自定义英雄和技能，决定开坑先做个KV编辑器。有依赖一个第三方的库来实例化KV。</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>为了后面方便快速开发自定义英雄和技能，决定开坑先做个KV编辑器。有依赖一个第三方的库来实例化KV。</p>
-<!-- more -->
-<h3 id="主要功能">主要功能</h3>
-<p>[系统]<br>
-1. 	设置： 一些全局参数<br>
-默认打开位置（英雄，技能，物品）<br>
-默认文件名字（英雄，技能，物品）<br>
-导入基础数据<br>
-2.  关于<br>
-[编辑]<br>
-[英雄]<br>
-1. 	导入：读取一些已经写好的KV文件<br>
-2. 	新建：创建一个新的KV<br>
-[技能]<br>
-1. 	导入：读取一些已经写好的KV文件<br>
-2. 	新建：创建一个新的KV<br>
-[物品]<br>
-1. 	导入：读取一些已经写好的KV文件<br>
-2. 	新建：创建一个新的KV<br>
-[字典]<br>
-翻译官方的一些文档</p>
-<h3 id="excel">excel</h3>
-<p>为了快速反应基础的变化，需要一个基于excel导入的数据库。这样可以很方便地导入导出。<br>
-通用的结构：</p>
-<ul>
-<li>ID: 主要是标识用</li>
-<li>KEY: 内置KEY名字，在输入时候会进行智能匹配 (如果是#开头，表示需要从POINT范围选取)</li>
-<li>GROUP: 分组用，方便展示或者其他目的</li>
-<li>VALUE: 从官方搞的一些默认值</li>
-<li>COMMENT: 收集的一些说明</li>
-<li>PARENT: 表明KEY之间的父子关系</li>
-<li>POINT: KV的取值源头（比如DOTA_ABILITY_ATTRIBUTE#DOTAUnitAttackCapability_t  表示查看比如DOTA_ABILITY_ATTRIBUTE表的DOTAUnitAttackCapability_t的分组）</li>
-</ul>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567421279321.png" alt=""></figure>
-<h3 id="截图">截图</h3>
-<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1566991427426.png" alt=""></figure>
 ]]></content>
     </entry>
 </feed>
