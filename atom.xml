@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-01-17T10:17:53.581Z</updated>
+    <updated>2020-01-17T10:25:32.701Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -37,8 +37,11 @@
 <figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e2177ba65644.png" alt=""></figure>
 </li>
 <li>
-<p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数</p>
+<p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数.像下面这种循环内设置统一过期时间的做法就有点危险</p>
 </li>
+</ol>
+<figure data-type="image" tabindex="3"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e218b722d15b.png" alt=""></figure>
+<ol start="7">
 <li>
 <p>保持主redis只放和用户相关的重要数据，周围数据都可以放在另外的redis中，需要梳理业务。</p>
 </li>
@@ -47,7 +50,7 @@
 </li>
 <li>
 <p>每日凌晨发现有集中的内存释放，并且空间还比较大.</p>
-<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
 </li>
 </ol>
 <p>分析完业务后发现是排行榜集中时间过期，没有做随机延迟。<br>
@@ -89,7 +92,7 @@
 <p>在最外层的调用地方还有一个for循环加持放大</p>
 <p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e21874521588.png" alt=""><br>
 分析腾讯的监控看那个面板可以看到，每个一个小时延迟和读数目有个尖峰。应该就是这个原因导致的。</p>
-<figure data-type="image" tabindex="4"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
+<figure data-type="image" tabindex="5"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
 ]]></content>
     </entry>
     <entry>

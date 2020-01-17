@@ -6,7 +6,7 @@
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
 <title>线上redis问题分析记录 | Keep Thinking</title>
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1579256180365">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1579256730751">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
 
@@ -201,8 +201,11 @@
 <figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e2177ba65644.png" alt=""></figure>
 </li>
 <li>
-<p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数</p>
+<p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数.像下面这种循环内设置统一过期时间的做法就有点危险</p>
 </li>
+</ol>
+<figure data-type="image" tabindex="3"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e218b722d15b.png" alt=""></figure>
+<ol start="7">
 <li>
 <p>保持主redis只放和用户相关的重要数据，周围数据都可以放在另外的redis中，需要梳理业务。</p>
 </li>
@@ -211,7 +214,7 @@
 </li>
 <li>
 <p>每日凌晨发现有集中的内存释放，并且空间还比较大.</p>
-<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
 </li>
 </ol>
 <p>分析完业务后发现是排行榜集中时间过期，没有做随机延迟。<br>
@@ -253,7 +256,7 @@
 <p>在最外层的调用地方还有一个for循环加持放大</p>
 <p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e21874521588.png" alt=""><br>
 分析腾讯的监控看那个面板可以看到，每个一个小时延迟和读数目有个尖峰。应该就是这个原因导致的。</p>
-<figure data-type="image" tabindex="4"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
+<figure data-type="image" tabindex="5"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
 
             </article>
           </div>
@@ -308,7 +311,7 @@
           </div>
           <div class="author-meta">
             <div class="author">
-              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1579256180365" class='avatar avatar-72 photo' height='72' width='72'>
+              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1579256730751" class='avatar avatar-72 photo' height='72' width='72'>
               <span>WRITTEN BY: &nbsp;&nbsp;&nbsp;<a href='https://xiwan.github.io'></a> </span>
             </div>
             <div class="bio">
