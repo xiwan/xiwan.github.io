@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-01-09T04:12:14.167Z</updated>
+    <updated>2020-01-17T10:17:08.052Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,88 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[线上redis问题分析记录]]></title>
+        <id>https://xiwan.github.io/post/9Wy-WVteG</id>
+        <link href="https://xiwan.github.io/post/9Wy-WVteG">
+        </link>
+        <updated>2020-01-17T10:08:27.000Z</updated>
+        <content type="html"><![CDATA[<p>首先祭出一般的复杂操作优化方案<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e216cc5b43ea.png" alt=""></p>
+<ol>
+<li>
+<p>历史价格不需要拿出全部数据。看现在这部分大小不大都在1KB左右，但是由于时间长了某些物品的价格数量比较多导致list会比较长。</p>
+<figure data-type="image" tabindex="1"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e216d0097915.png" alt=""></figure>
+</li>
+<li>
+<p>部分玩家的事务队列是否可能出现堆积，然后队列过长？</p>
+</li>
+<li>
+<p>寄售队列查了日志访问人数不多，将来可以考虑寄售过期之类，防止过长。</p>
+</li>
+<li>
+<p>可以定一个大概取间让队列尽量控制在5000以内，排查下用队列比较多的地方，比如排行榜之类。</p>
+</li>
+<li>
+<p>LDR:0:1 作为排行榜也是最热的key,需要控制大小和长度。</p>
+<figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e2177ba65644.png" alt=""></figure>
+</li>
+<li>
+<p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数</p>
+</li>
+<li>
+<p>保持主redis只放和用户相关的重要数据，周围数据都可以放在另外的redis中，需要梳理业务。</p>
+</li>
+<li>
+<p>对于stackexchage的连接做保护</p>
+</li>
+<li>
+<p>每日凌晨发现有集中的内存释放，并且空间还比较大.</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
+</li>
+</ol>
+<p>分析完业务后发现是排行榜集中时间过期，没有做随机延迟。<br>
+排行榜大的原因是没有限制数目导致的，并且还有一个安全隐患就是设置数据和expire是两条语句，有可能导致内存泄露。</p>
+<pre><code>public static async Task RenewDailyStar(RaidType type, int relatedID, RaidDailyStar star)
+        {
+            var oldStar = RedisValue.Null;
+            var key = GetDailyStarKey(type, relatedID);
+
+            // 防止集中过期
+            var expRandom = TimeSpan.FromDays(offlineExpireDay).Add(TimeSpan.FromSeconds(MathHelper.GetRandom(0, 600))); 
+            try
+            {
+                // fetch last daily star
+                var cacheStar = SerializationHelper.Serialize(star);
+                // getset is atomic
+                oldStar = await RedisServer.Instance().DB(dailyStarDB).StringGetSetAsync(key, cacheStar);
+                if (oldStar != RedisValue.Null)
+                {
+                    // compare with oldstar
+                    if (oldStar.Get&lt;RaidDailyStar&gt;().GetFinalScore() &gt; star.GetFinalScore())
+                        await RedisServer.Instance().DB(dailyStarDB).StringSetAsync(key, oldStar, expRandom);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(string.Format(&quot;{0} | {1}&quot;, star.GetFinalScore(), ex.Message));
+
+                // 滚回操作
+                if (oldStar != RedisValue.Null)
+                    await RedisServer.Instance().DB(dailyStarDB).StringSetAsync(key, oldStar, expRandom);
+            }
+        }
+</code></pre>
+<ol start="10">
+<li>这里是个批处理，而不是pipeline，由于取了1000位排行榜玩家数据，所以很可能这边会相当耗时。<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217cfe86470.png" alt=""></li>
+</ol>
+<p>在最外层的调用地方还有一个for循环加持放大</p>
+<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e21874521588.png" alt=""><br>
+分析腾讯的监控看那个面板可以看到，每个一个小时延迟和读数目有个尖峰。应该就是这个原因导致的。</p>
+<figure data-type="image" tabindex="4"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[elk时区问题]]></title>
         <id>https://xiwan.github.io/post/zX5LGZjc5</id>
@@ -584,41 +666,6 @@ readwritetimeout 相当于建立连接到下载完整个包体需要的时间，
 <p>当然，不同机器上的日志可以通过定时rsync命令拉取到同一台机器方便查找。</p>
 <h3 id="docker应用日志">docker应用日志</h3>
 <p>由于docker是无状态的，可以通过volums来实现和宿主机的互通。我们可以将docker内应用日志和数据方便地放在宿主机管理，比较简单。可以同时在宿主机上启动一个filebeat将日志发送到内部es机器即可。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[dota如何接入支付]]></title>
-        <id>https://xiwan.github.io/post/dota如何接入支付</id>
-        <link href="https://xiwan.github.io/post/dota如何接入支付">
-        </link>
-        <updated>2019-09-04T07:41:37.000Z</updated>
-        <summary type="html"><![CDATA[<p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
-<!-- more -->
-<h3 id="主体流程">主体流程</h3>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1567582907291.png" alt=""></figure>
-<h4 id="预支付部分">预支付部分</h4>
-<ol>
-<li>ui界面发起向lua服务器的支付请求，同时监听支付返回事件。</li>
-<li>lua服务器调用游戏服务器支付api，这里一般使用的是CreateHTTPRequestScriptVM 方法来拉起http请求。具体用法建议参考其他项目。</li>
-<li>游戏服务器接入好支付sdk后，通过sdk的api拉起预支付请求（如何配置可以参考网上很多例子）。如果是java的服务器代码，就调用 AlipayTradePrecreateRequest 接口就好了。同时也可以在这里完成创建订单的操作。</li>
-<li>同步等待平台预支付结果。</li>
-<li>这里可以根据返回结果来做一些数据更新的操作。然后将二维码地址告知lua服务器端。</li>
-<li>lua服务器获取到预支付的结果，告知ui界面展示二维码。</li>
-</ol>
-<h4 id="支付部分">支付部分</h4>
-<ol start="7">
-<li>客户扫描二维码，与平台交互支付过程。</li>
-<li>支付成功后，平台返回结果给客户</li>
-<li>同时，平台会异步告知交易结果给游戏服务器。游戏服务器继续完成数据更新操作。</li>
-<li>似乎没啥用。</li>
-</ol>
-<h4 id="测试结果">测试结果</h4>
-<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1567582911160.png" alt=""></figure>
-<h4 id="注意">注意</h4>
-<p>如果使用沙箱环境，要注意签名方式和对应的公钥不要弄错。就支付宝来说，需要记录两个公钥，一个是与签名方式对应的应用公钥，还有一个是基于这个公钥签发的平台公钥。</p>
-<p>还有一点就是支付参数中的product_code部分需要根据签约的活动来写，不能乱写。否则会一直导致参数失败的错误。</p>
 ]]></content>
     </entry>
 </feed>

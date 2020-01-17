@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-<title>写代码的一点思考 | Keep Thinking</title>
+<title>线上redis问题分析记录 | Keep Thinking</title>
 <link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1579256180365">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
@@ -153,87 +153,107 @@
     <div id="loop-container" class="loop-container">
       <div class="post type-post status-publish format-standard has-post-thumbnail hentry category-design tag-design tag-standard-2 tag-tagalicious tag-travel entry full-without-featured odd excerpt-1">
         
+          <div class='featured-image lazy lazy-bg-image' data-background="https://xiwan.github.io/post-images/9Wy-WVteG.png">
+          </div>
+        
 
         <div class="entry-meta">
-          <span class="date">· 2019-11-07 ·</span> <span> / </span>
+          <span class="date">· 2020-01-17 ·</span> <span> / </span>
           <span class="author">
             <a href="https://xiwan.github.io" title="" rel="author"> Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a></a>
           </span>
           
             <span class="category">
                     <span> / </span>
-                    <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
+                    <a href="https://xiwan.github.io/tag/tADP05upg">redis</a>
                 </span>
           
             <span class="category">
                     <span> / </span>
-                    <a href="https://xiwan.github.io/tag/pWl5SQFpg">unity</a>
+                    <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
                 </span>
           
         </div>
         <div class='entry-header'>
-          <h1 class='entry-title'>写代码的一点思考</h1>
+          <h1 class='entry-title'>线上redis问题分析记录</h1>
         </div>
         <div class="entry-container">
           <div class="entry-content">
             <article>
-              <p>专门用来总结一些经验和想法，不一定正确</p>
-<!-- more -->
-<h2 id="利用反射和泛型快速创造一个对象">利用反射和泛型快速创造一个对象</h2>
-<p>这里可以看到一个Single类的写法<br>
-<img src="https://xiwan.github.io/post-images/1573101268759.png" alt=""></p>
-<p>那么当我们需要让另外一个类成为单例时候就可以很简单的继承它即可</p>
-<pre><code>    public class Director : Single&lt;Director&gt;
+              <p>首先祭出一般的复杂操作优化方案<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e216cc5b43ea.png" alt=""></p>
+<ol>
+<li>
+<p>历史价格不需要拿出全部数据。看现在这部分大小不大都在1KB左右，但是由于时间长了某些物品的价格数量比较多导致list会比较长。</p>
+<figure data-type="image" tabindex="1"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e216d0097915.png" alt=""></figure>
+</li>
+<li>
+<p>部分玩家的事务队列是否可能出现堆积，然后队列过长？</p>
+</li>
+<li>
+<p>寄售队列查了日志访问人数不多，将来可以考虑寄售过期之类，防止过长。</p>
+</li>
+<li>
+<p>可以定一个大概取间让队列尽量控制在5000以内，排查下用队列比较多的地方，比如排行榜之类。</p>
+</li>
+<li>
+<p>LDR:0:1 作为排行榜也是最热的key,需要控制大小和长度。</p>
+<figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e2177ba65644.png" alt=""></figure>
+</li>
+<li>
+<p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数</p>
+</li>
+<li>
+<p>保持主redis只放和用户相关的重要数据，周围数据都可以放在另外的redis中，需要梳理业务。</p>
+</li>
+<li>
+<p>对于stackexchage的连接做保护</p>
+</li>
+<li>
+<p>每日凌晨发现有集中的内存释放，并且空间还比较大.</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
+</li>
+</ol>
+<p>分析完业务后发现是排行榜集中时间过期，没有做随机延迟。<br>
+排行榜大的原因是没有限制数目导致的，并且还有一个安全隐患就是设置数据和expire是两条语句，有可能导致内存泄露。</p>
+<pre><code>public static async Task RenewDailyStar(RaidType type, int relatedID, RaidDailyStar star)
+        {
+            var oldStar = RedisValue.Null;
+            var key = GetDailyStarKey(type, relatedID);
+
+            // 防止集中过期
+            var expRandom = TimeSpan.FromDays(offlineExpireDay).Add(TimeSpan.FromSeconds(MathHelper.GetRandom(0, 600))); 
+            try
+            {
+                // fetch last daily star
+                var cacheStar = SerializationHelper.Serialize(star);
+                // getset is atomic
+                oldStar = await RedisServer.Instance().DB(dailyStarDB).StringGetSetAsync(key, cacheStar);
+                if (oldStar != RedisValue.Null)
+                {
+                    // compare with oldstar
+                    if (oldStar.Get&lt;RaidDailyStar&gt;().GetFinalScore() &gt; star.GetFinalScore())
+                        await RedisServer.Instance().DB(dailyStarDB).StringSetAsync(key, oldStar, expRandom);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(string.Format(&quot;{0} | {1}&quot;, star.GetFinalScore(), ex.Message));
+
+                // 滚回操作
+                if (oldStar != RedisValue.Null)
+                    await RedisServer.Instance().DB(dailyStarDB).StringSetAsync(key, oldStar, expRandom);
+            }
+        }
 </code></pre>
-<p>这个写法只是适合部分场景，对于对于常用的Helper类，其实直接用static类就可以了。</p>
-<h2 id="通过多重继承来继承多个类">通过多重继承来继承多个类</h2>
-<p>一般来说单个类都是无法一次性继承多个类的，但是我们可以让这类之间行成父子关系。这样最终的儿子类是可以拥有所有先辈的公共成员的。</p>
-<p>我们创建了一个抽象类继承了Single，则它拥有了单例的特性</p>
-<pre><code>    public abstract class SheetObj&lt;T, V&gt; : Single&lt;T&gt; 
-        where T: class where V : ExtendObj
-</code></pre>
-<p>然后又创建了三个子类继承了SheetObj</p>
-<pre><code>    public class EnumBook : SheetObj&lt;EnumBook, Enum&gt;
-    public class RangeBook : SheetObj&lt;RangeBook, Range&gt;
-    public class EnumBook : SheetObj&lt;EnumBook, Enum&gt;
-</code></pre>
-<p>那么我们在使用这些子类时候就可以这么用：</p>
-<pre><code>// Single类的初始化方法
-    RangeBook.Initialize();
-    EnumBook.Initialize();
-    TreeBook.Initialize();
-// SheetObj的加载数据方法
-    RangeBook.Instance.Load(MasterDataFilePath);
-    EnumBook.Instance.Load(MasterDataFilePath);
-    TreeBook.Instance.Load(MasterDataFilePath);
-</code></pre>
-<p>实际上使用时候还可以考虑抽象函数，虚函数或者协议接口之类来满足自己的需求。</p>
-<h2 id="抽取共同的成员到基类">抽取共同的成员到基类</h2>
-<p>比如类A,B,C都有一个成员变量为ID，那么就可以先做一个基类，其余的类可以通过继承方式获取到这个成员变量。当然，这个思路可以扩展开来，会让类的结构有些复杂。但是能节省很多重复劳动工作。<br>
-不过有些项目不在乎这些重复，希望简单直白的类来节约debug时间。所以真正如何使用还是需要权衡。</p>
-<p>不过现在很多代码插件都有一键生成各种set, get方法。甚至还有比较邪门的lombook这类东西。底层似乎是用了动态类的机制。在这里就不展开了。</p>
-<h2 id="覆盖object的tostring方法">覆盖object的ToString()方法</h2>
-<p>在基类中重写ToString()方法，这样可以在Debug问题时候十分方便的查看对象的具体数据。</p>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1573102105886.png" alt=""></figure>
-<h2 id="善用builder模式">善用Builder模式</h2>
-<p>经常写代码时候会碰到要创建一个对象块，由于成员变量过多，会导致代码块十分臃肿。这个时候可以用Builder模式来改造类。</p>
-<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1573102260623.png" alt=""></figure>
-<p>上图这个列子中p1和p2就是很好解释了前面的观点。<br>
-p2是一种普通的生成类的方式，十分简单直白，但不好的是业务逻辑和生命混杂在一起十分乱。p1比较起来就会显得简单很多。</p>
-<p>通常的思路是创建一个Builder类专门负责生成目标对象。这么做的好处主要是如下考虑<br>
-1. 在生成对象的地方代码会十分简洁，配合链式声明，整个代码的可读性也会很好。<br>
-2. 解耦了对象生成和具体的业务逻辑，对调用者保持透明性。</p>
-<p>不过正如第二点说明那样，业务逻辑被挪到了Builder里面去做了，这并不会少写不少代码。不过就我个人来说，目前还是比较值的。</p>
-<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1573102774966.png" alt=""></figure>
-<h2 id="builder继续优化">Builder继续优化</h2>
-<p>通过观察发现这些设置成员变量的方法似乎都是差不多模式：通过一个key算出一个值，然后赋予成员便令，最后返回Builder本身。这样我们可以使用delegate模式，把这个部分的逻辑通过方法参数传入进来。</p>
-<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1573114364942.png" alt=""></figure>
-<p>这样我们的Builder就会变得十分轻量了，前面所有的赋值操作以及返回都变作了一个delegate函数：</p>
-<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1573114497904.png" alt=""></figure>
-<p>这样我们使用Builder生成对象也有相应变化：</p>
-<figure data-type="image" tabindex="6"><img src="https://xiwan.github.io/post-images/1573114673344.png" alt=""></figure>
-<p>如上图所示，我们发现p3和p1比较起来似乎更加复杂了，也不如p2直观。 其实这一来一去，我们从p2模式到p1主要是为了解决代码块比较笨重的问题，扩展性也差。但是新的问题是业务逻辑被隐藏到了Builder里面。其实仔细想想，对于Builder来说它并不需要关心你业务逻辑是怎样的，它唯一要做的就是把某个业务逻辑（规则）产生的结果赋予给相应的值就好了。基于这个考虑，我们也要把业务逻辑解耦开来。所以通过delegate这种方式，很好地做到了这点。整个builder赋值时候做地也是最存粹地操作而已！</p>
-<p>p3的做法把这也业务规则包装成方法后，可以写一个专门地处理业务逻辑类，它负责封装各种业务算法然后输出而已。同样也保持了简单高效的模式。</p>
+<ol start="10">
+<li>这里是个批处理，而不是pipeline，由于取了1000位排行榜玩家数据，所以很可能这边会相当耗时。<br>
+<img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217cfe86470.png" alt=""></li>
+</ol>
+<p>在最外层的调用地方还有一个for循环加持放大</p>
+<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e21874521588.png" alt=""><br>
+分析腾讯的监控看那个面板可以看到，每个一个小时延迟和读数目有个尖峰。应该就是这个原因导致的。</p>
+<figure data-type="image" tabindex="4"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
 
             </article>
           </div>
@@ -317,7 +337,7 @@ p2是一种普通的生成类的方式，十分简单直白，但不好的是业
             <nav class="navigation pagination" role="navigation">
               <h2 class="screen-reader-text">Posts navigation</h2>
               <div class="nav-links">
-                <a class="next page-numbers" href="https://xiwan.github.io/post/steam真的挂了2小时">下一篇->steam真的挂了2小时</a>
+                <a class="next page-numbers" href="https://xiwan.github.io/post/zX5LGZjc5">下一篇->elk时区问题</a>
               </div>
             </nav>
           
