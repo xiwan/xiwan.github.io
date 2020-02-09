@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-01-17T10:25:32.701Z</updated>
+    <updated>2020-02-09T13:13:52.526Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,54 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[诡异的Random]]></title>
+        <id>https://xiwan.github.io/post/POXwU3zqV</id>
+        <link href="https://xiwan.github.io/post/POXwU3zqV">
+        </link>
+        <updated>2020-02-09T12:43:49.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="问题描述">问题描述</h3>
+<p>今天下午，突然线上出现大量高级掉落重复出现。正常的概率是1%，结果部分玩家出现了很多。导致了群里炸了锅。于是开始分析掉落部分代码：</p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1581252565576.png" alt=""></figure>
+<p>这里做过一次优化，以前是不停的new 一个Random对象。后面测试时候发现效率不高，于是采用了复用的方式。现在似乎这里除了问题，分析下来应该是Random在某种条件下输出了相同值。</p>
+<h3 id="继续分析">继续分析</h3>
+<p>既然Random出了问题，那么有下面几个问题：<br>
+1. 触发Random出问题的条件是什么？<br>
+2. Random出问题后会输出什么值呢？<br>
+3. 假如是固定值，是有条件固定还是无条件呢？</p>
+<h4 id="触发条件">触发条件</h4>
+<p>有一种说法是：由于不指定seed情况下，random会默认用时间的tick来当作种子。如果在一个tick内重复过多的调用，则会产生固定值。</p>
+<p>不过根据线上情况分析：这个问题持续了半小时。所以这个马上被否决了。</p>
+<p>接下来搜索后得到了一个线索：</p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1581252881498.png" alt=""></figure>
+<p>并且有人提到当random停止工作后，他固定返回0。</p>
+<p>多线程环境下，的确使用static的random会产生这样的问题。这样来看应该是这里对于random的优化不当了。不过随之而来的是，固定值真的是0么？</p>
+<h4 id="固定值">固定值</h4>
+<p>停摆后的random的固定输出值是什么？真的是0。</p>
+<p>同理，线上的表现否定了这个结果。因为如果是0，玩家的掉落数目也使用了这个随机数，所以他们应该获取不到这个异常的结果。。。</p>
+<p>那么究竟是什么值呢？只能通过模拟多线程来压测了</p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1581253148318.png" alt=""></figure>
+<p>具体代码如上，在多线程环境下模拟随机过程，推论是：如果正常他应该输出比较均匀的分布，如果异常应该可以发现某个值特别大。</p>
+<p>当次数低于100000次，我并没有看到太多异常。当超过这个值后有趣的事情发生了：</p>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1581253310151.png" alt=""></figure>
+<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1581253317111.png" alt=""></figure>
+<figure data-type="image" tabindex="6"><img src="https://xiwan.github.io/post-images/1581253322350.png" alt=""></figure>
+<p>这三次异常的结果我差不多测试了30多遍才出来。也就是说差不多只有10%的概率出现Random罢工。这样的确证实了前面的说的多线程情况下， random输出固定值。可以看到一开始应该是均匀分布的，一旦出现多线程问题，马上罢工。</p>
+<h4 id="固定条件">固定条件</h4>
+<p>Ranom 罢工后会输出固定值这点确认了。但不是网上大家说的是0，而是取决于我输入的min值。这样就解释了线上的大部分疑惑了。并且继续做测试可以发现，这个固定值一旦产生并不是固定不变，而是每次都等于min值。</p>
+<p>测试条件为5-10，11-15两个取间同时开始随机取值，检查分布。结果如下图：</p>
+<figure data-type="image" tabindex="7"><img src="https://xiwan.github.io/post-images/1581253614580.png" alt=""></figure>
+<p>看到当第一个红框出现罢工后，下一个Random值不是5，而是直接都输出成11了。</p>
+<h3 id="如何改进呢">如何改进呢？</h3>
+<p>原来是通过new 一个Random达到隔离的目的，但现在看来有两个问题：<br>
+1. 效率不高<br>
+2. 并没有根本解决多线程下罢工的问题。<br>
+网上给的方案是采用锁，这样感觉效率也不高。并不能给这个底层方法带来本质的变化。</p>
+<p>现在想到的一个方案类似于concurrentDictionary那样，多粒度控制锁的一个Random池子。利用这个数据结构的并发性，来创造多个可以复用的Random实例。每次需要时候采用RondRobin算法获得一个对象即可。</p>
+<p>当然更激进的做法就是不用并发对象，直接做1000个实例，感觉出错的概率会下降不少。</p>
+<p>上面两点会继续更进</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[线上redis问题分析记录]]></title>
         <id>https://xiwan.github.io/post/9Wy-WVteG</id>
@@ -633,42 +681,6 @@ readwritetimeout 相当于建立连接到下载完整个包体需要的时间，
 <h2 id="总结">总结</h2>
 <p>写了一大通，感觉有点牢骚表现。毕竟自己当初脑子一热从明星上市企业出来，追求自己的游戏梦吧。结果这一年多下来做的还是更偏底层的东西了。中间有一段时间我自己还是有些执念。自己会学习Unity之类的东西，写各种最后无疾而终的小游戏。可能还是有想法哪天自己可以写写酷炫的前端吧（应该没啥问题😁）</p>
 <p>反正就这么过来了，现在游戏的上线，更感觉是自己是幕后的扫地僧。虽然感觉不出来游戏中的贡献，但正如老板说的：没我这游戏出不来。。。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[docker 日志处理]]></title>
-        <id>https://xiwan.github.io/post/docker 日志处理</id>
-        <link href="https://xiwan.github.io/post/docker 日志处理">
-        </link>
-        <updated>2019-09-18T03:59:22.000Z</updated>
-        <summary type="html"><![CDATA[<p>docker 启动后有一个需求便是如何处理以及收集它产生的日志。<br>
-这里的日志可以分为3类： docker的引擎日志， docker 容器日志， docker 应用日志</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>docker 启动后有一个需求便是如何处理以及收集它产生的日志。<br>
-这里的日志可以分为3类： docker的引擎日志， docker 容器日志， docker 应用日志</p>
-<!-- more -->
-<h3 id="docker-引擎日志">docker 引擎日志</h3>
-<p>这个查找了写文章后总结如下，根据自己对应的系统去查找即可</p>
-<p><strong>Ubuntu(14.04)</strong>	/var/log/upstart/docker.log<br>
-<strong>Ubuntu(16.04)</strong>	journalctl -u docker.service<br>
-<strong>CentOS 7/RHEL 7/Fedora</strong>	journalctl -u docker.service<br>
-<strong>CoreOS</strong>	journalctl -u docker.service<br>
-<strong>OpenSuSE</strong>	journalctl -u docker.service<br>
-<strong>OSX</strong>	~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/log/d‌​ocker.log<br>
-<strong>Debian GNU/Linux 7</strong>	/var/log/daemon.log<br>
-<strong>Debian GNU/Linux 8</strong>	journalctl -u docker.service<br>
-<strong>Boot2Docker</strong>	/var/log/docker.log</p>
-<h3 id="docker-容器日志">docker 容器日志</h3>
-<p>容器的日志 则可以通过 docker logs 命令来访问，而且可以像 tail -f 一样，使用 docker logs -f 来实时查看。如果使用 Docker Compose，则可以通过 docker-compose logs &lt;服务名&gt; 来查看。</p>
-<p>如果需要查看容器日志的具体位置可以调用命令：<br>
-<img src="https://xiwan.github.io/post-images/1568779631501.png" alt=""></p>
-<p>可以看到这个是一个非常复杂的路径，每次看这个文件是非常不方便的。比较好的解决方案是用一个日志收集器来收集这些日志，比如利用<a href="https://tonybai.com/2016/03/25/ship-docker-container-log-with-filebeat/">filebeat</a>来收集日志，然后集中到ES中查询。不过需要一些软件安装或者配置。</p>
-<p>这里我使用一个比较简单的方案， 利用docker-compose 的logs命令将对应service输出到默认的位置。这样不用担心频繁的up down导致的容器号变化。</p>
-<pre><code>nohup docker-compose -f docker-compose-esk.yml logs -f kibana &gt;&gt; /data/game/logs/elk/VM_18_7_centos-kibana.log &amp;
-</code></pre>
-<p>当然，不同机器上的日志可以通过定时rsync命令拉取到同一台机器方便查找。</p>
-<h3 id="docker应用日志">docker应用日志</h3>
-<p>由于docker是无状态的，可以通过volums来实现和宿主机的互通。我们可以将docker内应用日志和数据方便地放在宿主机管理，比较简单。可以同时在宿主机上启动一个filebeat将日志发送到内部es机器即可。</p>
 ]]></content>
     </entry>
 </feed>
