@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-02-09T13:15:13.867Z</updated>
+    <updated>2020-02-10T07:07:52.527Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -11,13 +11,18 @@
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Keep Thinking</rights>
     <entry>
-        <title type="html"><![CDATA[诡异的Random]]></title>
+        <title type="html"><![CDATA[Random函数罢工了]]></title>
         <id>https://xiwan.github.io/post/POXwU3zqV</id>
         <link href="https://xiwan.github.io/post/POXwU3zqV">
         </link>
         <updated>2020-02-09T12:43:49.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="问题描述">问题描述</h3>
+<p>今天下午，突然线上出现大量高级掉落重复出现。</p>
+]]></summary>
         <content type="html"><![CDATA[<h3 id="问题描述">问题描述</h3>
-<p>今天下午，突然线上出现大量高级掉落重复出现。正常的概率是1%，结果部分玩家出现了很多。导致了群里炸了锅。于是开始分析掉落部分代码：</p>
+<p>今天下午，突然线上出现大量高级掉落重复出现。</p>
+<!-- more -->
+<p>正常的概率是1%，结果部分玩家出现了很多。导致了群里炸了锅。于是开始分析掉落部分代码：</p>
 <figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1581252565576.png" alt=""></figure>
 <p>这里做过一次优化，以前是不停的new 一个Random对象。后面测试时候发现效率不高，于是采用了复用的方式。现在似乎这里除了问题，分析下来应该是Random在某种条件下输出了相同值。</p>
 <h3 id="继续分析">继续分析</h3>
@@ -54,8 +59,27 @@
 2. 并没有根本解决多线程下罢工的问题。<br>
 网上给的方案是采用锁，这样感觉效率也不高。并不能给这个底层方法带来本质的变化。</p>
 <p>现在想到的一个方案类似于concurrentDictionary那样，多粒度控制锁的一个Random池子。利用这个数据结构的并发性，来创造多个可以复用的Random实例。每次需要时候采用RondRobin算法获得一个对象即可。</p>
-<p>当然更激进的做法就是不用并发对象，直接做1000个实例，感觉出错的概率会下降不少。</p>
-<p>上面两点会继续更进</p>
+<p>当然更激进的做法就是不用并发对象，直接做1000个实例，感觉出错的概率会下降不少。<br>
+以下就是核心代码部分，每次通过到队列中获取random实例，而非反复构造它。当然在竞争十分激烈的情况下有可能拿不到random，这个时候就做了个保底。使用全局的globalRandom.</p>
+<pre><code>        static Random DequeueRand(Random random)
+        {
+            if (random == null)
+            {
+                if (GlobalRandomQueue.TryDequeue(out Random rand))
+                {
+                    random = rand;
+                    GlobalRandomQueue.Enqueue(rand);
+                }
+                else
+                {
+                    // 保底
+                    random = globalRandom;
+                }
+            }
+            return random;
+        }
+</code></pre>
+<p>测试效果：测试10批，每批10次， 每次1百万条，random函数再也不出现“罢工“情况了</p>
 ]]></content>
     </entry>
     <entry>
