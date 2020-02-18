@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>Redis底层协议 | Keep Thinking</title>
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1582021604869">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1582021604869" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">Redis底层协议</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2020-02-18</span>
+            
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://xiwan.github.io/tag/tADP05upg">
+                    redis
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content">
+            <p>最近读到官网的一篇文章 https://redis.io/topics/protocol, 主要是描述了一下redis在通讯协议。忽然觉得豁然开朗：redis作为作为一个内存数据库，其实其本质也是一个服务器而已。监听在6379（默认）接口，然后定义了一套自己的命令方便调用者使用。</p>
+<p>其实市面上的主流第三方客户端都会遵守这套协议。只不过实现的语言不一样而已。这里试着分析这套协议，并且写一个简单的“redis客户端”。</p>
+<!-- more -->
+<h3 id="内联协议">内联协议</h3>
+<p>既然是个tcp服务器，我们就可以telnet上去，类似下图这样：<br>
+<img src="https://xiwan.github.io/post-images/1582019455503.png" alt=""></p>
+<p>这些命令看起来和我们平时使用的差不多，不过这些命令被称为“内联命令”，而不是redis真正的通信协议。怎么理解呢？就是这些命令发过去后，redis服务器会先分析你的命令，如果发现是“内联的”，就会自己再解析成标准协议。</p>
+<p>对于redis这种高性能服务器来说，花费额外的性能解析这些“内联命令”是有些得不偿失的。这里斗胆坏一下：网上有些第三方的客户端做了这种投机取巧的：）</p>
+<h3 id="真正的协议">真正的协议</h3>
+<p>虽然分为请求和相应两个部分，其实他们都遵循一个协议：</p>
+<ul>
+<li>对于<strong>简单字符串</strong>类型，它的第一个byte是&quot;+&quot;</li>
+<li>对于<strong>错误</strong>类型，它的第一个byte是&quot;-&quot;</li>
+<li>对于<strong>整数</strong>类型， 它的第一个byte是&quot;:&quot;</li>
+<li>对于<strong>复杂字符串</strong>类型，它的第一个byte是&quot;$&quot;</li>
+<li>对于<strong>数组</strong>类型，它的第一个byte是&quot;*&quot;</li>
+<li><strong>结束字符</strong>固定为 &quot;\r\n&quot; (CRLF)。</li>
+</ul>
+<p>对于发送端：客户端永远使用<strong>数组</strong>类型，里面使用<strong>复杂字符串</strong>类型。<br>
+所以举个例子，比如<em>get name</em>, 在底层就变成了</p>
+<p><code>*2\r\n$3\r\nget\r\n$4\r\nname\r\n</code></p>
+<p>这里做下说明： *2表示整个数组长度为2，然后\r\n都是结束字符，可以认为是redis的一种强制分隔符； $3表示get这个字符长度为3；同理, $4表示name字符长度为4。当然每个表达式中间再用CRLF字符分割即可。</p>
+<p>这里我写了个简单的拼接程序：</p>
+<pre><code>static readonly string CRLF = &quot;\r\n&quot;;
+static string SocketCommand(string[] command) 
+{
+		var _len = command.Length;
+		var _command = new StringBuilder();
+		_command.Append($&quot;*{_len}{CRLF}&quot;);
+
+		for (int i = 0; i &lt; _len; i++) 
+		{
+				_command.Append($&quot;${command[i].Length}{CRLF}{command[i]}{CRLF}&quot;);
+		}
+
+		return _command.ToString();
+}
+</code></pre>
+<p>测试结果：</p>
+<p><img src="https://xiwan.github.io/post-images/1582021232629.png" alt=""></p>
+<p>可以看到和telnet模式是一样的操作，但底层协议完全不一样。</p>
+<h3 id="不同的模式">不同的模式</h3>
+<p>除了上面说得这种经典“一问一答”模式之外， redis还支持另外两种操作：</p>
+<ol>
+<li>管道技术(PIPELINE)： 当你有很多命令需要短时间执行时候，这个技术非常有用。其核心就是将多个命令打包成一个命令，减少来回的网络开销。这里有一点说明，管道和事务是有区别的，虽然他们都是合并命令。管道可以认为这些命令是松散的，中间可以插入其他的命令；而事务是相反的，这些命令是紧耦合的，必须全部执行完毕才能执行后续命令。</li>
+<li>订阅模式：当客户端订阅(subscribe)某个频道后，redis将不再需要等待命令了。可以反过来在pub端发送消息，而sub端会自动获取到这些消息。这项技术在应用在我们游戏的聊天室中，还有一些跨服消息（rpc）之类。</li>
+</ol>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://xiwan.github.io/post/POXwU3zqV">
+              <h3 class="post-title">
+                下一篇：Random函数罢工了
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+        
+          <div id="gitalk-container"></div>
+        
+
+        
+      
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/xiwan" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

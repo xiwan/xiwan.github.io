@@ -1,1006 +1,780 @@
+
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="description" content="" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="all,follow">
-<meta name="googlebot" content="index,follow,snippet,archive">
+    
+<meta charset="utf-8" >
+
 <title>Keep Thinking</title>
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1581318468400">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
+<meta name="description" content="有美人兮心不怿">
 
-<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1582021604869">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
 
 
 
   </head>
-  <body class="home blog ct-body standard">
-    <div id="overflow-container" class="overflow-container">
-    <a class="skip-content" href="#main">Skip to content</a>
-        <header id="site-header" class="site-header" role="banner">
-    <div class='top-navigation top-navigation-important'>
-        <div class='container'>
-            <div id="menu-secondary" class="menu-container menu-secondary" role="navigation">
-                <button id="toggle-secondary-navigation" class="toggle-secondary-navigation"><i class="fa fa-plus"></i></button>
-                <div class="menu">
-                    <ul id="menu-secondary-items" class="menu-secondary-items">
-                        
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/tADP05upg">redis</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/pWl5SQFpg">unity</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/u_2Pe30Rt">life</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/WLQnCbVL4">docker</a>
-                        </li>
-                            
-                        
-                            
-                        
-                            
-                        
-                    </ul>
-                </div>
-            </div>
-            <ul class="social-media-icons">
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-            </ul>
-        </div>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1582021604869" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
     </div>
-
-    <div class="container">
-        <div id="title-info" class="title-info">
-            <div id='site-title' class='site-title'>
-                <a href="https://xiwan.github.io">  Keep Thinking </a>
-            </div>
-        </div>
-        <button id="toggle-navigation" class="toggle-navigation">
-            <i class="fa fa-bars"></i>
-        </button>
-        <div id="menu-primary-tracks" class="menu-primary-tracks"></div>
-        <div id="menu-primary" class="menu-container menu-primary" role="navigation">
-            <p class="site-description">有美人兮心不怿</p>
-            <div class="menu">
-                <ul id="menu-primary-items" class="menu-primary-items">
-                     
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="/">首页</a>
-                            </li>
-                        
-                    
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="/archives">归档</a>
-                            </li>
-                        
-                    
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="/tags">标签</a>
-                            </li>
-                        
-                    
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="https://xiwan.github.io/post/UOJXP5H7t/">about</a>
-                            </li>
-                        
-                    
-                </ul>
-            </div>
-        </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
     </div>
+  </div>
+</div>
 
-
-</header>
-
-
-        <div id="main" class="main" role="main">
-  <h1 class="screen-reader-text">Posts</h1>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
       
-      even
-       excerpt">
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
       
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2020-02-09 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        
+        
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/FwWrD9HpO">
+        <h2 class="post-title">Redis底层协议</h2>
+      </a>
+      <div class="post-abstract">
+        <p>最近读到官网的一篇文章 https://redis.io/topics/protocol, 主要是描述了一下redis在通讯协议。忽然觉得豁然开朗：redis作为作为一个内存数据库，其实其本质也是一个服务器而已。监听在6379（默认）接口，然后定义了一套自己的命令方便调用者使用。</p>
+<p>其实市面上的主流第三方客户端都会遵守这套协议。只不过实现的语言不一样而已。这里试着分析这套协议，并且写一个简单的“redis客户端”。</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2020-02-18</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/tADP05upg">
+                redis
+                
+              </a>
+            
           </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
-                </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                </span>
-            
+        
+      </div>
+    </div>
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/POXwU3zqV"> Random函数罢工了 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <h3 id="问题描述">问题描述</h3>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/POXwU3zqV">
+        <h2 class="post-title">Random函数罢工了</h2>
+      </a>
+      <div class="post-abstract">
+        <h3 id="问题描述">问题描述</h3>
 <p>今天下午，突然线上出现大量高级掉落重复出现。</p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2020-02-09</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gbFeC4W9H">
+                code
+                
+                  ，
+                
+              </a>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard   has-post-thumbnail hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <a class="featured-image-link" href="https://xiwan.github.io/post/9Wy-WVteG">
-        <div class='featured-image lazy lazy-bg-image' data-background="https://xiwan.github.io/post-images/9Wy-WVteG.png"></div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/9Wy-WVteG">
+        <h2 class="post-title">线上redis问题分析记录</h2>
       </a>
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2020-01-17 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
+      <div class="post-abstract">
+        
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2020-01-17</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/tADP05upg">
+                redis
+                
+                  ，
+                
+              </a>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
           </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/tADP05upg">redis</a>
-                </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/9Wy-WVteG"> 线上redis问题分析记录 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              
-          </article>
-        </div>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2020-01-09 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
-                </span>
-            
-
+    
+      <a href="https://xiwan.github.io/post/9Wy-WVteG">
+        <div class="feature-container" style="background-image: url('https://xiwan.github.io/post-images/9Wy-WVteG.png')">
         </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/zX5LGZjc5"> elk时区问题 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>希望通过这篇文章能解释清楚elk中的时区问题</p>
-
-          </article>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2020-01-06 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/WBe1HiDrr"> elk的fileds被撑爆了。。。 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
-
-          </article>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-12-26 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
-                </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/6SadtR1zT"> logstash 如何处理复杂日志 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>最近压测发现日志在抽奖接口会放大百倍，直接把10万长度的日志队列挤爆！</p>
-
-          </article>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-12-16 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
-                </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/b0uwzUXQ8"> redis 大key处理 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>最近压测登陆接口，发现处理超过1k的byte对象（我们初始化就有3k,跑起来后可以达到40k）时候，整体的tqs下降得十分厉害。从一般几千得并发掉落倒了不到一千，还有不少得错误。<br>
-<img src="https://xiwan.github.io/post-images/1576471294178.png" alt=""></p>
-
-          </article>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-11-18 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/filebeat踩坑inode"> filebeat踩坑inode </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>最近我们游戏调整了服务器架构，所以涉及到一些文件系统的改动。类似于文件重命名之类。按照之前的理解这种操作在停服时候做，通过脚本应该是比较安全快捷的。不过正式由于这个操作，让我花了一个通宵才查明一个filebeat的问题。</p>
-
-          </article>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-11-07 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
-                </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/pWl5SQFpg">unity</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/写代码的一点思考"> 写代码的一点思考 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>专门用来总结一些经验和想法，不一定正确</p>
-
-          </article>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard   has-post-thumbnail hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <a class="featured-image-link" href="https://xiwan.github.io/post/steam真的挂了2小时">
-        <div class='featured-image lazy lazy-bg-image' data-background="https://xiwan.github.io/post-images/steam真的挂了2小时.png"></div>
       </a>
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-10-29 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/steam真的挂了2小时"> steam真的挂了2小时 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              
-          </article>
-        </div>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/zX5LGZjc5">
+        <h2 class="post-title">elk时区问题</h2>
+      </a>
+      <div class="post-abstract">
+        <p>希望通过这篇文章能解释清楚elk中的时区问题</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2020-01-09</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/oFM83lZJ1">
+                elk
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-10-11 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/WBe1HiDrr">
+        <h2 class="post-title">elk的fileds被撑爆了。。。</h2>
+      </a>
+      <div class="post-abstract">
+        <p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2020-01-06</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/oFM83lZJ1">
+                elk
+                
+              </a>
+            
           </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/u_2Pe30Rt">life</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/最近"> 最近... </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>这一个月经过努力好不容易把我们的游戏送上了steam。中间踩了不少坑，无数次的加班才换来的结果。当然现在回国头去看一切还是挺值的。游戏在没有任何推广情况下，口碑和数据都保持得不错。每天在留言板和q群里面看玩家和我们的互动也慢慢成为我得日常部分。今天好不容易闲下来了一点，对过去一段时间做个回顾看看</p>
-
-          </article>
-        </div>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-09-18 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/WLQnCbVL4">docker</a>
-                </span>
-            
+    
+  </section>
 
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/6SadtR1zT">
+        <h2 class="post-title">logstash 如何处理复杂日志</h2>
+      </a>
+      <div class="post-abstract">
+        <p>最近压测发现日志在抽奖接口会放大百倍，直接把10万长度的日志队列挤爆！</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-12-26</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/oFM83lZJ1">
+                elk
+                
+                  ，
+                
+              </a>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/b0uwzUXQ8">
+        <h2 class="post-title">redis 大key处理</h2>
+      </a>
+      <div class="post-abstract">
+        <p>最近压测登陆接口，发现处理超过1k的byte对象（我们初始化就有3k,跑起来后可以达到40k）时候，整体的tqs下降得十分厉害。从一般几千得并发掉落倒了不到一千，还有不少得错误。</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-12-16</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gbFeC4W9H">
+                code
+                
+                  ，
+                
+              </a>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/filebeat踩坑inode">
+        <h2 class="post-title">filebeat踩坑inode</h2>
+      </a>
+      <div class="post-abstract">
+        <p>最近我们游戏调整了服务器架构，所以涉及到一些文件系统的改动。类似于文件重命名之类。按照之前的理解这种操作在停服时候做，通过脚本应该是比较安全快捷的。不过正式由于这个操作，让我花了一个通宵才查明一个filebeat的问题。</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-11-18</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/oFM83lZJ1">
+                elk
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/写代码的一点思考">
+        <h2 class="post-title">写代码的一点思考</h2>
+      </a>
+      <div class="post-abstract">
+        <p>专门用来总结一些经验和想法，不一定正确</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-11-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gbFeC4W9H">
+                code
+                
+                  ，
+                
+              </a>
+            
+              <a href="https://xiwan.github.io/tag/pWl5SQFpg">
+                unity
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/steam真的挂了2小时">
+        <h2 class="post-title">steam真的挂了2小时</h2>
+      </a>
+      <div class="post-abstract">
+        
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-10-29</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+      <a href="https://xiwan.github.io/post/steam真的挂了2小时">
+        <div class="feature-container" style="background-image: url('https://xiwan.github.io/post-images/steam真的挂了2小时.png')">
         </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/docker 日志处理"> docker 日志处理 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>docker 启动后有一个需求便是如何处理以及收集它产生的日志。<br>
+      </a>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/最近">
+        <h2 class="post-title">最近...</h2>
+      </a>
+      <div class="post-abstract">
+        <p>这一个月经过努力好不容易把我们的游戏送上了steam。中间踩了不少坑，无数次的加班才换来的结果。当然现在回国头去看一切还是挺值的。游戏在没有任何推广情况下，口碑和数据都保持得不错。每天在留言板和q群里面看玩家和我们的互动也慢慢成为我得日常部分。今天好不容易闲下来了一点，对过去一段时间做个回顾看看</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-10-11</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/u_2Pe30Rt">
+                life
+                
+              </a>
+            
+          </span>
+        
+      </div>
+    </div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/docker 日志处理">
+        <h2 class="post-title">docker 日志处理</h2>
+      </a>
+      <div class="post-abstract">
+        <p>docker 启动后有一个需求便是如何处理以及收集它产生的日志。<br>
 这里的日志可以分为3类： docker的引擎日志， docker 容器日志， docker 应用日志</p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-09-18</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/WLQnCbVL4">
+                docker
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard   has-post-thumbnail hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <a class="featured-image-link" href="https://xiwan.github.io/post/dota如何接入支付">
-        <div class='featured-image lazy lazy-bg-image' data-background="https://s.cn.bing.net/th?id=OUWL.Dota2_648&amp;w=648&amp;h=120&amp;c=1&amp;rs=2&amp;qlt=80&amp;pid=SANGAM"></div>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/dota如何接入支付">
+        <h2 class="post-title">dota如何接入支付</h2>
       </a>
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-09-04 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
+      <div class="post-abstract">
+        <p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-09-04</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/3fNBcHlD4">
+                dota2
+                
+              </a>
+            
           </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/3fNBcHlD4">dota2</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/dota如何接入支付"> dota如何接入支付 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>对于自定地图来说，接入支付应该是比不可少的步骤。这里主要以支付宝为例子来说明下大概流程</p>
-
-          </article>
-        </div>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-28 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
+    
+      <a href="https://xiwan.github.io/post/dota如何接入支付">
+        <div class="feature-container" style="background-image: url('https://s.cn.bing.net/th?id=OUWL.Dota2_648&amp;w=648&amp;h=120&amp;c=1&amp;rs=2&amp;qlt=80&amp;pid=SANGAM')">
+        </div>
+      </a>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/zhi-zuo-yi-ge-kv-bian-ji-qi">
+        <h2 class="post-title">制作一个KV编辑器</h2>
+      </a>
+      <div class="post-abstract">
+        <p>为了后面方便快速开发自定义英雄和技能，决定开坑先做个KV编辑器。有依赖一个第三方的库来实例化KV。</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/3fNBcHlD4">
+                dota2
+                
+              </a>
+            
           </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/3fNBcHlD4">dota2</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/zhi-zuo-yi-ge-kv-bian-ji-qi"> 制作一个KV编辑器 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>为了后面方便快速开发自定义英雄和技能，决定开坑先做个KV编辑器。有依赖一个第三方的库来实例化KV。</p>
-
-          </article>
-        </div>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-26 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
+    
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/bot-xiang-guan">
+        <h2 class="post-title">bot相关</h2>
+      </a>
+      <div class="post-abstract">
+        <p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
+
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-26</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/3fNBcHlD4">
+                dota2
+                
+              </a>
+            
           </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/3fNBcHlD4">dota2</a>
-                </span>
-            
-
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/bot-xiang-guan"> bot相关 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
-
-          </article>
-        </div>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-20 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/3fNBcHlD4">dota2</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/ru-he-tiao-guo-heroselection"> 如何跳过heroselection </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <h3 id="背景">背景</h3>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/ru-he-tiao-guo-heroselection">
+        <h2 class="post-title">如何跳过heroselection</h2>
+      </a>
+      <div class="post-abstract">
+        <h3 id="背景">背景</h3>
 <p>最近研究dota2rpg时候发现一个问题：游戏流程如果使用官方的做法会比较死板。比如你必须选完队伍，然后再去选择英雄，然后再开始游戏。当然这个不是说它不好，但对于一款高度定制化的地图编辑器来说，这着实会束缚开发者的能力。很多优秀的rpg地图都可以定制整个游戏前的流程。</p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-20</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/3fNBcHlD4">
+                dota2
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-13 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/3fNBcHlD4">dota2</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/dota2-wen-jian-ge-shi"> dota2 文件格式 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              
-          </article>
-        </div>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/dota2-wen-jian-ge-shi">
+        <h2 class="post-title">dota2 文件格式</h2>
+      </a>
+      <div class="post-abstract">
+        
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-13</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/3fNBcHlD4">
+                dota2
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-07 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/gdya-a8IE">netty</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/dotnetty定时器与断线重连"> dotnetty定时器与断线重连 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              
-          </article>
-        </div>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/dotnetty定时器与断线重连">
+        <h2 class="post-title">dotnetty定时器与断线重连</h2>
+      </a>
+      <div class="post-abstract">
+        
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gdya-a8IE">
+                netty
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-07 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/gdya-a8IE">netty</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/dotnettty大包与粘包"> dotnettty大包与粘包 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <h4 id="目的">目的</h4>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/dotnettty大包与粘包">
+        <h2 class="post-title">dotnettty大包与粘包</h2>
+      </a>
+      <div class="post-abstract">
+        <h4 id="目的">目的</h4>
 <p>主要测试dotnetty在大包体，或者粘包情况下的表现</p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/gdya-a8IE">
+                netty
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-07 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/serilog-vs-log4net"> serilog vs log4net </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <h3 id="目的">目的</h3>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/serilog-vs-log4net">
+        <h2 class="post-title">serilog vs log4net</h2>
+      </a>
+      <div class="post-abstract">
+        <h3 id="目的">目的</h3>
 <p>通过测试数值来比较两个库的优劣</p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/xhJdIDktV">
+                benchmark
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-        odd
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-07 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/WLQnCbVL4">docker</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/基于docker搭建centos模板环境"> 基于docker搭建centos模板环境 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <h1 id="背景">背景</h1>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/基于docker搭建centos模板环境">
+        <h2 class="post-title">基于docker搭建centos模板环境</h2>
+      </a>
+      <div class="post-abstract">
+        <h1 id="背景">背景</h1>
 <p>我们已经基于标准shell建立了一整套服务器环境搭建体系，在平常运维中，其实只要记住那一步执行哪个shell脚本就好了。但是执行了一段时间后，还是觉得不够灵活。想象如下场景：有一天你刚回收完一套环境，这个时候来了个需求需要尽快搭建一套独立环境之类。这个时候需要重新执行一次所有的脚本，时间比较慢，并且数据可靠性也无法保证。这个时候我想到了docker，虽然我们有在测试环境部分使用它的功能，但并没有真正拿他做到<strong>开箱即用</strong></p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/WLQnCbVL4">
+                docker
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
-  
-  <div id="loop-container" class="loop-container">
-    <div class="post type-post status-publish format-standard  hentry category-design tag-memories
-    tag-normal-post tag-standard-2 excerpt zoom full-without-featured
-      
-      even
-       excerpt">
-      
-      <div class="excerpt-container">
-        <div class="excerpt-meta">
-          <span class="date">  · 2019-08-01 ·</span> <span> / </span>
-          <span class="author">
-              <a href="https://xiwan.github.io" title="Posts by  Keep Thinking" rel="author"> Keep Thinking</a>
-          </span>
-            
-                <span> / </span>
-                <span class="category">
-                        <a href="https://xiwan.github.io/tag/pWl5SQFpg">unity</a>
-                </span>
-            
+    
+  </section>
 
-        </div>
-        <div class='excerpt-header'>
-          <h2 class='excerpt-title'>
-            <a href="https://xiwan.github.io/post/test"> 2d 光照研究 </a>
-          </h2>
-        </div>
-        <div class='excerpt-content'>
-          <article>
-              <h1 id="背景">背景</h1>
+<section class="post-item">
+    <div class="content">
+      <a href="https://xiwan.github.io/post/test">
+        <h2 class="post-title">2d 光照研究</h2>
+      </a>
+      <div class="post-abstract">
+        <h1 id="背景">背景</h1>
 <p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
 
-          </article>
-        </div>
+      </div>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2019-08-01</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="https://xiwan.github.io/tag/pWl5SQFpg">
+                unity
+                
+              </a>
+            
+          </span>
+        
       </div>
     </div>
-  </div>
+    
+  </section>
+
+
+<div class="pagination-container">
+  
   
 </div>
 
-        <nav class="navigation pagination" role="navigation">
-    <h2 class="screen-reader-text">Posts navigation</h2>
-    <div class="nav-links">
-        
-        
-    </div>
-</nav>
-
-        <footer id="site-footer" class="site-footer" role="contentinfo">
-    <h1>
-        <a href="https://xiwan.github.io"> Keep Thinking </a>
-    </h1>
-    <p class="site-description">有美人兮心不怿</p>
-    <div id="menu-footer" class="menu-container menu-footer" role="navigation">
-        <div class="menu">
-            <ul id="menu-footer-items" class="menu-footer-items">
-            </ul>
-        </div>
-    </div>
-    <ul class="social-media-icons">
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-    </ul>
-    <div class="design-credit">
-        <p>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a></p>
-    </div>
-</footer>
-<script>
-    hljs.initHighlightingOnLoad()
-</script>
-<script src="https://xiwan.github.io/media/scripts/lib/jquery.min.js"></script>
-<script src="https://xiwan.github.io/media/scripts/lib/jquerymigrate.js"></script>
-<script src="https://xiwan.github.io/media/scripts/lib/production.min.js"></script>
 
       </div>
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/xiwan" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
   </body>
 </html>
-

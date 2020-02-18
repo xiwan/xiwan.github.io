@@ -1,183 +1,115 @@
+
+<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-<meta name="description" content="" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="all,follow">
-<meta name="googlebot" content="index,follow,snippet,archive">
+  <head>
+    
+<meta charset="utf-8" >
+
 <title>写代码的一点思考 | Keep Thinking</title>
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1581318468400">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css" type='text/css' media='all'>
+<meta name="description" content="有美人兮心不怿">
 
-<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1582021604869">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
 
 
 
-</head>
-<body class="home blog ct-body standard">
-<div id="overflow-container" class="overflow-container">
-  <a class="skip-content" href="#main">Skip to content</a>
-  <header id="site-header" class="site-header" role="banner">
-    <div class='top-navigation top-navigation-important'>
-        <div class='container'>
-            <div id="menu-secondary" class="menu-container menu-secondary" role="navigation">
-                <button id="toggle-secondary-navigation" class="toggle-secondary-navigation"><i class="fa fa-plus"></i></button>
-                <div class="menu">
-                    <ul id="menu-secondary-items" class="menu-secondary-items">
-                        
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/xhJdIDktV">benchmark</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/tADP05upg">redis</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/oFM83lZJ1">elk</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/pWl5SQFpg">unity</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/u_2Pe30Rt">life</a>
-                        </li>
-                            
-                        
-                            
-                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
-                            <a href="https://xiwan.github.io/tag/WLQnCbVL4">docker</a>
-                        </li>
-                            
-                        
-                            
-                        
-                            
-                        
-                    </ul>
-                </div>
-            </div>
-            <ul class="social-media-icons">
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-            </ul>
-        </div>
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1582021604869" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
     </div>
-
-    <div class="container">
-        <div id="title-info" class="title-info">
-            <div id='site-title' class='site-title'>
-                <a href="https://xiwan.github.io">  Keep Thinking </a>
-            </div>
-        </div>
-        <button id="toggle-navigation" class="toggle-navigation">
-            <i class="fa fa-bars"></i>
-        </button>
-        <div id="menu-primary-tracks" class="menu-primary-tracks"></div>
-        <div id="menu-primary" class="menu-container menu-primary" role="navigation">
-            <p class="site-description">有美人兮心不怿</p>
-            <div class="menu">
-                <ul id="menu-primary-items" class="menu-primary-items">
-                     
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="/">首页</a>
-                            </li>
-                        
-                    
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="/archives">归档</a>
-                            </li>
-                        
-                    
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="/tags">标签</a>
-                            </li>
-                        
-                    
-                        
-                            <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item'>
-                                <a href="https://xiwan.github.io/post/UOJXP5H7t/">about</a>
-                            </li>
-                        
-                    
-                </ul>
-            </div>
-        </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
     </div>
+  </div>
+</div>
 
-
-</header>
-
-
-  <div id="main" class="main" role="main">
-    <div id="loop-container" class="loop-container">
-      <div class="post type-post status-publish format-standard has-post-thumbnail hentry category-design tag-design tag-standard-2 tag-tagalicious tag-travel entry full-without-featured odd excerpt-1">
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
         
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
 
-        <div class="entry-meta">
-          <span class="date">· 2019-11-07 ·</span> <span> / </span>
-          <span class="author">
-            <a href="https://xiwan.github.io" title="" rel="author"> Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a></a>
-          </span>
+
+      <div class="content-container">
+        <div class="post-detail">
           
-            <span class="category">
-                    <span> / </span>
-                    <a href="https://xiwan.github.io/tag/gbFeC4W9H">code</a>
-                </span>
-          
-            <span class="category">
-                    <span> / </span>
-                    <a href="https://xiwan.github.io/tag/pWl5SQFpg">unity</a>
-                </span>
-          
-        </div>
-        <div class='entry-header'>
-          <h1 class='entry-title'>写代码的一点思考</h1>
-        </div>
-        <div class="entry-container">
-          <div class="entry-content">
-            <article>
-              <p>专门用来总结一些经验和想法，不一定正确</p>
+          <h2 class="post-title">写代码的一点思考</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2019-11-07</span>
+            
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://xiwan.github.io/tag/gbFeC4W9H">
+                    code
+                    
+                      ，
+                    
+                  </a>
+                
+                  <a href="https://xiwan.github.io/tag/pWl5SQFpg">
+                    unity
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content">
+            <p>专门用来总结一些经验和想法，不一定正确</p>
 <!-- more -->
 <h2 id="利用反射和泛型快速创造一个对象">利用反射和泛型快速创造一个对象</h2>
 <p>这里可以看到一个Single类的写法<br>
@@ -214,187 +146,111 @@
 <p>不过现在很多代码插件都有一键生成各种set, get方法。甚至还有比较邪门的lombook这类东西。底层似乎是用了动态类的机制。在这里就不展开了。</p>
 <h2 id="覆盖object的tostring方法">覆盖object的ToString()方法</h2>
 <p>在基类中重写ToString()方法，这样可以在Debug问题时候十分方便的查看对象的具体数据。</p>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1573102105886.png" alt=""></figure>
+<p><img src="https://xiwan.github.io/post-images/1573102105886.png" alt=""></p>
 <h2 id="善用builder模式">善用Builder模式</h2>
 <p>经常写代码时候会碰到要创建一个对象块，由于成员变量过多，会导致代码块十分臃肿。这个时候可以用Builder模式来改造类。</p>
-<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1573102260623.png" alt=""></figure>
+<p><img src="https://xiwan.github.io/post-images/1573102260623.png" alt=""></p>
 <p>上图这个列子中p1和p2就是很好解释了前面的观点。<br>
 p2是一种普通的生成类的方式，十分简单直白，但不好的是业务逻辑和生命混杂在一起十分乱。p1比较起来就会显得简单很多。</p>
 <p>通常的思路是创建一个Builder类专门负责生成目标对象。这么做的好处主要是如下考虑<br>
 1. 在生成对象的地方代码会十分简洁，配合链式声明，整个代码的可读性也会很好。<br>
 2. 解耦了对象生成和具体的业务逻辑，对调用者保持透明性。</p>
 <p>不过正如第二点说明那样，业务逻辑被挪到了Builder里面去做了，这并不会少写不少代码。不过就我个人来说，目前还是比较值的。</p>
-<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1573102774966.png" alt=""></figure>
+<p><img src="https://xiwan.github.io/post-images/1573102774966.png" alt=""></p>
 <h2 id="builder继续优化">Builder继续优化</h2>
 <p>通过观察发现这些设置成员变量的方法似乎都是差不多模式：通过一个key算出一个值，然后赋予成员便令，最后返回Builder本身。这样我们可以使用delegate模式，把这个部分的逻辑通过方法参数传入进来。</p>
-<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1573114364942.png" alt=""></figure>
+<p><img src="https://xiwan.github.io/post-images/1573114364942.png" alt=""></p>
 <p>这样我们的Builder就会变得十分轻量了，前面所有的赋值操作以及返回都变作了一个delegate函数：</p>
-<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1573114497904.png" alt=""></figure>
+<p><img src="https://xiwan.github.io/post-images/1573114497904.png" alt=""></p>
 <p>这样我们使用Builder生成对象也有相应变化：</p>
-<figure data-type="image" tabindex="6"><img src="https://xiwan.github.io/post-images/1573114673344.png" alt=""></figure>
+<p><img src="https://xiwan.github.io/post-images/1573114673344.png" alt=""></p>
 <p>如上图所示，我们发现p3和p1比较起来似乎更加复杂了，也不如p2直观。 其实这一来一去，我们从p2模式到p1主要是为了解决代码块比较笨重的问题，扩展性也差。但是新的问题是业务逻辑被隐藏到了Builder里面。其实仔细想想，对于Builder来说它并不需要关心你业务逻辑是怎样的，它唯一要做的就是把某个业务逻辑（规则）产生的结果赋予给相应的值就好了。基于这个考虑，我们也要把业务逻辑解耦开来。所以通过delegate这种方式，很好地做到了这点。整个builder赋值时候做地也是最存粹地操作而已！</p>
 <p>p3的做法把这也业务规则包装成方法后，可以写一个专门地处理业务逻辑类，它负责封装各种业务算法然后输出而已。同样也保持了简单高效的模式。</p>
 
-            </article>
-          </div>
-          <div class='entry-meta-bottom'>
-            <div class="entry-categories">
-              <p>
-                <span>Categories</span>
-                
-                  
-                    
-                  <a href="https://xiwan.github.io/tag/gbFeC4W9H" title="View all posts in code">code</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/xhJdIDktV" title="View all posts in benchmark">benchmark</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/tADP05upg" title="View all posts in redis">redis</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/oFM83lZJ1" title="View all posts in elk">elk</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/pWl5SQFpg" title="View all posts in unity">unity</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/u_2Pe30Rt" title="View all posts in life">life</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/WLQnCbVL4" title="View all posts in docker">docker</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/3fNBcHlD4" title="View all posts in dota2">dota2</a>
-                    
-                    
-                    
-                  <a href="https://xiwan.github.io/tag/gdya-a8IE" title="View all posts in netty">netty</a>
-                    
-                    
-              </p>
-            </div>
-            <div class="entry-tags">
-              <p><span>Tags</span>
-              </p>
-            </div>
-          </div>
-          <div class="author-meta">
-            <div class="author">
-              <img alt='' src="https://xiwan.github.io/images/avatar.png?v=1581318468400" class='avatar avatar-72 photo' height='72' width='72'>
-              <span>WRITTEN BY: &nbsp;&nbsp;&nbsp;<a href='https://xiwan.github.io'></a> </span>
-            </div>
-            <div class="bio">
-              <p></p>
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-            </div>
           </div>
         </div>
-          
-            <nav class="navigation pagination" role="navigation">
-              <h2 class="screen-reader-text">Posts navigation</h2>
-              <div class="nav-links">
-                <a class="next page-numbers" href="https://xiwan.github.io/post/steam真的挂了2小时">下一篇->steam真的挂了2小时</a>
-              </div>
-            </nav>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://xiwan.github.io/post/steam真的挂了2小时">
+              <h3 class="post-title">
+                下一篇：steam真的挂了2小时
+              </h3>
+            </a>
+          </div>
           
       </div>
-      <section id="comments" class="comments">
+
+      
         
-          
-            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-<div id="gitalk-container"></div>
-
-<script>
-
-  var gitalk = new Gitalk({
-    clientID: 'c8d7ebef73924ce0e7ad',
-    clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
-    repo: 'xiwan.github.io',
-    owner: 'xiwan',
-    admin: ['xiwan'],
-    id: location.pathname,      // Ensure uniqueness and length less than 50
-    distractionFreeMode: false  // Facebook-like distraction free mode
-  })
-
-  gitalk.render('gitalk-container')
-
-</script>
-
-          
-
-          
+          <div id="gitalk-container"></div>
         
-      </section>
-    </div>
+
+        
+      
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/xiwan" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
   </div>
-  <footer id="site-footer" class="site-footer" role="contentinfo">
-    <h1>
-        <a href="https://xiwan.github.io"> Keep Thinking </a>
-    </h1>
-    <p class="site-description">有美人兮心不怿</p>
-    <div id="menu-footer" class="menu-container menu-footer" role="navigation">
-        <div class="menu">
-            <ul id="menu-footer-items" class="menu-footer-items">
-            </ul>
-        </div>
-    </div>
-    <ul class="social-media-icons">
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-    </ul>
-    <div class="design-credit">
-        <p>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a></p>
-    </div>
-</footer>
-<script>
-    hljs.initHighlightingOnLoad()
-</script>
-<script src="https://xiwan.github.io/media/scripts/lib/jquery.min.js"></script>
-<script src="https://xiwan.github.io/media/scripts/lib/jquerymigrate.js"></script>
-<script src="https://xiwan.github.io/media/scripts/lib/production.min.js"></script>
-
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
 </div>
-</body>
-</html>
 
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
