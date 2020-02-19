@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-02-19T11:17:14.374Z</updated>
+    <updated>2020-02-19T11:19:57.580Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -16,9 +16,9 @@
         <link href="https://xiwan.github.io/post/O3_DlNeqo">
         </link>
         <updated>2020-02-18T10:43:42.000Z</updated>
-        <summary type="html"><![CDATA[<p>去年年底封测的第一个晚上，高峰十分，本来一切平和。但是在毫无征兆的情况下，突然线上redis断了。检查了机房连接没有问题，并且线上10多个实例，只有一台机器的redis断掉了。十分诡异！排查了一个小时没有任何结果，此次问题造成了大概800人回档。对于当时近万人的同时在线，还算损失比较小。</p>
+        <summary type="html"><![CDATA[<p>去年年底封测的第一个晚上，晚高峰时候，本来一切平和。但是在毫无征兆的情况下，突然线上redis断了。检查了机房连接没有问题，并且线上10多个实例，只有一台机器的redis断掉了。十分诡异！排查了一个小时没有任何结果，此次问题造成了大概800人回档。对于当时近万人的同时在线，还算损失比较小。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>去年年底封测的第一个晚上，高峰十分，本来一切平和。但是在毫无征兆的情况下，突然线上redis断了。检查了机房连接没有问题，并且线上10多个实例，只有一台机器的redis断掉了。十分诡异！排查了一个小时没有任何结果，此次问题造成了大概800人回档。对于当时近万人的同时在线，还算损失比较小。</p>
+        <content type="html"><![CDATA[<p>去年年底封测的第一个晚上，晚高峰时候，本来一切平和。但是在毫无征兆的情况下，突然线上redis断了。检查了机房连接没有问题，并且线上10多个实例，只有一台机器的redis断掉了。十分诡异！排查了一个小时没有任何结果，此次问题造成了大概800人回档。对于当时近万人的同时在线，还算损失比较小。</p>
 <!-- more -->
 <p>这个错误在以前的测试，包括压测过程中都没有出现过。并且steam服务器跑了也将近半年没有问题。但当时简单修复相关业务逻辑后，这个错误在封测期间再也没有问题了。所以又搁置了起来。</p>
 <p>不过封测停止后，这个问题突然在steam服务器也多了起来。辛亏的是当时做了一个保护措施（一旦发现redis连接断掉就立马重连）。所以还算安稳度过到现在。</p>
