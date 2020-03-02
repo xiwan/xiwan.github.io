@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-02-19T11:39:41.271Z</updated>
+    <updated>2020-03-02T10:41:34.481Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,31 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[一种防止客户端作弊的方案]]></title>
+        <id>https://xiwan.github.io/post/l4Y3atzIB</id>
+        <link href="https://xiwan.github.io/post/l4Y3atzIB">
+        </link>
+        <updated>2020-03-02T09:57:39.000Z</updated>
+        <summary type="html"><![CDATA[<p>个人觉得要防住外挂，最好的方案就是一切走服务器来验证。尤其是一些关键性的数据，比如血条，装备和位置。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>个人觉得要防住外挂，最好的方案就是一切走服务器来验证。尤其是一些关键性的数据，比如血条，装备和位置。</p>
+<!-- more -->
+<p>这里我以位置来举例，如果什么时候都要把数据同步给服务器来验证后再移动，除了可能的丢包之外，来回的开销也会让客户端玩起来像PPT一样。当然回合制的游戏，比如卡牌之类可以考虑这种方案。如果是对实时性要求比较高的FPS游戏，肯能就无法忍受这种方案了。</p>
+<h3 id="模型思路">模型思路</h3>
+<p>有一种比较实用的方案是：由于“位置”这个信息比较敏感，客户端会不停地反复更新它。肯定是需要服务器校验的。所以可以去掉客户端的直接写它的权利，转而做一个“位置副本”。客户端对于位置的更新都给予这个“位置副本”，包括读和写。这样由于操作都在客户端所以游戏的流畅感会好很多。</p>
+<p>对于原来的“位置”数据，客户端只保留了读的权利。相反，服务器将拥有“位置”数据的读和写权利，但对于“位置副本”却只有读的权利。</p>
+<p>那么当客户端不断的操作“位置副本”，并且不停地将信息同步给服务器的时候。服务器可以拿“位置”数据和它进行交叉对比。如果发现符合<strong>算法条件</strong>的下移动，则可以拿“位置副本”更新“位置”数据。相反，如果发现异常：比如一下子穿墙之类，服务器就不会更新“位置”数据。并且异步告知客户端需要修正它的“位置副本”。</p>
+<p>通常客户端是只要关注“位置副本”数据的，一旦收到服务器的“位置”异常信息。则需要立马修正自己的“位置副本”到上一个正确的“位置”数据。这样就达到了一个既能保证流畅性又能完成校验的目的了。</p>
+<h3 id="服务器预估">服务器预估</h3>
+<p>那么服务器如何判定客户端的“位置副本”正确性呢？</p>
+<p>首先， 服务器需要一份地图数据（这份地图数据有可能也需要实时更新，比如在一些可以破坏地形的场景中）。同时他需要保存一份所有玩家的“位置”信息。这样服务器就知道玩家某个时刻在地图的哪个位置了。当它收到客户端的“位置副本”数据更新信息后，除了做一些常规的校验外。最终要的是去匹配当前值是否和“预估位置”值。如果符合，则可以更新。</p>
+<p>那么这个“预估位置”如何得到呢？这里会涉及比较多的因素： 比如玩家的三维值，环境值之类。基本上的思路是基于上一个“位置”数据，然后穷尽游戏内所有可以对移动产生的作用的因素，并把它转化成许多个对应的“向量”，然后进行相加就可以获得“预估位置”了。</p>
+<p>当然基于现实情况的复杂性，要求“位置副本”和“预估位置”严格相等是显然不现实的。所以还要容忍一定的“合理误差”。</p>
+<h3 id="客户端呢">客户端呢？</h3>
+<p>由于我不是客户端出生，所以思路有可能比较局限。现在想到的方案有，进行包混淆可以一定层度的减少被破解。然后一些敏感的“位置”信息相关的逻辑可以欺骗性的用字符串而不是常规的数字，这样就可以避免被内存定位到之类。当然肯定不止这些方案。。。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[调查redis的protocal error]]></title>
         <id>https://xiwan.github.io/post/O3_DlNeqo</id>
@@ -674,73 +699,6 @@ ttl： 采集失效时间，-1表示永不失效
 2. 不要随意改变既定的文件结构
 </code></pre>
 <p>操作完之后，果然filebeat又重新识别出来老的日志文件了。整个elk的压力也下去了。回过头看这一次踩坑：感觉linux底层还是值得好好研究下的。写写脚本简单，但也只是知其然不知其所以然。对于cp，mv, rm这类常用命令的理解也深刻了不少。自己操作或者指导别人时候也会特别小心了。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[写代码的一点思考]]></title>
-        <id>https://xiwan.github.io/post/写代码的一点思考</id>
-        <link href="https://xiwan.github.io/post/写代码的一点思考">
-        </link>
-        <updated>2019-11-07T04:22:58.000Z</updated>
-        <summary type="html"><![CDATA[<p>专门用来总结一些经验和想法，不一定正确</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>专门用来总结一些经验和想法，不一定正确</p>
-<!-- more -->
-<h2 id="利用反射和泛型快速创造一个对象">利用反射和泛型快速创造一个对象</h2>
-<p>这里可以看到一个Single类的写法<br>
-<img src="https://xiwan.github.io/post-images/1573101268759.png" alt=""></p>
-<p>那么当我们需要让另外一个类成为单例时候就可以很简单的继承它即可</p>
-<pre><code>    public class Director : Single&lt;Director&gt;
-</code></pre>
-<p>这个写法只是适合部分场景，对于对于常用的Helper类，其实直接用static类就可以了。</p>
-<h2 id="通过多重继承来继承多个类">通过多重继承来继承多个类</h2>
-<p>一般来说单个类都是无法一次性继承多个类的，但是我们可以让这类之间行成父子关系。这样最终的儿子类是可以拥有所有先辈的公共成员的。</p>
-<p>我们创建了一个抽象类继承了Single，则它拥有了单例的特性</p>
-<pre><code>    public abstract class SheetObj&lt;T, V&gt; : Single&lt;T&gt; 
-        where T: class where V : ExtendObj
-</code></pre>
-<p>然后又创建了三个子类继承了SheetObj</p>
-<pre><code>    public class EnumBook : SheetObj&lt;EnumBook, Enum&gt;
-    public class RangeBook : SheetObj&lt;RangeBook, Range&gt;
-    public class EnumBook : SheetObj&lt;EnumBook, Enum&gt;
-</code></pre>
-<p>那么我们在使用这些子类时候就可以这么用：</p>
-<pre><code>// Single类的初始化方法
-    RangeBook.Initialize();
-    EnumBook.Initialize();
-    TreeBook.Initialize();
-// SheetObj的加载数据方法
-    RangeBook.Instance.Load(MasterDataFilePath);
-    EnumBook.Instance.Load(MasterDataFilePath);
-    TreeBook.Instance.Load(MasterDataFilePath);
-</code></pre>
-<p>实际上使用时候还可以考虑抽象函数，虚函数或者协议接口之类来满足自己的需求。</p>
-<h2 id="抽取共同的成员到基类">抽取共同的成员到基类</h2>
-<p>比如类A,B,C都有一个成员变量为ID，那么就可以先做一个基类，其余的类可以通过继承方式获取到这个成员变量。当然，这个思路可以扩展开来，会让类的结构有些复杂。但是能节省很多重复劳动工作。<br>
-不过有些项目不在乎这些重复，希望简单直白的类来节约debug时间。所以真正如何使用还是需要权衡。</p>
-<p>不过现在很多代码插件都有一键生成各种set, get方法。甚至还有比较邪门的lombook这类东西。底层似乎是用了动态类的机制。在这里就不展开了。</p>
-<h2 id="覆盖object的tostring方法">覆盖object的ToString()方法</h2>
-<p>在基类中重写ToString()方法，这样可以在Debug问题时候十分方便的查看对象的具体数据。</p>
-<p><img src="https://xiwan.github.io/post-images/1573102105886.png" alt=""></p>
-<h2 id="善用builder模式">善用Builder模式</h2>
-<p>经常写代码时候会碰到要创建一个对象块，由于成员变量过多，会导致代码块十分臃肿。这个时候可以用Builder模式来改造类。</p>
-<p><img src="https://xiwan.github.io/post-images/1573102260623.png" alt=""></p>
-<p>上图这个列子中p1和p2就是很好解释了前面的观点。<br>
-p2是一种普通的生成类的方式，十分简单直白，但不好的是业务逻辑和生命混杂在一起十分乱。p1比较起来就会显得简单很多。</p>
-<p>通常的思路是创建一个Builder类专门负责生成目标对象。这么做的好处主要是如下考虑<br>
-1. 在生成对象的地方代码会十分简洁，配合链式声明，整个代码的可读性也会很好。<br>
-2. 解耦了对象生成和具体的业务逻辑，对调用者保持透明性。</p>
-<p>不过正如第二点说明那样，业务逻辑被挪到了Builder里面去做了，这并不会少写不少代码。不过就我个人来说，目前还是比较值的。</p>
-<p><img src="https://xiwan.github.io/post-images/1573102774966.png" alt=""></p>
-<h2 id="builder继续优化">Builder继续优化</h2>
-<p>通过观察发现这些设置成员变量的方法似乎都是差不多模式：通过一个key算出一个值，然后赋予成员便令，最后返回Builder本身。这样我们可以使用delegate模式，把这个部分的逻辑通过方法参数传入进来。</p>
-<p><img src="https://xiwan.github.io/post-images/1573114364942.png" alt=""></p>
-<p>这样我们的Builder就会变得十分轻量了，前面所有的赋值操作以及返回都变作了一个delegate函数：</p>
-<p><img src="https://xiwan.github.io/post-images/1573114497904.png" alt=""></p>
-<p>这样我们使用Builder生成对象也有相应变化：</p>
-<p><img src="https://xiwan.github.io/post-images/1573114673344.png" alt=""></p>
-<p>如上图所示，我们发现p3和p1比较起来似乎更加复杂了，也不如p2直观。 其实这一来一去，我们从p2模式到p1主要是为了解决代码块比较笨重的问题，扩展性也差。但是新的问题是业务逻辑被隐藏到了Builder里面。其实仔细想想，对于Builder来说它并不需要关心你业务逻辑是怎样的，它唯一要做的就是把某个业务逻辑（规则）产生的结果赋予给相应的值就好了。基于这个考虑，我们也要把业务逻辑解耦开来。所以通过delegate这种方式，很好地做到了这点。整个builder赋值时候做地也是最存粹地操作而已！</p>
-<p>p3的做法把这也业务规则包装成方法后，可以写一个专门地处理业务逻辑类，它负责封装各种业务算法然后输出而已。同样也保持了简单高效的模式。</p>
 ]]></content>
     </entry>
 </feed>

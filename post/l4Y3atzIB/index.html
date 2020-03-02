@@ -5,7 +5,7 @@
     
 <meta charset="utf-8" >
 
-<title>bot相关 | Keep Thinking</title>
+<title>一种防止客户端作弊的方案 | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -86,15 +86,22 @@
       <div class="content-container">
         <div class="post-detail">
           
-          <h2 class="post-title">bot相关</h2>
+          <h2 class="post-title">一种防止客户端作弊的方案</h2>
           <div class="post-info post-detail-info">
-            <span><i class="icon-calendar-outline"></i> 2019-08-26</span>
+            <span><i class="icon-calendar-outline"></i> 2020-03-02</span>
             
               <span>
                 <i class="icon-pricetags-outline"></i>
                 
-                  <a href="https://xiwan.github.io/tag/3fNBcHlD4">
-                    dota2
+                  <a href="https://xiwan.github.io/tag/gbFeC4W9H">
+                    code
+                    
+                      ，
+                    
+                  </a>
+                
+                  <a href="https://xiwan.github.io/tag/pWl5SQFpg">
+                    unity
                     
                   </a>
                 
@@ -102,43 +109,30 @@
             
           </div>
           <div class="post-content">
-            <p>通常测试时候是需要加入一些机器人的。那么在workshop中如何加入呢？</p>
+            <p>个人觉得要防住外挂，最好的方案就是一切走服务器来验证。尤其是一些关键性的数据，比如血条，装备和位置。</p>
 <!-- more -->
-<h3 id="与bot相关的几个函数">与bot相关的几个函数</h3>
-<p>int GetConnectionState(int iPlayerID)</p>
-<p><code>Returns a status code indication the connection state of the player. 0 - no connection. 1 - bot connected. 2 - player connected. 3 bot/player disconnected.</code></p>
-<p>bool IsControllableByAnyPlayer()</p>
-<p><code>Is this unit controlled by any non-bot player?</code></p>
-<p>bool IsOwnedByAnyPlayer()</p>
-<p><code>Is this unit owned by any non-bot player?</code></p>
-<p>void SetBotDifficulty(int nDifficulty)</p>
-<p><code>Sets the bot's difficulty level (0 = passive, 1 = easy, 2 = medium, 3 = hard, 4 = unfair)</code></p>
-<p><img src="https://xiwan.github.io/post-images/1566805414719.png" alt=""></p>
-<p>bool AddBot(string string_1, string string_2, string string_3, bool bool_4)</p>
-<p><code>Add a computer controlled bot.</code></p>
-<h3 id="addbot用法">AddBot用法</h3>
-<p>这里面比较重要的就是AddBot方法了。<br>
-string_1 = 英雄单位的名字（默认的和自定义应该都是可以的）<br>
-string_2 = 英雄位置（mid, top, bot）三条线的分路<br>
-string_3 = passive/positive ？？<br>
-bool_4 = 这个表示是否和玩家为队友，但可以不在一个阵营</p>
-<p>如果要设置阵营，需要调用</p>
-<pre><code>PlayerResource:SetCustomTeamAssignment( 0, DOTA_TEAM_GOODGUYS )
-PlayerResource:SetCustomTeamAssignment( 1, DOTA_TEAM_GOODGUYS )
-</code></pre>
-<p><img src="https://xiwan.github.io/post-images/1566806951528.png" alt=""></p>
-<p>当然，我可以枚举上面的组合来达到一下效果：同阵营队友，同阵营非队友，不同阵营队友，不同阵营非队友之类。</p>
-<p>最终效果，不通阵营的队友，互相不能攻击</p>
-<p><img src="https://xiwan.github.io/post-images/1566807155157.png" alt=""></p>
+<p>这里我以位置来举例，如果什么时候都要把数据同步给服务器来验证后再移动，除了可能的丢包之外，来回的开销也会让客户端玩起来像PPT一样。当然回合制的游戏，比如卡牌之类可以考虑这种方案。如果是对实时性要求比较高的FPS游戏，肯能就无法忍受这种方案了。</p>
+<h3 id="模型思路">模型思路</h3>
+<p>有一种比较实用的方案是：由于“位置”这个信息比较敏感，客户端会不停地反复更新它。肯定是需要服务器校验的。所以可以去掉客户端的直接写它的权利，转而做一个“位置副本”。客户端对于位置的更新都给予这个“位置副本”，包括读和写。这样由于操作都在客户端所以游戏的流畅感会好很多。</p>
+<p>对于原来的“位置”数据，客户端只保留了读的权利。相反，服务器将拥有“位置”数据的读和写权利，但对于“位置副本”却只有读的权利。</p>
+<p>那么当客户端不断的操作“位置副本”，并且不停地将信息同步给服务器的时候。服务器可以拿“位置”数据和它进行交叉对比。如果发现符合<strong>算法条件</strong>的下移动，则可以拿“位置副本”更新“位置”数据。相反，如果发现异常：比如一下子穿墙之类，服务器就不会更新“位置”数据。并且异步告知客户端需要修正它的“位置副本”。</p>
+<p>通常客户端是只要关注“位置副本”数据的，一旦收到服务器的“位置”异常信息。则需要立马修正自己的“位置副本”到上一个正确的“位置”数据。这样就达到了一个既能保证流畅性又能完成校验的目的了。</p>
+<h3 id="服务器预估">服务器预估</h3>
+<p>那么服务器如何判定客户端的“位置副本”正确性呢？</p>
+<p>首先， 服务器需要一份地图数据（这份地图数据有可能也需要实时更新，比如在一些可以破坏地形的场景中）。同时他需要保存一份所有玩家的“位置”信息。这样服务器就知道玩家某个时刻在地图的哪个位置了。当它收到客户端的“位置副本”数据更新信息后，除了做一些常规的校验外。最终要的是去匹配当前值是否和“预估位置”值。如果符合，则可以更新。</p>
+<p>那么这个“预估位置”如何得到呢？这里会涉及比较多的因素： 比如玩家的三维值，环境值之类。基本上的思路是基于上一个“位置”数据，然后穷尽游戏内所有可以对移动产生的作用的因素，并把它转化成许多个对应的“向量”，然后进行相加就可以获得“预估位置”了。</p>
+<p>当然基于现实情况的复杂性，要求“位置副本”和“预估位置”严格相等是显然不现实的。所以还要容忍一定的“合理误差”。</p>
+<h3 id="客户端呢">客户端呢？</h3>
+<p>由于我不是客户端出生，所以思路有可能比较局限。现在想到的方案有，进行包混淆可以一定层度的减少被破解。然后一些敏感的“位置”信息相关的逻辑可以欺骗性的用字符串而不是常规的数字，这样就可以避免被内存定位到之类。当然肯定不止这些方案。。。</p>
 
           </div>
         </div>
 
         
           <div class="next-post">
-            <a class="purple-link" href="https://xiwan.github.io/post/ru-he-tiao-guo-heroselection">
+            <a class="purple-link" href="https://xiwan.github.io/post/O3_DlNeqo">
               <h3 class="post-title">
-                下一篇：如何跳过heroselection
+                下一篇：调查redis的protocal error
               </h3>
             </a>
           </div>
