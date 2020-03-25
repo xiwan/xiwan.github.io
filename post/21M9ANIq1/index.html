@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585125524805">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585125524805" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -127,6 +127,13 @@
 <p>结果不错，已经到达5分钟级别了。那么还能不能更快呢？我做了第四个版本是多线程的，但结果不是特别好：</p>
 <p><img src="https://xiwan.github.io/post-images/1585125335885.png" alt=""></p>
 <p>这个版本基本和第三版本持平，唯一的好处做成一个异步的过程。当然也有可能是我实现得不对:)</p>
+<h3 id="如何进一步挖掘潜力">如何进一步挖掘潜力</h3>
+<p>似乎单机10万写入速度已经到了极限，提升不大了。这个时候比较好的思路是拆表了，加入我把10万个用户拆成5个表，每个表只负责2万人。相信整体速度会有个更大的提升。</p>
+<p>由于游戏的规模可能就是10万人同时在线，所以每台服务器内存很可能就是只负责差不多这10万人的一部分。那么为什么不直接用一张表来放呢？</p>
+<p>其实这里基于两点考虑：<br>
+1.多个线程写一张表可能会出现竞争甚至死锁的问题。<br>
+2.然后玩家可能会在多个服务器都有记录，这个时候由于同步机制的问题，很可能老的数据反而覆盖了新的数据问题。</p>
+<p>当然分成多个表带来的问题是如何识别重复数据哪份更新。最简单的做法是使用时间戳， 不过考虑到机器的时间差，其实用时间戳不是一个特别好的方案。还是需要使用redis或者zookeeper加锁机制来获取一个递增的版本号来管理。当发现两份数据的key值相同时候，通过对比版本号大小即可。</p>
 <h3 id="结语">结语</h3>
 <p>这次是基于C#的Dapper库做的实验，其他的链接库应该差不多。主要是这一通操作的思想：尽量把相同的数据批处理，然后是定长，再配合压缩和异步的技术，那么这么大的数据也是可以写入mysql的。</p>
 
