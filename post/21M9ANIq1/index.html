@@ -5,7 +5,7 @@
     
 <meta charset="utf-8" >
 
-<title>dota2 文件格式 | Keep Thinking</title>
+<title>用一首歌的时间落地10万个用户数据 | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -86,32 +86,58 @@
       <div class="content-container">
         <div class="post-detail">
           
-          <h2 class="post-title">dota2 文件格式</h2>
+          <h2 class="post-title">用一首歌的时间落地10万个用户数据</h2>
           <div class="post-info post-detail-info">
-            <span><i class="icon-calendar-outline"></i> 2019-08-13</span>
-            
-              <span>
-                <i class="icon-pricetags-outline"></i>
-                
-                  <a href="https://xiwan.github.io/tag/3fNBcHlD4">
-                    dota2
-                    
-                  </a>
-                
-              </span>
+            <span><i class="icon-calendar-outline"></i> 2020-03-25</span>
             
           </div>
           <div class="post-content">
-            <p><img src="https://xiwan.github.io/post-images/1565680703810.png" alt="">)</p>
+            <p>为啥是一首歌，因为新的需求是极端情况可以忍受玩家回档5分钟。哪些极端情况呢？redis完全不能用了，只能走mysql来落地。来保护玩家数据。</p>
+<p>不过有个明显的问题是：mysql到底能不能抗此大责任？</p>
+<!-- more -->
+<h3 id="介绍">介绍</h3>
+<p>首先我们得知道每个用户大概占多少内存。根据线上用户的统计来看，差不多可以认为上限为200kb</p>
+<p><img src="https://xiwan.github.io/post-images/1585122972394.png" alt=""></p>
+<p>如果我们要保存10万个用户，差不多就是100,000x200Kb = 20G。这个对redis来说已经算比较大的压力了。所以自然考虑到了mysql。</p>
+<p>mysql在这里主要扮演的是备份和还原的角色</p>
+<ul>
+<li>备份：定时把内存中的用户信息写入mysql，对时间比较敏感，同时需要保证数据的完整性。</li>
+<li>还原：回滚用户数据时候，停服将mysql里面数据加载到redis，对时间不是特别敏感。</li>
+</ul>
+<h3 id="做法">做法</h3>
+<p>比较常规的做法是用一个循环套住insert或者update语句，如果10万个用户差不多需要跑10次。比较直接，但反复操作数据库连接太消耗，故没有考虑。</p>
+<p>查询资料后，发现还有四种技巧：</p>
+<ol>
+<li>insert into ...on duplicate key update批量更新</li>
+<li>replace into 批量更新</li>
+<li>创建临时表，先更新临时表，然后从临时表中update</li>
+<li>使用mysql 自带的语句构建批量更新</li>
+</ol>
+<p>进过研究，比较适合我这个项目的是方法2. 1和4主要是构建的sql语法比较麻烦，并且将业务逻辑下沉到数据库本身不是一种提倡的做法。3的开销主要是建立表，如果中间出现数据库问题，也是代价比较大。</p>
+<h3 id="迭代">迭代</h3>
+<p>由于内存限制，不大可能把10万个用户都加载到内存。所以准备加载1000个用户，然后循环100次。</p>
+<p>第一个版本比较直接，就是将内存中所有用户全部构建成sql语句来执行。测试速度如下：</p>
+<p><img src="https://xiwan.github.io/post-images/1585124385650.png" alt=""></p>
+<p>可以看到似乎不错，差不多10分钟内可以完成整个过程。但是离我们的目标5分钟还是有距离。</p>
+<p>第二个版本：我固定了每次执行的用户数目，比如500个。这样改造后的速度：</p>
+<p><img src="https://xiwan.github.io/post-images/1585124674444.png" alt=""></p>
+<p>已下子到了6分钟。看来批量定长是一个不错的方向。</p>
+<p>第三个版本：由于数据本身200kb一个有压缩空间，所以我把每个用户数据进行了gzip压缩再存储。这次到达速度为：</p>
+<p><img src="https://xiwan.github.io/post-images/1585124866510.png" alt=""></p>
+<p>结果不错，已经到达5分钟级别了。那么还能不能更快呢？我做了第四个版本是多线程的，但结果不是特别好：</p>
+<p><img src="https://xiwan.github.io/post-images/1585125335885.png" alt=""></p>
+<p>这个版本基本和第三版本持平，唯一的好处做成一个异步的过程。当然也有可能是我实现得不对:)</p>
+<h3 id="结语">结语</h3>
+<p>这次是基于C#的Dapper库做的实验，其他的链接库应该差不多。主要是这一通操作的思想：尽量把相同的数据批处理，然后是定长，再配合压缩和异步的技术，那么这么大的数据也是可以写入mysql的。</p>
 
           </div>
         </div>
 
         
           <div class="next-post">
-            <a class="purple-link" href="https://xiwan.github.io/post/dotnetty定时器与断线重连">
+            <a class="purple-link" href="https://xiwan.github.io/post/l4Y3atzIB">
               <h3 class="post-title">
-                下一篇：dotnetty定时器与断线重连
+                下一篇：一种防止客户端作弊的方案
               </h3>
             </a>
           </div>
