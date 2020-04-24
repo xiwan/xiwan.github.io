@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -112,7 +112,7 @@
             <p>今天下午，突然线上出现大量高级掉落重复出现。<br>
 正常的概率是1%，结果部分玩家出现了很多。导致了群里炸了锅。于是开始分析掉落部分代码：</p>
 <!-- more -->
-<p><img src="https://xiwan.github.io/post-images/1581252565576.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1581252565576.png" alt=""></figure>
 <p>这里做过一次优化，以前是不停的new 一个Random对象。后面测试时候发现效率不高，于是采用了复用的方式。现在似乎这里除了问题，分析下来应该是Random在某种条件下输出了相同值。</p>
 <h3 id="问题分析">问题分析</h3>
 <p>既然Random出了问题，那么有下面几个问题：<br>
@@ -123,24 +123,24 @@
 <p>有一种说法是：由于不指定seed情况下，random会默认用时间的tick来当作种子。如果在一个tick内重复过多的调用，则会产生固定值。</p>
 <p>不过根据线上情况分析：这个问题持续了半小时。所以这个马上被否决了。</p>
 <p>接下来搜索后得到了一个线索：</p>
-<p><img src="https://xiwan.github.io/post-images/1581252881498.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1581252881498.png" alt=""></figure>
 <p>并且有人提到当random停止工作后，他固定返回0。</p>
 <p>多线程环境下，的确使用static的random会产生这样的问题。这样来看应该是这里对于random的优化不当了。不过随之而来的是，固定值真的是0么？</p>
 <h4 id="固定值">固定值</h4>
 <p>停摆后的random的固定输出值是什么？真的是0。</p>
 <p>同理，线上的表现否定了这个结果。因为如果是0，玩家的掉落数目也使用了这个随机数，所以他们应该获取不到这个异常的结果。。。</p>
 <p>那么究竟是什么值呢？只能通过模拟多线程来压测了</p>
-<p><img src="https://xiwan.github.io/post-images/1581253148318.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1581253148318.png" alt=""></figure>
 <p>具体代码如上，在多线程环境下模拟随机过程，推论是：如果正常他应该输出比较均匀的分布，如果异常应该可以发现某个值特别大。</p>
 <p>当次数低于100000次，我并没有看到太多异常。当超过这个值后有趣的事情发生了：</p>
-<p><img src="https://xiwan.github.io/post-images/1581253310151.png" alt=""></p>
-<p><img src="https://xiwan.github.io/post-images/1581253317111.png" alt=""></p>
-<p><img src="https://xiwan.github.io/post-images/1581253322350.png" alt=""></p>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1581253310151.png" alt=""></figure>
+<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1581253317111.png" alt=""></figure>
+<figure data-type="image" tabindex="6"><img src="https://xiwan.github.io/post-images/1581253322350.png" alt=""></figure>
 <p>这三次异常的结果我差不多测试了30多遍才出来。也就是说差不多只有10%的概率出现Random罢工。这样的确证实了前面的说的多线程情况下， random输出固定值。可以看到一开始应该是均匀分布的，一旦出现多线程问题，马上罢工。</p>
 <h4 id="固定条件">固定条件</h4>
 <p>Ranom 罢工后会输出固定值这点确认了。但不是网上大家说的是0，而是取决于我输入的min值。这样就解释了线上的大部分疑惑了。并且继续做测试可以发现，这个固定值一旦产生并不是固定不变，而是每次都等于min值。</p>
 <p>测试条件为5-10，11-15两个取间同时开始随机取值，检查分布。结果如下图：</p>
-<p><img src="https://xiwan.github.io/post-images/1581253614580.png" alt=""></p>
+<figure data-type="image" tabindex="7"><img src="https://xiwan.github.io/post-images/1581253614580.png" alt=""></figure>
 <p>看到当第一个红框出现罢工后，下一个Random值不是5，而是直接都输出成11了。</p>
 <h3 id="如何改进呢">如何改进呢？</h3>
 <p>原来是通过new 一个Random达到隔离的目的，但现在看来有两个问题：<br>

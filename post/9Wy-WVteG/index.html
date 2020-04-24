@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -117,7 +117,7 @@
 <ol>
 <li>
 <p>历史价格不需要拿出全部数据。看现在这部分大小不大都在1KB左右，但是由于时间长了某些物品的价格数量比较多导致list会比较长。</p>
-<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e216d0097915.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e216d0097915.png" alt=""></figure>
 </li>
 <li>
 <p>部分玩家的事务队列是否可能出现堆积，然后队列过长？</p>
@@ -130,13 +130,13 @@
 </li>
 <li>
 <p>LDR:0:1 作为排行榜也是最热的key,需要控制大小和长度。</p>
-<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e2177ba65644.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e2177ba65644.png" alt=""></figure>
 </li>
 <li>
 <p>建议有expire的地方，如果觉得会有大量数据的前提下，都加一个随机数.像下面这种循环内设置统一过期时间的做法就有点危险</p>
 </li>
 </ol>
-<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e218b722d15b.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e218b722d15b.png" alt=""></figure>
 <ol start="7">
 <li>
 <p>保持主redis只放和用户相关的重要数据，周围数据都可以放在另外的redis中，需要梳理业务。</p>
@@ -146,7 +146,7 @@
 </li>
 <li>
 <p>每日凌晨发现有集中的内存释放，并且空间还比较大.</p>
-<p><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></p>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1579255870027.png" alt=""></figure>
 </li>
 </ol>
 <p>分析完业务后发现是排行榜集中时间过期，没有做随机延迟。<br>
@@ -188,7 +188,7 @@
 <p>在最外层的调用地方还有一个for循环加持放大</p>
 <p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e21874521588.png" alt=""><br>
 分析腾讯的监控看那个面板可以看到，每个一个小时延迟和读数目有个尖峰。应该就是这个原因导致的。</p>
-<p><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></p>
+<figure data-type="image" tabindex="5"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-01-17/5e217e17cc74f.png" alt=""></figure>
 
           </div>
         </div>

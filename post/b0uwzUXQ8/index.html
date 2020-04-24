@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -111,7 +111,7 @@
           <div class="post-content">
             <p>最近压测登陆接口，发现处理超过1k的byte对象（我们初始化就有3k,跑起来后可以达到40k）时候，整体的tqs下降得十分厉害。从一般几千得并发掉落倒了不到一千，还有不少得错误。</p>
 <!-- more -->
-<p><img src="https://xiwan.github.io/post-images/1576471294178.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1576471294178.png" alt=""></figure>
 <p>经过调查这个应该是redis在处理大key时候的一个坑，每次的全量更新让单线程的redis十分缓慢，无法在规定时间内完成操作。</p>
 <h2 id="解决办法">解决办法</h2>
 <p>对于大key,网上查了下给了两种解决方案：</p>
@@ -215,7 +215,7 @@
 <p>在500B为一个基本单元情况下的测试结果。可以看到错误率明显下降，整体的tqs也上升了20%左右。<br>
 <img src="https://xiwan.github.io/post-images/1576472238470.png" alt=""></p>
 <p>观察了下elk的做法，它也会将index拆分成5个shard，然后做一份replica，再散列在集群里面。这么做的好处是可以减少某个热key引起的请求偏移；当然也不需要再关注上层的业务逻辑了。这应该是一个比较主流的做法：</p>
-<p><img src="https://xiwan.github.io/post-images/1577268824992.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1577268824992.png" alt=""></figure>
 
           </div>
         </div>

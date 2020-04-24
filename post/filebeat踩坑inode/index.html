@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -123,11 +123,11 @@ ttl： 采集失效时间，-1表示永不失效
 <p>简单理解就是在linux中，同一个文件的判断条件就是inode值是否相等。如果要快速查看inode，可以用 <strong>ls -i</strong>命令看到这里，我有了一个推断：这次调整结构为了脚本的方便调整了日志的路径。但是具体的脚本是用cp方式建立的。cp方式虽然会让文件的内容和名字一致，但是会去重新申请inode值。当然如果系统的inode值耗尽了，尽管还有磁盘空间，也会导致无法建立新的文件。如果要保持inode不变，需要用的是mv方式或者ln（硬链接，不是软连接）方式，并且不能跨磁盘（区）。</p>
 <h2 id="验证">验证</h2>
 <p>估计filebeat底层也是沿用的这一套。为了验证我的猜想，于是做了下面的实验：</p>
-<p><img src="https://xiwan.github.io/post-images/1574064453379.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1574064453379.png" alt=""></figure>
 <p>可以看到同一个文件通过cp方式，inode值的确变化了。相应的我们用mv方式就不会有影响：</p>
-<p><img src="https://xiwan.github.io/post-images/1574064532919.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1574064532919.png" alt=""></figure>
 <p>网上也查到filebeat的文件说明：</p>
-<p><img src="https://xiwan.github.io/post-images/1574064603448.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1574064603448.png" alt=""></figure>
 <h2 id="解决">解决</h2>
 <p>到这里，自然解决方案也出来了</p>
 <pre><code>1. 写脚本用mv的方式来移动老的日志文件

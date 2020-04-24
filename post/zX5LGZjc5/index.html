@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -115,7 +115,7 @@
   }
 </code></pre>
 <p>这样做后的结果呢？</p>
-<p><img src="https://xiwan.github.io/post-images/1578541551939.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1578541551939.png" alt=""></figure>
 <p>由于默认设置kibana用浏览器时间，所以档这个对齐后，上午11点却只能现实凌晨3点的日志。。。感觉越搞越糟糕了。</p>
 <p>仔细想下，我们其实强行同步这两个时间是有点多余的。因为kibana默认是按照@timestamp来交割，并且用的是utc时区来展示。当我们切换设置为browser，它自动将@timestamp转换到对应时区，而不影响日志展示本身。所以一旦你强行对齐这两个时间，反而会导致部分日志无法展示出来了。如果你服务器一开始就设定UTC时间来记录日志，这种对齐是没有任何问题得。但是一旦设定了其他时区，其实最好得做法就是简单的把日志时间和时区信息设置到@timestamp，剩下的就让elk自己转换即可。</p>
 <pre><code>  date {

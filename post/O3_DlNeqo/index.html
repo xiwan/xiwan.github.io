@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -122,30 +122,30 @@
 <p>不过封测停止后，这个问题突然在steam服务器也多了起来。辛亏的是当时做了一个保护措施（一旦发现redis连接断掉就立马重连）。所以还算安稳度过到现在。</p>
 <h3 id="如何稳定复现这个问题">如何稳定复现这个问题？</h3>
 <p>现在摆在手上的日志只有failed to write时候一定会断线，于是找到我们使用的这个第三方客户端源码研读起来：</p>
-<p><img src="https://xiwan.github.io/post-images/1582108891413.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1582108891413.png" alt=""></figure>
 <p>这就是抛错的地方，的确是连接问题。但是什么条件会抛呢？由于源码实在复杂，所以这部分并没有继续下去。</p>
 <h3 id="继续深挖">继续深挖</h3>
 <p>由于最近几乎每天redis都会自动断掉然后重连，于是决定直接monitor现场。这个命令的作用就是看redis当时在处理什么命令。具体可以参考官方文档。结果发现监控不多久就出现了如下错误：</p>
-<p><img src="https://xiwan.github.io/post-images/1582109109573.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1582109109573.png" alt=""></figure>
 <p>然后同样也是连接断掉了。当然redis自己还是稳定运行的。在网上查了下相关问题，很多人给的答案有点让人捉摸不透：</p>
-<p><img src="https://xiwan.github.io/post-images/1582109233761.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1582109233761.png" alt=""></figure>
 <p>因为问题是出在客户端这边，为什么要修改redis服务器的一些配置甚至去升级呢？就感觉这个做法有点像<strong>头痛医脚</strong>。</p>
 <h3 id="柳暗花明">柳暗花明</h3>
 <p>就在一筹莫展时候，我阅读了官网的<a href="https://xiwan.github.io/post/FwWrD9HpO/">协议文章</a></p>
 <p>于是有了个推论会不会是底层的byte乱了。比如说我多了个CRLF或者少了个CRLF之类。于是做了些测试，的确验证了我的想法：</p>
-<p><img src="https://xiwan.github.io/post-images/1582112369686.png" alt=""></p>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1582112369686.png" alt=""></figure>
 <p>当出现<strong>protocol error</strong>后我自己写的客户端也被断掉了。虽然这个错误和monitor看到的错误并不一样，但看错误日志可以得出他们都属于<strong>protocol error</strong>这个大类型。</p>
 <pre><code>当redis抛出protocol error后会立刻关闭客户端的socket
 </code></pre>
 <p>上面的是我做出的一个结论。</p>
 <h3 id="继续测试">继续测试</h3>
 <p>有了上面那个结论，我怎么去做测试数据来验证这点呢？因为协议的部分是底层实现不大可能多一个或者少一个<strong>关键字符</strong>。于是我想着自己做一些数据来验证这点。</p>
-<p><img src="https://xiwan.github.io/post-images/1582109822145.png" alt=""></p>
+<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1582109822145.png" alt=""></figure>
 <p>程序逻辑大概是随机组合这些保留字符窜丢给redis，不过截至目前为止，我也没有试验出来断线。看样子就协议本身来说还是比较稳定的，只要底层协议按照官方的来，哪怕你输入了一些特殊字符， redis本身还是能顺利处理的。</p>
 <p>到了这里，似乎又陷入了死胡同。。。</p>
 <h3 id="回到原点">回到原点</h3>
 <p>既然错误是redis抛出来的，于是我回到了它的源码上面。很快就找到了一些端倪了：</p>
-<p><img src="https://xiwan.github.io/post-images/1582110076823.png" alt=""></p>
+<figure data-type="image" tabindex="6"><img src="https://xiwan.github.io/post-images/1582110076823.png" alt=""></figure>
 <p>这段代码很明显是处理首字符的时候发现了未定义字符而抛错，进而redis认为连接的字符顺序错误了，从而导致了断线。并且有意思的是这段错误是来自hiredis而非redis服务器本身，另一个有意思的是老版本显然支持的协议字符要比上面的更少。</p>
 <p>hiredis是redis作者写的一个客户端，可以推测使用的redis-cli命令应该是基于这个开发的，所以用monitor命令时候才会发现这个错误。看样子是回包时候，发现了数据错误。那么这个错误似乎和我们线上问题无关了。因为Failed to write明显是写的时候错误了。</p>
 <h3 id="暂时总结">暂时总结</h3>

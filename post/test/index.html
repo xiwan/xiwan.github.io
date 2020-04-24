@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -106,7 +106,7 @@
 <p>最近关注了比较多的独立游戏，比如《eastward》，《the last night》和《迷雾侦探》的美术风格一下子吸引了我。经过一些资料的翻阅，发现实现它的美术效果其中很重要的一点就是 <strong>法线贴图</strong>。</p>
 <!-- more -->
 <h2 id="原理">原理</h2>
-<p><img src="https://xiwan.github.io/post-images/1564653884231.png" alt=" 原始贴图与法线贴图"></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1564653884231.png" alt=" 原始贴图与法线贴图"></figure>
 <p>法线图： 基于原始图生成的。这是因为它把图片的法线向量转成了rgp通道。而面向我们的一般是z轴，所以颜色偏蓝。</p>
 <pre><code>//下面是两者的互相转换公式
 Color.rgb = Normal.xyz / 2.0 + 0.5;
@@ -124,11 +124,11 @@ FinalColor = DiffuseColor.rgb * Intensity.rgb
 </code></pre>
 <h1 id="法线贴图">法线贴图</h1>
 <p>这里比较有意思的一点是：这里的序列帧都可以获得该shader效果。</p>
-<p><img src="https://s2.ax1x.com/2019/08/02/e0QoSP.gif" alt="e0QoSP.gif"></p>
+<figure data-type="image" tabindex="2"><img src="https://s2.ax1x.com/2019/08/02/e0QoSP.gif" alt="e0QoSP.gif"></figure>
 <h1 id="添加阴影效果">添加阴影效果</h1>
 <p>前景虽然看起来不错，但是有一个问题就是没有阴影</p>
 <h2 id="阴影效果">阴影效果</h2>
-<p><img src="https://s2.ax1x.com/2019/08/02/eBEE6J.gif" alt="eBEE6J.gif"></p>
+<figure data-type="image" tabindex="3"><img src="https://s2.ax1x.com/2019/08/02/eBEE6J.gif" alt="eBEE6J.gif"></figure>
 <h1 id="参考">参考</h1>
 <p><a href="https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6">ShaderLesson6</a><br>
 <a href="https://zhuanlan.zhihu.com/p/41915682">《迷雾侦探》美术制作过程—光影篇</a></p>

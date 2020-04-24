@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -97,7 +97,7 @@
 <!-- more -->
 <h3 id="介绍">介绍</h3>
 <p>首先我们得知道每个用户大概占多少内存。根据线上用户的统计来看，差不多可以认为上限为200kb</p>
-<p><img src="https://xiwan.github.io/post-images/1585122972394.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1585122972394.png" alt=""></figure>
 <p>如果我们要保存10万个用户，差不多就是100,000x200Kb = 20G。这个对redis来说已经算比较大的压力了。所以自然考虑到了mysql。</p>
 <p>mysql在这里主要扮演的是备份和还原的角色</p>
 <ul>
@@ -117,15 +117,15 @@
 <h3 id="迭代">迭代</h3>
 <p>由于内存限制，不大可能把10万个用户都加载到内存。所以准备加载1000个用户，然后循环100次。</p>
 <p>第一个版本比较直接，就是将内存中所有用户全部构建成sql语句来执行。测试速度如下：</p>
-<p><img src="https://xiwan.github.io/post-images/1585124385650.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1585124385650.png" alt=""></figure>
 <p>可以看到似乎不错，差不多10分钟内可以完成整个过程。但是离我们的目标5分钟还是有距离。</p>
 <p>第二个版本：我固定了每次执行的用户数目，比如500个。这样改造后的速度：</p>
-<p><img src="https://xiwan.github.io/post-images/1585124674444.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1585124674444.png" alt=""></figure>
 <p>已下子到了6分钟。看来批量定长是一个不错的方向。</p>
 <p>第三个版本：由于数据本身200kb一个有压缩空间，所以我把每个用户数据进行了gzip压缩再存储。这次到达速度为：</p>
-<p><img src="https://xiwan.github.io/post-images/1585124866510.png" alt=""></p>
+<figure data-type="image" tabindex="4"><img src="https://xiwan.github.io/post-images/1585124866510.png" alt=""></figure>
 <p>结果不错，已经到达5分钟级别了。那么还能不能更快呢？我做了第四个版本是多线程的，但结果不是特别好：</p>
-<p><img src="https://xiwan.github.io/post-images/1585125335885.png" alt=""></p>
+<figure data-type="image" tabindex="5"><img src="https://xiwan.github.io/post-images/1585125335885.png" alt=""></figure>
 <p>这个版本基本和第三版本持平，唯一的好处做成一个异步的过程。当然也有可能是我实现得不对:)</p>
 <h3 id="如何进一步挖掘潜力">如何进一步挖掘潜力</h3>
 <p>似乎单机10万写入速度已经到了极限，提升不大了。这个时候比较好的思路是拆表了，加入我把10万个用户拆成5个表，每个表只负责2万人。相信整体速度会有个更大的提升。</p>

@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -106,7 +106,7 @@
           </div>
           <div class="post-content">
             <p>早上一起来被告知昨晚有将近两个小时的游戏服务器连接失败。大概的样子是这样：</p>
-<p><img src="https://xiwan.github.io/post-images/1572334369507.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1572334369507.png" alt=""></figure>
 <p>第一排查的是机房网络情况，经过询问得知网络正常。然后开始分析日志，发现如下特点：</p>
 <ol>
 <li>连接失败的开始时间和结束时间差不多（夜里2点-4点）</li>
@@ -115,7 +115,7 @@
 <p>根据以上两条进一步分析，机房的网络问题被排除了。</p>
 <p>排除掉机房后，我又看了下当时的cpu内存情况也没有异常。接下来只能重新掉头分析上报内容了，感觉大部分失败都是在登陆界面。游戏内玩家报告失败的情况没有。这个时候反应是不是steam平台炸了。但是这个怎么验证呢？这么大的平台炸了，为啥网上没有一点消息。。。</p>
 <p>接着只能硬着头皮查日志了</p>
-<p><img src="https://xiwan.github.io/post-images/1572334817578.png" alt=""></p>
+<figure data-type="image" tabindex="2"><img src="https://xiwan.github.io/post-images/1572334817578.png" alt=""></figure>
 <p>根据日志这段时间分析也发现了几个特点：</p>
 <pre><code>1. 两个机房出现情况的时间点不单单是差不多，而是精确到秒级别的同步。
 2. 一般的超时差不多就是几百毫秒，这段时间的超时居然高达了100秒。
@@ -123,7 +123,7 @@
 <p>根据1来推断有两种可能性。第一种是我们又被攻击了，不过我很快否定了这个想法。因为攻击不可能挑选半夜人少时候，并且只持续了2小时左右就停止了，这个不大符合规律。那么就是最不可能的肯能了：steam平台昨晚挂了。</p>
 <p>steam平台有波动是很正常，但2个小时的时间算是一个不小的事故了。会不会是因为某次波动导致的底层bug，从而请求阻塞之类？不过经过老板提点，还是否定了这个思路，因为两个机房，相同的时间节点。由于两边环境的差异，不可能这么凑巧的。所以真相只有一个：steam 挂了2小时。</p>
 <p>顺着这个思路，我终于找到了一个作证：</p>
-<p><img src="https://xiwan.github.io/post-images/1572335271678.png" alt=""></p>
+<figure data-type="image" tabindex="3"><img src="https://xiwan.github.io/post-images/1572335271678.png" alt=""></figure>
 <p>相关网站 https://outage.report/steam 。这个是一个专门给玩家们上报steam 挂机了的网站。报告的热点图几乎都在北美和欧洲，国内似乎知道的人很少，并且由于出问题时间在半夜，所以并没有人会怀疑到steam上面去。</p>
 <p>这下一切就解释得通了：steam昨晚真得挂了2个小时！根据宕机历史来看，steam不算太靠谱。。。</p>
 <h2 id="隐患">隐患</h2>

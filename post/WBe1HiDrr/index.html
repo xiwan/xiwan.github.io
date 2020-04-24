@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -111,7 +111,7 @@
 <p>为了确定是不是这个原因，我们需要统计下当时的情况：</p>
 <pre><code>curl -s -XGET http://host:port/index/_mapping? pretty | grep '&quot;type&quot;' | wc -l
 </code></pre>
-<p><img src="https://xiwan.github.io/post-images/1578300163529.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1578300163529.png" alt=""></figure>
 <p>可以看到3号的field才741个，4号已经飙到1487个了，5号差不多1573个，6号是1463个。默认的field上线是1000个，怪不得会出现上面的错误，并且可以推断丢失的日志应该不止一种。只能说比较幸运的是，影响范围不大。</p>
 <h3 id="解决问题">解决问题</h3>
 <p>好吧，调整下settings。这里最重要的就是这句&quot;index.mapping.total_fields.limit&quot;: 2000(默认值是1000)。当然这里需要考虑下对于开卡这种日志，其实有必要让他自己单独享用一个index，来减少这种问题。</p>

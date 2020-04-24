@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1585126224098">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1587723116260">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
 
@@ -36,7 +36,7 @@
   <div class="site-header">
     <div class="left">
       <a href="https://xiwan.github.io">
-        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1585126224098" alt="" width="32px" height="32px">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1587723116260" alt="" width="32px" height="32px">
       </a>
       <a href="https://xiwan.github.io">
         <h1 class="site-title">Keep Thinking</h1>
@@ -139,7 +139,7 @@
 </code></pre>
 <p>可以看到在ruby内部, 每一条日志其实是一个event. 通过内置的event.set 和 get方法就可以很简单的将日志继续分割下去。</p>
 <p>最后得到的结果为：</p>
-<p><img src="https://xiwan.github.io/post-images/1577357078972.png" alt=""></p>
+<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1577357078972.png" alt=""></figure>
 <p>当然我们也关系加入新的ruby插件后的效率问题。找了台4G，2核的普通机器在没有调优参数的情况下，pv 压测后的结果为:</p>
 <p>4核4GB的机器结果** 978KiB 0:05:43 [2.85KiB/s]**差不多100万条复杂数据，每秒2.85k个event的速度</p>
 <p>这里有个比较有意思的收获，原来获取array的尾部在conf里面可以写-1...</p>
