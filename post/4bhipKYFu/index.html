@@ -5,7 +5,7 @@
     
 <meta charset="utf-8" >
 
-<title>about me | Keep Thinking</title>
+<title>制作带有dotnet的jenkins(dotnet3.1) | Keep Thinking</title>
 <meta name="description" content="有美人兮心不怿">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -86,15 +86,15 @@
       <div class="content-container">
         <div class="post-detail">
           
-          <h2 class="post-title">about me</h2>
+          <h2 class="post-title">制作带有dotnet的jenkins(dotnet3.1)</h2>
           <div class="post-info post-detail-info">
-            <span><i class="icon-calendar-outline"></i> 2019-08-01</span>
+            <span><i class="icon-calendar-outline"></i> 2020-05-27</span>
             
               <span>
                 <i class="icon-pricetags-outline"></i>
                 
-                  <a href="https://xiwan.github.io/tag/u_2Pe30Rt">
-                    life
+                  <a href="https://xiwan.github.io/tag/WLQnCbVL4">
+                    docker
                     
                   </a>
                 
@@ -102,12 +102,93 @@
             
           </div>
           <div class="post-content">
-            <p>blablabala</p>
+            <h3 id="dotnet安装脚本-dotnet-install-31sh">dotnet安装脚本 dotnet-install-3.1.sh</h3>
+<p>可以根据需要换成其他版本</p>
+<pre><code># Based on instructiions at https://www.microsoft.com/net/download/linux-package-manager/debian9/sdk-current
+# Install dependency for .NET Core 2
+apt-get update
+apt-get install -y curl libunwind8 gettext apt-transport-https
+
+# Based on instructions at https://www.microsoft.com/net/download/linux-package-manager/debian9/sdk-current
+# Install microsoft.qpg &amp; Install the .NET Core framework 
+
+wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor &gt; microsoft.asc.gpg
+mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+wget https://packages.microsoft.com/config/debian/9/prod.list
+mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+apt-get update
+apt-get install -y dotnet-sdk-3.1
+apt-get install -y zip
+apt-get clean
+</code></pre>
+<h3 id="dockerfile部分">Dockerfile部分</h3>
+<pre><code>FROM jenkins/jenkins:lts
+# Switch to root to install .NET Core SDK
+USER root
+# Show distro information!
+RUN uname -a &amp;&amp; cat /etc/*release
+RUN apt-get update &amp;&amp; apt-get install -y libltdl7
+
+ARG dockerGid=999
+RUN echo &quot;docker:x:${dockerGid}:jenkins&quot; &gt;&gt; /etc/group
+
+COPY dotnet-install-3.1.sh install.sh
+RUN bash install.sh
+
+# Switch back to the jenkins user.
+USER jenkins
+</code></pre>
+<h3 id="终端输入">终端输入</h3>
+<pre><code class="language-shell">sudo chown -R 1000:1000 /var/docker_data/jenkins/jenkins_home
+
+# 制作镜像
+docker build . -t jenkins-dotnet
+
+# 启动镜像
+# 注意端口映射规则 其中18080为jenkins访问端口 50000为底层tcp端口
+
+docker run --name kaki-jenkins-dotnet -p 18080:8080 -p 50000:50000 -v /var/docker_data/jenkins/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /volume1/docker/jenkins/backups/jenkins-153:/var/backups -v /volume1/Outofbag/server:/var/server -v $(which docker):/usr/bin/docker -e JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai -d jenkins-dotnet
+
+</code></pre>
+<h4 id="docker-composeyml">docker-compose.yml</h4>
+<p>对应docker-compose文件</p>
+<pre><code class="language-yaml">version: '2'
+services:
+  jenkins-core:
+    build: ./
+    environment:
+      - JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai 
+    ports:
+      - 18080:8080
+      - 50000:50000
+    # uncomment for docker in docker
+    privileged: true
+    restart: always
+    volumes:
+        # enable persistent volume (warning: make sure that the local jenkins_home folder is created)
+        - /var/docker_data/jenkins/jenkins_home:/var/jenkins_home
+        # mount docker sock and binary for docker in docker (only works on linux)
+        - /var/run/docker.sock:/var/run/docker.sock
+		- /volume1/docker/jenkins/backups/jenkins-153:/var/backups
+        - /usr/local/bin/docker:/usr/bin/docker
+		- /volume1/Outofbag/server:/var/server
+</code></pre>
 
           </div>
         </div>
 
         
+          <div class="next-post">
+            <a class="purple-link" href="https://xiwan.github.io/post/m58UGVTjO">
+              <h3 class="post-title">
+                下一篇：支付相关的
+              </h3>
+            </a>
+          </div>
+          
       </div>
 
       

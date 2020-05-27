@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>打包机维护（备份） | Keep Thinking</title>
+<meta name="description" content="有美人兮心不怿">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://xiwan.github.io/favicon.ico?v=1590574720499">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://xiwan.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://xiwan.github.io">
+        <img class="avatar" src="https://xiwan.github.io/images/avatar.png?v=1590574720499" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://xiwan.github.io">
+        <h1 class="site-title">Keep Thinking</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="menu purple-link">
+            标签
+          </a>
+        
+      
+        
+          <a href="https://xiwan.github.io/post/UOJXP5H7t/" class="menu purple-link">
+            about
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">打包机维护（备份）</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2020-05-27</span>
+            
+          </div>
+          <div class="post-content">
+            <h3 id="打包机基础">打包机基础</h3>
+<pre><code>1. 需要固定ip到192.168.1.36.
+2. 打包机的jenkins与153的jenkins是互联的，打包命令通过153发送
+3. 打包机密码111111(所有需要密码地方)
+4. 打包机跑着andorid和ios两个项目，无法同时开打
+5. 由于空间不足所以打包机，所以外接着一个ssd硬盘
+6. tv 信息: 1208430276 密码： 1q2w3e4R
+</code></pre>
+<h3 id="基本流程">基本流程</h3>
+<p>下面是153的jenkins项目：</p>
+<figure data-type="image" tabindex="1"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece3b785ccd4.png" alt=""></figure>
+<pre><code>1. 153 jenkins发送命令(153)
+2. 打包机拉取svn目录（外接ssd）
+3. 打包机调用unity生成相关项目(本地)
+4. 打包机调用xcode或者as命令生成相关包体(本地)
+5. 将包体拷贝到153的nginx托管目录下(/Outofbag/builds)
+6. 生成邮件，发送相关人员(jenkins邮件插件)
+</code></pre>
+<h4 id="重要的脚本">重要的脚本</h4>
+<p>项目入口在svn的Kaki_confd里面的jenkins/scripts目录中</p>
+<pre><code>kaki-app-package.sh 需要参数iphone/android 这个是打包脚本的总入口
+share.sh 公共脚本，里面定义很多参数和共享方法
+kaki-app-android-package 打包android的脚本
+kaki-app-iphone-package 打包ios的脚本
+branch-kaki 拉分支脚本
+</code></pre>
+<h4 id="服务器列表入口">服务器列表入口</h4>
+<p>打包时候需要告知前端这个包使用哪种入口列表，起资源也在jenkins中：</p>
+<figure data-type="image" tabindex="2"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece372dc037f.png" alt=""></figure>
+<p>基本命名规则是ServerArea-xxxx.txt格式。后面的xxxx就是具体的入口列表。</p>
+<h3 id="目录结构">目录结构</h3>
+<p>打包机的目录结构分为三个部分</p>
+<h4 id="svn-部分">svn 部分</h4>
+<p>这个是打包机拉取项目的地址（ssd）, 固定地址为：<br>
+/Volumes/Samsung_T5/data/svn</p>
+<p>下面又分成三个子目录：</p>
+<figure data-type="image" tabindex="3"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece2f51f3d2a.png" alt=""></figure>
+<pre><code>*android 主要放svn 拉取的unity的android文件
+*iphone 主要放svn 拉取的unity的ios 文件
+*Kaki_confd 则是打包机脚本主要放置的地方
+</code></pre>
+<p>其中Kaki_confd的jenkins目录下为脚本路径</p>
+<figure data-type="image" tabindex="4"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece302156325.png" alt=""></figure>
+<p>可以看到它下面也分了三个目录：</p>
+<pre><code>* android 主要是android相关的资源
+* iphone 主要是ios相关的资源
+* scripts 就是脚本所在
+</code></pre>
+<p>前面两个的目录下面有 Editor/readyForCp/readyForCpV2 三个文件夹</p>
+<pre><code>Editor 主要是unity扩展命令文件
+readyForCp 老版本资源文件
+readyForCpV2 目前所用资源文件
+</code></pre>
+<p>这里要说明的是zips下面一般放置飞鱼下载的各种sdk包，然后解压到fysdk即可</p>
+<figure data-type="image" tabindex="5"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece31621df81.png" alt=""></figure>
+<p>config 目录下面则是根据不同平台提前做好的资源和配置。打包时候会自动更改参数拷贝到相应输出地址。</p>
+<h4 id="项目部分">项目部分</h4>
+<p>项目输出的固定路径： /Users/xiwan/Documents/projects/build/</p>
+<p>下面也是按照android 和 iphone两个平台输出。其中项目固定成KakiRaid名字，然后包体放在outputs目录下面。</p>
+<figure data-type="image" tabindex="6"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece33741ed7a.png" alt=""></figure>
+<h4 id="签名部分">签名部分</h4>
+<p>ios签名证书固定放置的目录为：</p>
+<p>/Users/xiwan/Library/MobileDevice/Provisioning\ Profiles</p>
+<figure data-type="image" tabindex="7"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece33d6c5c17.png" alt=""></figure>
+<p>每次跟新证书，根据不同的证书来替换脚本中对应部分即可</p>
+<figure data-type="image" tabindex="8"><img src="http://192.168.1.153/showdoc/server/../Public/Uploads/2020-05-27/5ece3425e8c7f.png" alt=""></figure>
+<p>andorid的签名证书在其svn对应的config文件夹下面</p>
+<h3 id="如何更新飞鱼sdk">如何更新飞鱼sdk</h3>
+<p>去飞鱼网站下载对应sdk, 放置在对应svn下面的zips目录，然后解压到外面的fysdk即可。<br>
+注意：尽量在mac上解压和操作，可以减少很多不必要的麻烦</p>
+<p>地址： https://nebula.737.com/home/</p>
+<h3 id="需要的软件">需要的软件</h3>
+<p>unity for mac 2018.4.22，打包需要正版账号<br>
+xcode 这个保证覆盖的平台即可<br>
+android studio 使用的是3.6.2<br>
+gradle 用的4.10</p>
+
+          </div>
+        </div>
+
+        
+      </div>
+
+      
+        
+          <div id="gitalk-container"></div>
+        
+
+        
+      
+
+      <div class="site-footer">
+  <div class="slogan">有美人兮心不怿</div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/xiwan" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://xiwan.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'c8d7ebef73924ce0e7ad',
+        clientSecret: '97d84d969ff9448afc55b2fa45c305a44d94e681',
+        repo: 'xiwan.github.io',
+        owner: 'xiwan',
+        admin: ['xiwan'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

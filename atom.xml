@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://xiwan.github.io</id>
     <title>Keep Thinking</title>
-    <updated>2020-05-22T09:00:52.088Z</updated>
+    <updated>2020-05-27T10:18:43.360Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://xiwan.github.io"/>
     <link rel="self" href="https://xiwan.github.io/atom.xml"/>
@@ -10,6 +10,88 @@
     <logo>https://xiwan.github.io/images/avatar.png</logo>
     <icon>https://xiwan.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Keep Thinking</rights>
+    <entry>
+        <title type="html"><![CDATA[制作带有dotnet的jenkins(dotnet3.1)]]></title>
+        <id>https://xiwan.github.io/post/4bhipKYFu</id>
+        <link href="https://xiwan.github.io/post/4bhipKYFu">
+        </link>
+        <updated>2020-05-27T10:16:40.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="dotnet安装脚本-dotnet-install-31sh">dotnet安装脚本 dotnet-install-3.1.sh</h3>
+<p>可以根据需要换成其他版本</p>
+<pre><code># Based on instructiions at https://www.microsoft.com/net/download/linux-package-manager/debian9/sdk-current
+# Install dependency for .NET Core 2
+apt-get update
+apt-get install -y curl libunwind8 gettext apt-transport-https
+
+# Based on instructions at https://www.microsoft.com/net/download/linux-package-manager/debian9/sdk-current
+# Install microsoft.qpg &amp; Install the .NET Core framework 
+
+wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor &gt; microsoft.asc.gpg
+mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+wget https://packages.microsoft.com/config/debian/9/prod.list
+mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+apt-get update
+apt-get install -y dotnet-sdk-3.1
+apt-get install -y zip
+apt-get clean
+</code></pre>
+<h3 id="dockerfile部分">Dockerfile部分</h3>
+<pre><code>FROM jenkins/jenkins:lts
+# Switch to root to install .NET Core SDK
+USER root
+# Show distro information!
+RUN uname -a &amp;&amp; cat /etc/*release
+RUN apt-get update &amp;&amp; apt-get install -y libltdl7
+
+ARG dockerGid=999
+RUN echo &quot;docker:x:${dockerGid}:jenkins&quot; &gt;&gt; /etc/group
+
+COPY dotnet-install-3.1.sh install.sh
+RUN bash install.sh
+
+# Switch back to the jenkins user.
+USER jenkins
+</code></pre>
+<h3 id="终端输入">终端输入</h3>
+<pre><code class="language-shell">sudo chown -R 1000:1000 /var/docker_data/jenkins/jenkins_home
+
+# 制作镜像
+docker build . -t jenkins-dotnet
+
+# 启动镜像
+# 注意端口映射规则 其中18080为jenkins访问端口 50000为底层tcp端口
+
+docker run --name kaki-jenkins-dotnet -p 18080:8080 -p 50000:50000 -v /var/docker_data/jenkins/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /volume1/docker/jenkins/backups/jenkins-153:/var/backups -v /volume1/Outofbag/server:/var/server -v $(which docker):/usr/bin/docker -e JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai -d jenkins-dotnet
+
+</code></pre>
+<h4 id="docker-composeyml">docker-compose.yml</h4>
+<p>对应docker-compose文件</p>
+<pre><code class="language-yaml">version: '2'
+services:
+  jenkins-core:
+    build: ./
+    environment:
+      - JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai 
+    ports:
+      - 18080:8080
+      - 50000:50000
+    # uncomment for docker in docker
+    privileged: true
+    restart: always
+    volumes:
+        # enable persistent volume (warning: make sure that the local jenkins_home folder is created)
+        - /var/docker_data/jenkins/jenkins_home:/var/jenkins_home
+        # mount docker sock and binary for docker in docker (only works on linux)
+        - /var/run/docker.sock:/var/run/docker.sock
+		- /volume1/docker/jenkins/backups/jenkins-153:/var/backups
+        - /usr/local/bin/docker:/usr/bin/docker
+		- /volume1/Outofbag/server:/var/server
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[支付相关的]]></title>
         <id>https://xiwan.github.io/post/m58UGVTjO</id>
@@ -482,167 +564,6 @@ static string SocketCommand(string[] command)
 </code></pre>
 <p>但是要记得在查询语句里面和时间相关的条件都带上timezone就好了。其实这么看来，最优雅的做法还是一开始就把服务器时间设置成UTC,可以少走很多弯路。</p>
 <p>这里多说一点，elk用这个@timestamp除了展示用还有什么作用呢？索引分割用。由于我们日志是按天分割，日志文件是按小时记录。由于存在8小时时差，所以索引的一天24小时是跨了日志的两天的。比如索引7号的日志，实际是从7号早上8点到8号早上7点为止。这点明白后，在调整索引时候，最好延迟两天再做，防止对正在写入的索引产生影响。别我是怎么知道的，反正都是血泪史。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[elk的fileds被撑爆了。。。]]></title>
-        <id>https://xiwan.github.io/post/WBe1HiDrr</id>
-        <link href="https://xiwan.github.io/post/WBe1HiDrr">
-        </link>
-        <updated>2020-01-06T07:41:25.000Z</updated>
-        <summary type="html"><![CDATA[<p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>今天调查了一个奇怪的问题，在其他日志都是看起来的情况下，突然发现某个日志在5号凌晨开始后没有被收录了。</p>
-<!-- more -->
-<h3 id="定位问题">定位问题</h3>
-<p>通过调查日志文件本身发现是有记录的，但是没有进入elk。由于前面我已经加上了日志counter和服务器id，那么可以排除日志hash碰撞的可能性。于是开始调查logstash，得到的日志结果:</p>
-<p><strong>[2020-01-06T05:47:02,707][WARN ][logstash.outputs.elasticsearch] Could not index event to Elasticsearch. {:status=&gt;400, :action=&gt;[&quot;index&quot;, {:_id=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, :_index=&gt;&quot;kakiraid-info-2020.01.06&quot;, :_type=&gt;&quot;kakiraid_log&quot;, :_routing=&gt;nil}, #<a href="LogStash::Event:0x2ccdcf00">LogStash::Event:0x2ccdcf00</a>], :response=&gt;{&quot;index&quot;=&gt;{&quot;_index&quot;=&gt;&quot;kakiraid-info-2020.01.06&quot;, &quot;_type&quot;=&gt;&quot;kakiraid_log&quot;, &quot;_id&quot;=&gt;&quot;f5a3e882bfcb4f155c99db18c07093e2&quot;, &quot;status&quot;=&gt;400, &quot;error&quot;=&gt;{&quot;type&quot;=&gt;&quot;illegal_argument_exception&quot;, &quot;reason&quot;=&gt;&quot;Limit of total fields [1000] in index [kakiraid-info-2020.01.06] has been exceeded&quot;}}}}</strong></p>
-<p>原来是索引中的字段给撑爆了。联系起前几天调整的复杂日志结构问题，是有这个可能性的。因为为了分析开卡日志和减少日志放大倍数，为每个item都动态生成了field。没想到在这里给自己挖坑了。</p>
-<p>为了确定是不是这个原因，我们需要统计下当时的情况：</p>
-<pre><code>curl -s -XGET http://host:port/index/_mapping? pretty | grep '&quot;type&quot;' | wc -l
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="https://xiwan.github.io/post-images/1578300163529.png" alt=""></figure>
-<p>可以看到3号的field才741个，4号已经飙到1487个了，5号差不多1573个，6号是1463个。默认的field上线是1000个，怪不得会出现上面的错误，并且可以推断丢失的日志应该不止一种。只能说比较幸运的是，影响范围不大。</p>
-<h3 id="解决问题">解决问题</h3>
-<p>好吧，调整下settings。这里最重要的就是这句&quot;index.mapping.total_fields.limit&quot;: 2000(默认值是1000)。当然这里需要考虑下对于开卡这种日志，其实有必要让他自己单独享用一个index，来减少这种问题。</p>
-<pre><code>{
-    &quot;index.mapping.total_fields.limit&quot;: 2000,
-}
-</code></pre>
-<p>由于一般我们会使用动态模板，这样我们每次的设置仅对当前的索引产生效果。如果第二天来的日志，还会使用默认的模板来进行索引。最好的方案是使用自定义模板:</p>
-<pre><code class="language-json">put {{domain}}/_template/kakiraid-logs
-
-{
-  &quot;template&quot;: &quot;kakiraid-*&quot;, 
-  &quot;order&quot;:    1, 
-  &quot;settings&quot;: {
-    &quot;index.indexing.slowlog.threshold.index.debug&quot; : &quot;2s&quot;,
-    &quot;index.indexing.slowlog.threshold.index.info&quot; : &quot;5s&quot;,
-    &quot;index.indexing.slowlog.threshold.index.trace&quot; : &quot;500ms&quot;,
-    &quot;index.indexing.slowlog.threshold.index.warn&quot; : &quot;10s&quot;,
-    &quot;index.mapping.total_fields.limit&quot;: 3000,
-    &quot;index.merge.policy.max_merged_segment&quot; : &quot;5gb&quot;,
-    &quot;index.merge.policy.segments_per_tier&quot; : &quot;24&quot;,
-    &quot;index.merge.scheduler.max_merge_count&quot; : 10,
-    &quot;index.merge.scheduler.max_thread_count&quot; : 1,
-    &quot;index.number_of_shards&quot;: &quot;5&quot;,
-    &quot;index.number_of_replicas&quot; : &quot;1&quot;,
-    &quot;index.optimize_auto_generated_id&quot; : &quot;true&quot;,
-    &quot;index.refresh_interval&quot; : &quot;60s&quot;,
-    &quot;index.routing.allocation.total_shards_per_node&quot; : &quot;-1&quot;,
-    &quot;index.search.slowlog.threshold.fetch.debug&quot; : &quot;500ms&quot;,
-    &quot;index.search.slowlog.threshold.fetch.info&quot; : &quot;800ms&quot;,
-    &quot;index.search.slowlog.threshold.fetch.trace&quot; : &quot;200ms&quot;,
-    &quot;index.search.slowlog.threshold.fetch.warn&quot; : &quot;1s&quot;,
-    &quot;index.search.slowlog.threshold.query.debug&quot; : &quot;2s&quot;,
-    &quot;index.search.slowlog.threshold.query.info&quot; : &quot;5s&quot;,
-    &quot;index.search.slowlog.threshold.query.trace&quot; : &quot;500ms&quot;,
-    &quot;index.search.slowlog.threshold.query.warn&quot; : &quot;10s&quot;,
-    &quot;index.translog.durability&quot; : &quot;async&quot;,
-    &quot;index.translog.flush_threshold_size&quot; : &quot;5000mb&quot;,
-    &quot;index.translog.sync_interval&quot;: &quot;600s&quot;,
-	&quot;index.unassigned.node_left.delayed_timeout&quot; : &quot;7200m&quot;
-  },
-  &quot;mappings&quot;: {
-    &quot;_default_&quot;: { 
-	  &quot;dynamic&quot;: true,
-      &quot;_all&quot;: {
-        &quot;enabled&quot;: false
-      },
-      &quot;dynamic_templates&quot;: [
-        {
-          &quot;string_template&quot;: {
-            &quot;match_mapping_type&quot;: &quot;string&quot;,  
-            &quot;match&quot;: &quot;*&quot;,                    
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;text&quot;,
-              &quot;fields&quot;: {
-                    &quot;keyword&quot;: {
-                        &quot;type&quot;: &quot;keyword&quot;,
-                        &quot;ignore_above&quot;: 256
-                    }
-                }
-            }
-          }
-        },
-        {
-          &quot;ip&quot;: {
-            &quot;match_mapping_type&quot;: &quot;*&quot;,
-            &quot;match&quot;: &quot;*_ip&quot;,
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;ip&quot;
-            }
-          }
-        },
-        {
-          &quot;date&quot;: {
-            &quot;match&quot;: &quot;*_date&quot;,            
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;date&quot;,            
-              &quot;format&quot;: &quot;yyyy-MM-dd HH:mm:ss&quot;  
-            }
-          }
-        },
-        {
-          &quot;keyword&quot;: {
-            &quot;match_mapping_type&quot;: &quot;string&quot;,
-            &quot;match&quot;: &quot;*_k&quot;,                 
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;keyword&quot;,
-              &quot;ignore_above&quot;: 256,
-              &quot;null_value&quot;: &quot;null&quot;
-            }
-          }
-        },
-        {
-          &quot;long&quot;: {
-            &quot;match_mapping_type&quot;: &quot;*&quot;,
-            &quot;match&quot;: &quot;*_l&quot;,              
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;integer&quot;          
-            }
-          }
-        },
-        {
-          &quot;double&quot;: {
-            &quot;match_mapping_type&quot;: &quot;*&quot;,
-            &quot;match&quot;: &quot;*_d&quot;,              
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;double&quot;           
-            }
-          }
-        },
-        {
-          &quot;boolean&quot;: {
-            &quot;match_mapping_type&quot;: &quot;boolean&quot;,
-            &quot;match&quot;: &quot;*_b&quot;,                
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;boolean&quot;
-            }
-          }
-        },
-        {
-          &quot;analyzer&quot;: {
-            &quot;match&quot;: &quot;*_a&quot;,                
-            &quot;mapping&quot;: {
-              &quot;type&quot;: &quot;text&quot;,                
-              &quot;index&quot;: true,
-              &quot;analyzer&quot;: &quot;english&quot;,        
-              &quot;null_value&quot;: &quot;null&quot;
-            }
-          }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-<p>其他的是我为了加快索引速度给的一些“调优”。比如refresh_interval这个默认值是1s，虽然看上去日志是所见即所得，但有的时候并不需要这么快。可以适当的延长这个值，让日志在file_cache中多呆一会儿再被可见。其实对于elk来说，文档可见其实只要缓存到了file_cache中即可，并不需要写入到硬盘。</p>
-<p>当然通过flush也是可以保证这点的，但是它的代价就是磁盘io。所以我这里将translog设定成了异步并且有大小阈值的。因为这些日志文件并不是那么的重要。</p>
-<p>同时我还设定了dynamic_templates来保证未来的扩展性，只要符合命名规则就可以自动解析成想要的类型了。这里要注意得是模板其实也有顺序的，个人越是通用的应该要放在上面比较好。然后对于string类型来说，建议还是使用text而不是keyword，这样会使得日常查看日志方便许多。</p>
-<h3 id="如何重新装载日志呢">如何重新装载日志呢？</h3>
-<p>为了保证日志的完整性，肯定是需要重新index受到影响的日志。这个结合filebeat的inode特性，我们首先需要隔离开受到“错误”影响的日志，比如某个时间段之后的日志的索引都有问题。按照我的经验是截至到当天的前一天为好。最重要的原因是当天的index还没有完成，处于正在执行状态，是不会接受已经被索引过的日志的。要么就是停止当天的索引，要么就是隔天操作。</p>
-<p>隔离开的日志只要更换下inode，然后就可以做到不停机的情况下重新index了。比较稳妥的方案是可以删除掉已经存在Index, 然后找一个压力比较小的时候做以上的操作:)</p>
 ]]></content>
     </entry>
 </feed>
